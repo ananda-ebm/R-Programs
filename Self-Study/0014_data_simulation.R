@@ -26,12 +26,8 @@ for (i in 1:N) {
   second.stage.random.components[,i] <- s
 }
 
-second.stage.random.components
-
 first.stage.parameters <- matrix(c(muS, muT, alpha, beta), 
                                  nrow = 4, ncol = N) + second.stage.random.components
-
-first.stage.parameters
 
 n.patients <- 100
 
@@ -44,8 +40,6 @@ for (i in 1:(N*n.patients)) {
   
   first.stage.random.components[,i] <- s
 }
-
-first.stage.random.components
 
 treatment.assignment <- matrix(NA, nrow = N, ncol = n.patients)
 
@@ -92,14 +86,18 @@ outcome.T_melted <- outcome.T %>%
 
 View(outcome.T_melted)
 
-df <- cbind(outcome.S_melted, outcome.T_melted[,2])
+treatment.assignment <- as.data.frame(as.vector(t(treatment.assignment)))
+
+df <- cbind(outcome.S_melted[,1], treatment.assignment[,1], outcome.S_melted[,2], outcome.T_melted[,2])
 View(df)
 
 df <- cbind(rep(1:40, each = 100), df)
 View(df)
 
-names(df)[1] <- "Trial ID"
+names(df)[c(1, 3)] <- c("Trial ID", "Treatment")
 
 View(df)
+
+library(openxlsx)
 
 write.xlsx(df, "C:\\Users\\AnandaBiswas\\OneDrive - EBM Health Consultants LLP\\Documents\\R-Programs\\Self-Study\\0014_data.xlsx")
