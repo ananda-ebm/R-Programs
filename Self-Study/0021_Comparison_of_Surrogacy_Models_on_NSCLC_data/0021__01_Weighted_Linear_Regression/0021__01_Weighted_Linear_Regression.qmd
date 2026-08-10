@@ -1,0 +1,179 @@
+---
+title: "Frequentist Weighted Linear Regression"
+author: "Ananda Biswas"
+date: "`r Sys.Date()`"
+format: html
+editor: visual
+---
+
+## Required Libraries
+
+```{r message=FALSE, warning=FALSE}
+library(openxlsx)
+
+library(wCorr)
+library(DescTools)
+
+library(gt)
+library(tidyverse)
+library(cmdstanr)
+```
+
+## Loading Data
+
+```{r}
+#| include: false
+data.path <- 'https://github.com/ananda-ebm/datasets/raw/refs/heads/master/NSCLC.xlsx'
+```
+
+```{r}
+df1 <- read.xlsx(data.path, sheet = 1)
+```
+
+## Initial Sanity Checks
+
+```{r}
+str(df1)
+```
+
+```{r}
+dim(df1)
+```
+
+```{r, results='asis'}
+#| echo: false
+#| tbl-cap: "Snapshot of NSCLC Data"
+
+head(df1) |>
+  gt() |>
+  tab_options(
+    data_row.padding = px(8),
+    column_labels.padding = px(10)
+  )
+```
+
+## Generating Treatment Effect on Surrogate Endpoint in New Trials
+
+```{r}
+range(df1$HR.PFS)
+```
+
+```{r}
+# Suppose 1000 new trials reporting TE on surrogate endpoint only
+new.data <- data.frame(PFS.ln.HR = log(seq(0.2,3, length=1000)))
+```
+
+## Some Derived Quantities
+
+The weights used in this analysis were the inverse variance $1/{\text{SE}^2}$ of the log HR of OS.
+
+```{r}
+df1$weight <- 1 / (df1$OS.se)^2
+```
+
+The weighted correlation coefficient $(\rho)$ was estimated using the Pearson weighted correlation of the target and the surrogate endpoints.
+
+```{r}
+rho <- weightedCorr(df1$OS.ln.HR, df1$PFS.ln.HR,
+             method = "Pearson",
+             weights = 1 / df1$OS.se^2)
+rho
+```
+
+Confidence intervals around Pearson $\rho$ are not symmetrical. Therefore, a Fisher's $z-$transformation was applied to estimate the $95\%$ confidence intervals, which is conducted using the `CorCI()` function in the `DescTools` package.
+
+```{r}
+effective.n <- sum(df1$weight)^2 / sum(df1$weight^2)
+effective.n <- round(effective.n, 1)
+
+effective.n
+```
+
+```{r}
+CorCI(rho = rho, 
+      n = effective.n, 
+      conf.level = 0.95, alternative = "two.sided")
+```
+
+## Model Fitting
+
+Frequentist weighted linear regression is arguably the *simplest* approach to a surrogate analysis. A weighted linear regression model was used to relate the target endpoint (log HRs of OS) to the surrogate endpoint (log HRs of PFS). The data were *weighted* by the inverse of the variance of the log HRs of the target variable.
+
+```{r}
+fit1 <- lm(OS.ln.HR ~ PFS.ln.HR, weights = weight, data = df1)
+summary(fit1)
+```
+
+```{r}
+sqrt(summary(fit1)$r.squared)
+```
+
+## Prediction of TE on Clinical Outcome in New Trials
+
+### Confidence Intervals
+
+```{r}
+wlr.ci <- data.frame(predict(fit1, newdata = new.data, interval = "confidence"))
+
+head(wlr.ci)
+```
+
+### Prediction Intervals
+
+```{r}
+wlr.pi <- data.frame(predict(fit1, newdata = new.data, interval = "prediction",
+                  weight = 1 / (mean(df1$OS.se)^2) ))
+
+head(wlr.pi)
+```
+
+## Trial-level Association Plot
+
+```{r}
+wlr.pred.df <- data.frame(HR.OS = exp(wlr.ci[,1]),
+                        HR.PFS = exp(new.data$PFS.ln.HR),
+                        lower.ci = exp(wlr.ci[,2]),
+                        upper.ci = exp(wlr.ci[,3]),
+                        lower.pi = exp(wlr.pi[,2]),
+                        upper.pi = exp(wlr.pi[,3]))
+```
+
+```{r}
+wlr.association.plot <- ggplot(df1, aes(x = HR.PFS, y = HR.OS)) +
+  geom_ribbon(aes(x = HR.PFS, ymin = lower.ci, ymax = upper.ci), data = wlr.pred.df, stat = 'identity', fill = "steelblue", alpha = 0.5) +
+  geom_ribbon(aes(x = HR.PFS, ymin = lower.pi, ymax = upper.pi), data = wlr.pred.df, stat = 'identity', fill = "lightblue", alpha = 0.4) +
+  scale_x_continuous(trans = "log", 
+                     limits = c(min(df1$HR.PFS)*0.9, max(df1$HR.PFS)*1.1),
+                     breaks=c(0.1,0.2,0.3,0.4,0.5,0.7,1,1.2,1.5,2,3),
+                     expand = c(0.01, 0.01)) +
+  scale_y_continuous(trans = "log",
+                     limits=c(0.2, 3.1),
+                     breaks=c(0.1,0.2,0.3,0.4,0.5,0.7,1,1.2,1.5,2,3),
+                     expand = c(0.01, 0.01)) +
+  geom_smooth(aes(x = HR.PFS, y = HR.OS), data = wlr.pred.df, stat = 'identity') +
+  geom_point(aes(x = HR.PFS, y = HR.OS, size = weight), 
+             col = "gray30", shape = 21, fill = "orange") +
+  geom_hline(yintercept = 1, linetype = 'dashed') +
+  xlab("Progression-free survival hazard ratio (log scale)")+ 
+  ylab(paste("Overall survival hazard ratio" , "\n", "\U00B1", "95% confidence and prediction intervals (log scale)")) +
+  ggtitle("Weighted Linear Regression") +
+  theme_bw() +
+  scale_colour_hue("trial") +
+  theme(legend.position = "none")
+```
+
+```{r, fig.width=8, fig.height=6, out.width="100%"}
+wlr.association.plot
+```
+
+## Surrogate Threshold Effect
+
+```{r}
+candidate.HR.PFS <- wlr.pred.df %>%
+  filter(upper.pi < 1) %>%
+  pull(HR.PFS)
+
+WLR.STE <- round(max(candidate.HR.PFS), digits = 3)
+
+WLR.STE
+```
