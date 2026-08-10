@@ -95,6 +95,35 @@ CorCI(rho = rho,
       conf.level = 0.95, alternative = "two.sided")
 ```
 
+## Model
+
+The weighted linear regression (WLR) model is given by
+
+$$\theta_i = \alpha + \beta\gamma_i + \varepsilon_i,
+\qquad i = 1,\ldots,n,$$
+
+where
+
+$$\varepsilon_i \sim
+N\left(0,\sigma_{\theta_i}^2\right); 
+\qquad 
+w_i = \dfrac{1}{\sigma_{\theta_i}^2}.$$
+
+The parameters $\alpha$ and $\beta$ are estimated by minimizing the weighted sum of squared residuals:
+
+$$\underset{\alpha,\beta}{\operatorname{minimize}}
+\sum_{i=1}^{n}
+w_i
+\left(
+\theta_i-\alpha-\beta\gamma_i
+\right)^2.$$ Here:
+
+- $\theta_i$ is the treatment effect on the final endpoint in study $i$;
+- $\gamma_i$ is the treatment effect on the surrogate endpoint in study $i$;
+- $\alpha$ is the intercept;
+- $\beta$ is the regression coefficient measuring the association between treatment effects on the surrogate and final endpoints; and
+- $w_i$ is the weight assigned to study $i$.
+
 ## Model Fitting
 
 Frequentist weighted linear regression is arguably the *simplest* approach to a surrogate analysis. A weighted linear regression model was used to relate the target endpoint (log HRs of OS) to the surrogate endpoint (log HRs of PFS). The data were *weighted* by the inverse of the variance of the log HRs of the target variable.
@@ -167,6 +196,8 @@ wlr.association.plot
 ```
 
 ## Surrogate Threshold Effect
+
+Surrogate Threshold Effect is defined as ***the minimum treatment effect on the surrogate necessary to predict a nonzero effect on the true endpoint*** in a future trial. $\log(HR) < 0$ implies a *beneficial* treatment effect. So STE was computed as the intersection of the upper $95\%$ prediction interval with the horizontal line for no treatment effect (i.e., in which the HR for OS equals $1$ or $\log(HR) = 0$).
 
 ```{r}
 candidate.HR.PFS <- wlr.pred.df %>%
