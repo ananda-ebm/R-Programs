@@ -1,0 +1,158 @@
+---
+title: "Frequentist Fixed-effects Meta Regression"
+author: "Ananda Biswas"
+date: "`r Sys.Date()`"
+format: html
+editor: visual
+knitr:
+  opts_chunk:
+    fig.path: "figures/"
+---
+
+## Required Libraries
+
+```{r message=FALSE, warning=FALSE}
+library(openxlsx)
+
+library(gt)
+library(tidyverse)
+
+library(metafor)
+```
+
+## Loading Data
+
+```{r}
+#| include: false
+data.path <- 'https://github.com/ananda-ebm/datasets/raw/refs/heads/master/NSCLC.xlsx'
+```
+
+```{r}
+df1 <- read.xlsx(data.path, sheet = 1)
+```
+
+## Initial Sanity Checks
+
+```{r}
+str(df1)
+```
+
+```{r}
+dim(df1)
+```
+
+```{r, results='asis'}
+#| echo: false
+#| tbl-cap: "Snapshot of NSCLC Data"
+
+head(df1) |>
+  gt() |>
+  tab_options(
+    data_row.padding = px(8),
+    column_labels.padding = px(10)
+  )
+```
+
+## Derived Quantities
+
+```{r}
+df1$weight <- 1 / (df1$OS.se)^2
+```
+
+## Generating Treatment Effect on Surrogate Endpoint in New Trials
+
+```{r}
+range(df1$HR.PFS)
+```
+
+```{r}
+# Suppose 1000 new trials reporting TE on surrogate endpoint only
+new.data <- data.frame(PFS.ln.HR = log(seq(0.2,3, length=1000)))
+```
+
+## Model
+
+Meta-regression is an extension of meta-analysis that includes the surrogate endpoint as a study-level covariate. The model is written as
+
+$$\widehat{\theta}_i
+=
+\theta+\beta\widehat{\alpha}_i+\varepsilon_i,
+\qquad
+i=1,\ldots,N,$$
+
+where
+
+$$\varepsilon_i
+\overset{\mathrm{iid}}{\sim}
+N(0,\sigma^2).$$ Here:
+
+- $\widehat{\theta}_i$ = estimated treatment effect on the final endpoint in study $i$;
+- $\widehat{\alpha}_i$ = estimated treatment effect on the surrogate endpoint in study $i$;
+- $\theta$ = intercept;
+- $\beta$ = regression coefficient describing the association between surrogate and final treatment effects.
+
+Here we assume that $\theta$ is common for all studies and the only reason observed treatment effect $\widehat{\theta_i}$'s are different from $\theta$ is the sampling error (in addition to the observed treatment effect on surrogate endpoint of that study).
+
+## Model Fitting
+
+```{r}
+fit.FEMR <- metafor::rma(OS.ln.HR ~ 1 + PFS.ln.HR, sei = OS.se, data = df1, method = "FE")
+summary(fit.FEMR)
+```
+
+## Prediction of TE on Clinical Outcome in New Trials and Confidence Intervals
+
+We assume that there is no between-trial heterogeneity in either the target or the surrogate endpoint (fixed-effects assumption). So confidence intervals can be interpreted as prediction intervals.
+
+```{r}
+FEMR.ci <- data.frame(predict(fit.FEMR, new.data$PFS.ln.HR))
+head(FEMR.ci) |>
+  gt()
+```
+
+```{r}
+FEMR.ci$HR.OS <- exp(FEMR.ci$pred)
+FEMR.ci$HR.PFS <- exp(new.data$PFS.ln.HR)
+
+head(FEMR.ci) |>
+  gt()
+```
+
+## Trial-level Association Plot
+
+```{r}
+FEMR.association.plot <- ggplot(df1, aes(x = HR.PFS, y = HR.OS)) +
+  geom_ribbon(aes(x = HR.PFS, ymin = exp(ci.lb), ymax = exp(ci.ub)), data = FEMR.ci, fill = "steelblue", alpha = 0.4) +
+  geom_smooth(aes(x = HR.PFS, y = HR.OS), data = FEMR.ci, stat = 'identity') +
+  geom_point(aes(size = weight), shape = 21, col = "gray30", fill = "orange") +
+  scale_x_continuous(transform = "log",
+                     limits = c(0.2, 3.1),
+                     breaks=c(0.1,0.2,0.3,0.4,0.5,0.7,1,1.2,1.5,2,3),
+                     expand = c(0.01, 0.01)) +
+  scale_y_continuous(transform = "log",
+                     limits = c(0.2, 3.1),
+                     breaks=c(0.1,0.2,0.3,0.4,0.5,0.7,1,1.2,1.5,2,3),
+                     expand = c(0.01, 0.01)) +
+  geom_hline(yintercept = 1, linetype = 'dashed') +
+  xlab("Progression-free survival hazard ratio (log scale)")+ 
+  ylab(paste("Overall survival hazard ratio" , "\n", "\U00B1", "95% confidence and prediction intervals (log scale)")) +
+  ggtitle("Frequentist Fixed-effects Meta-regression") +
+  theme_bw() +
+  scale_colour_hue("trial") +
+  theme(legend.position = "none")
+```
+
+```{r, fig.width=8, fig.height=6, out.width="100%"}
+FEMR.association.plot
+```
+
+## Surrogate Threshold Effect
+
+```{r}
+candidate.HR.PFS <- FEMR.ci %>%
+  filter(ci.ub < 0) %>%
+  pull(HR.PFS)
+
+FEMR.STE <- round(max(candidate.HR.PFS), digits = 3)
+FEMR.STE
+```
