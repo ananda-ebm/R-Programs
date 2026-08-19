@@ -2,8 +2,15 @@
 title: "Frequentist Fixed-effects Meta Regression"
 author: "Ananda Biswas"
 date: "`r Sys.Date()`"
-format: html
-editor: visual
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    code-fold: show
+    code-tools: true
+    code-summary: "Show/Hide Code"
 knitr:
   opts_chunk:
     fig.path: "figures/"
