@@ -2,8 +2,15 @@
 title: "Bayesian Random-effects Meta Regression"
 author: "Ananda Biswas"
 date: "`r Sys.Date()`"
-format: html
-editor: visual
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    code-fold: show
+    code-tools: true
+    code-summary: "Show/Hide Code"
 knitr:
   opts_chunk:
     fig.path: "figures/"
@@ -132,12 +139,18 @@ STAN_data.BREMR <- list(
 )
 ```
 
-### STAN Model Compilation
+### STAN Model
 
 ```{r}
 #| include: false
-BREMR.model.path <- "C:\\Users\\AnandaBiswas\\OneDrive - EBM Health Consultants LLP\\Documents\\R-Programs\\Self-Study\\0021_Comparison_of_Surrogacy_Models_on_NSCLC_data\\0021__03_Bayesian_Random-effects_Meta_Regression\\0021__03_BREMR_model.stan"
+BREMR.model.path <- "C:\\Users\\AnandaBiswas\\OneDrive - EBM Health Consultants LLP\\Documents\\R-Programs\\Self-Study\\0021_Comparison_of_Surrogacy_Models_on_NSCLC_data\\0021__03\\0021__03_BREMR.stan"
 ```
+
+```{r}
+cat(readLines(BREMR.model.path), sep = "\n")
+```
+
+### Model Compilation
 
 ```{r}
 model.BREMR <- cmdstan_model(stan_file = BREMR.model.path)
@@ -147,7 +160,7 @@ model.BREMR <- cmdstan_model(stan_file = BREMR.model.path)
 
 ```{r}
 n.chains <- 4
-n.samples.per.chain <- 10000
+n.samples.per.chain <- 100000
 ```
 
 ```{r}
@@ -155,7 +168,7 @@ fit.BREMR <- model.BREMR$sample(
   data = STAN_data.BREMR,
   chains = n.chains,
   parallel_chains = n.chains,
-  iter_warmup = 1000,
+  iter_warmup = 25000,
   iter_sampling = n.samples.per.chain,
   seed = 14,
   refresh = 0 # suppress the iteration progress messages
