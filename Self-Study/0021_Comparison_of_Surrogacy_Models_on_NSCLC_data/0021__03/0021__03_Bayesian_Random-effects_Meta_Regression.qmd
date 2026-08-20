@@ -126,6 +126,14 @@ and
 $$\lambda_{0i}^{\mathrm{raw}} \sim N(0,1),
 \qquad i=1,\ldots,N.$$
 
+## Surrogacy Criteria
+
+A perfect surrogate requires all the following conditions simultaneously :
+
+- $\beta = 0$, to ensure that no treatment effect on the surrogate endpoint implies no treatment effect on the final clinical outcome
+- $\lambda_1 \neq 0$, establishing a relationship between treatment effects on the surrogate and final clinical outcomes
+- $\psi^2 = 0$, implying that one can predict $\mu_{2i}$ perfectly given $Y_{1i}$.
+
 ## Model Fitting
 
 ### Preparing data for STAN
@@ -146,8 +154,12 @@ STAN_data.BREMR <- list(
 BREMR.model.path <- "C:\\Users\\AnandaBiswas\\OneDrive - EBM Health Consultants LLP\\Documents\\R-Programs\\Self-Study\\0021_Comparison_of_Surrogacy_Models_on_NSCLC_data\\0021__03\\0021__03_BREMR.stan"
 ```
 
+Here is a suitable STAN model.
+
 ```{r}
-cat(readLines(BREMR.model.path), sep = "\n")
+#| echo: false
+#| results: asis
+cat("```stan\n", paste(readLines(BREMR.model.path), collapse = "\n"), "\n```", sep = "")
 ```
 
 ### Model Compilation
@@ -170,6 +182,7 @@ fit.BREMR <- model.BREMR$sample(
   parallel_chains = n.chains,
   iter_warmup = 25000,
   iter_sampling = n.samples.per.chain,
+  adapt_delta = 0.96,
   seed = 14,
   refresh = 0 # suppress the iteration progress messages
 )
@@ -199,6 +212,8 @@ Y2.replicated.draws <- fit.BREMR$draws(variables = "Y2_rep", format = "matrix")
 dim(Y2.replicated.draws)
 ```
 
+### Check 1
+
 Plot the density of the observed data and densities of a few randomly selected replicated data-sets to assess the Bayesian model.
 
 ```{r fig.height=6, fig.width=8, out.width="100%"}
@@ -211,9 +226,13 @@ ppc_dens_overlay(y = df1$OS.ln.HR,
                  yrep = Y2.replicated.draws[temp, ])
 ```
 
-Plot the observed `y~x` along with the confidence intervals calculated from the replications of each `y`.
+The thin colored lines are supposed to closely envelope the thick dark line. The above does not seem to be a great fit.
 
-For instance, here I shall have $`r nrow(df1)`$ points each corresponding to a study in the NSCLC data, and $`r nrow(df1)`$ confidence intervals accompanying them. Confidence interval for $Y_{2j}$ was calculated from the $`r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$ replications of $Y_{2j}$ $\forall j = 1(1)`r nrow(df1)`$.
+### Check 2
+
+Plot the observed `y~x` along with the prediction intervals calculated from the replications of each `y`.
+
+For instance, here I shall have $`r nrow(df1)`$ points each corresponding to a study in the NSCLC data, and $`r nrow(df1)`$ prediction intervals accompanying them. Prediction interval for $Y_{2j}$ was calculated from the $`r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$ replications of $Y_{2j}$ $\forall j = 1(1)`r nrow(df1)`$.
 
 ```{r fig.height=6, fig.width=8, out.width="100%"}
 #| message: false
@@ -223,7 +242,13 @@ ppc_intervals(y = df1$OS.ln.HR,
               x = df1$PFS.ln.HR)
 ```
 
+The narrow inner bands represent $50\%$ prediction intervals and the wide outer bands represent $95\%$ prediction intervals. The wide outer bands are supposed to contain the dark dots.
+
+In the above, the wide outer bands often contain the dark dots, with just one or two falling on the extreme ends.
+
 ## Posterior Summaries of Parameters of Interest
+
+### Point Estimates
 
 ```{r}
 fit.BREMR$summary(variables = c("beta", "lambda1", "psi")) |>
@@ -232,9 +257,7 @@ fit.BREMR$summary(variables = c("beta", "lambda1", "psi")) |>
 
 Posterior means/medians can be used as Bayesian estimates of the parameters.
 
-## Prediction of TE on Clinical Outcome in New Trials
-
-Now I take posterior sample to calculate the predictions on new future trials, credible intervals and prediction intervals. These are the main components of **trial-level association plot**.
+### Interval Estimates
 
 ```{r}
 posterior.draws <- fit.BREMR$draws(
@@ -242,6 +265,14 @@ posterior.draws <- fit.BREMR$draws(
   format = "matrix"
 )
 ```
+
+```{r}
+apply(posterior.draws, 2, quantile, probs = c(0.025, 0.975))
+```
+
+## Prediction of TE on Clinical Outcome in New Trials
+
+Now use posterior samples to calculate the predictions on new future trials, credible intervals and prediction intervals. These are the main components of **trial-level association plot**.
 
 ```{r}
 #| tbl-cap: "Preview of Posterior Sample"
@@ -336,7 +367,7 @@ BREMR.predictions <- BREMR.posterior +
 BREMR.pi <- t(apply(BREMR.predictions, 1, quantile, probs = c(0.025, 0.975)))
 ```
 
-## Association Plot
+## Trial-level Association Plot
 
 I combine all the required components for the trial-level association plot.
 
