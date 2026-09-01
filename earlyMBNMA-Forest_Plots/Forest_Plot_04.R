@@ -37,8 +37,10 @@ p_forest <- ggplot(df, aes(x = MD, y = Treatment)) +
   theme_minimal(base_size = 11) +
   theme(
     panel.grid.minor = element_blank(),
-    panel.grid.major.y = element_line(color = "grey92", linewidth = 0.5),
-    panel.grid.major.x = element_line(color = "grey92", linewidth = 0.5),
+    # panel.grid.major.y = element_line(color = "grey92", linewidth = 0.5),
+    # panel.grid.major.x = element_line(color = "grey92", linewidth = 0.5),
+    panel.grid.major.y = element_blank(),
+    panel.grid.major.x = element_blank(),
     axis.text.y = element_blank(),
     axis.ticks.y = element_blank(),
     axis.text.x = element_text(size = 9.5, color = "black"),
