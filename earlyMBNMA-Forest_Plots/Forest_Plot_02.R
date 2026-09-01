@@ -47,7 +47,11 @@ p_forest <- ggplot(df, aes(x = RR, y = Treatment)) +
     axis.text.x = element_text(size = 9.5, color = "black"),
     axis.line.x = element_line(),
     axis.title.x = element_text(size = 11, face = "bold", margin = margin(t = 16)),
-    plot.margin = margin(t = 5, r = 4, b = 20, l = 5)
+    plot.margin = margin(t = 5, r = 4, b = 20, l = 5),
+    plot.background  = element_blank(),
+    panel.background = element_blank(),
+    legend.background = element_blank(),
+    legend.box.background = element_blank()
   )
 
 # ---- Table panel (right side): Treatment | Risk Ratio | CrI (95%) ----
@@ -73,7 +77,20 @@ p_table <- ggplot(tbl, aes(x = col, y = Treatment, label = label)) +
   )
 
 # ---- Combine: forest plot (left) + table (right), rows aligned ----
-final_plot <- p_forest + p_table + plot_layout(widths = c(1, 0.75)) # tweak
+final_plot <- p_forest + p_table +
+  plot_layout(widths = c(1, 0.75)) + # tweak
+  plot_annotation(
+    theme = theme(
+      plot.background = element_rect(
+        fill = "transparent",
+        colour = NA
+      ),
+      panel.background = element_rect(
+        fill = "transparent",
+        colour = NA
+      )
+    )
+  )
 
 final_plot
 
@@ -83,4 +100,4 @@ ggsave("FP_02_MG_ADL_2pt_improvement.png",
        width = 12, 
        height = 5.5, 
        dpi = 1000, 
-       bg = "white")
+       bg = "transparent")
