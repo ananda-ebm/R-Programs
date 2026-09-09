@@ -141,7 +141,7 @@ final_plot <- p_forest + p_table +
 final_plot
 
 # suitably use setwd()
-ggsave("FP_03_QMG_score_improvement_from_baseline.png", 
+ggsave("FP_03_QMG_score_change_from_baseline.png", 
        final_plot,
        width = 12, 
        height = 5.5, 
