@@ -34,6 +34,9 @@ $$\begin{pmatrix}
 \hat{\theta}_i\\
 \hat{\gamma}_i
 \end{pmatrix}
+\mid
+\theta_i,
+\gamma_i
 \sim
 N\left(
 \begin{pmatrix}
@@ -47,9 +50,9 @@ N\left(
 \right)$${#eq-within-trial-distribution} where
 
 - $\sigma_i^2$ and $\delta_i^2$ are variances that reflect sampling variation
-- $\rho_i$ is the correlation between the estimated treatment differences conditional upon the true differences.
+- $\rho_i$ is the correlation between the estimated treatment differences *conditional upon the true differences*.
 
-Considering $\gamma_i$'s as fixed effects, we assume a simple linear model to describe the relationship between $\theta_i$ and $\gamma_i$ across the $N$ clinical trials
+Considering $\gamma_i$'s as **fixed effects**, we assume a simple linear model to describe the relationship between $\theta_i$ and $\gamma_i$ across the $N$ clinical trials
 
 $$\theta_i \mid \gamma_i \sim N(\alpha + \beta\gamma_i, \tau^2).$${#eq-between-trials-distribution}
 
