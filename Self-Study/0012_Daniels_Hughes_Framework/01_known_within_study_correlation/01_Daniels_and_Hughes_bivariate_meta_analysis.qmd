@@ -1,0 +1,338 @@
+---
+title: "Daniels and Hughes Bivariate Meta-analytic Method for Evaluation of Potential Surrogate Markers"
+author: "Ananda Biswas"
+date: "`r Sys.Date()`"
+bibliography: references.bib
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    code-fold: show
+    code-tools: true
+    code-summary: "Show/Hide Code"
+knitr:
+  opts_chunk:
+    fig.path: "figures/"
+---
+
+## Model
+
+Consider a meta-analysis of $N$ clinical trials each of which, for simplicity, involves the comparison of two treatments.
+
+In the $i-$th trial,
+
+- $\theta_i$ denotes the true treatment difference on the clinical outcome (true endpoint),
+- $\gamma_i$ denotes the true treatment difference on the response variable (surrogate endpoint).
+
+We assume that we have estimates $\widehat{\theta_i}$ and $\widehat{\gamma_i}$, respectively, available from each trial and that the size of each study is sufficiently large, that $(\widehat{\theta_i}, \widehat{\gamma_i})$ is normally distributed about $(\theta_i, \gamma_i)$.
+
+Within the $i-$th clinical trial, Daniels and Hughes [@danielshughes1997] assume that the following model applies:
+
+$$\begin{pmatrix}
+\hat{\theta}_i\\
+\hat{\gamma}_i
+\end{pmatrix}
+\sim
+N\left(
+\begin{pmatrix}
+\theta_i\\
+\gamma_i
+\end{pmatrix},
+\begin{pmatrix}
+\sigma_i^2 & \rho_i\sigma_i\delta_i\\
+\rho_i\sigma_i\delta_i & \delta_i^2
+\end{pmatrix}
+\right)$${#eq-within-trial-distribution} where
+
+- $\sigma_i^2$ and $\delta_i^2$ are variances that reflect sampling variation
+- $\rho_i$ is the correlation between the estimated treatment differences conditional upon the true differences.
+
+Considering $\gamma_i$'s as fixed effects, we assume a simple linear model to describe the relationship between $\theta_i$ and $\gamma_i$ across the $N$ clinical trials
+
+$$\theta_i \mid \gamma_i \sim N(\alpha + \beta\gamma_i, \tau^2).$${#eq-between-trials-distribution}
+
+By combining the within-trial distribution [-@eq-within-trial-distribution] with the between-trials distribution [-@eq-between-trials-distribution], we obtain a bivariate normal distribution:
+
+$$\begin{pmatrix}
+\hat{\theta}_i\\
+\hat{\gamma}_i
+\end{pmatrix}
+\sim
+N\left(
+\begin{pmatrix}
+\alpha + \beta\gamma_i\\
+\gamma_i
+\end{pmatrix},
+\begin{pmatrix}
+\sigma_i^2 + \tau^2 & \rho_i\sigma_i\delta_i\\
+\rho_i\sigma_i\delta_i & \delta_i^2
+\end{pmatrix}
+\right)$${#eq-combined-distribution}
+
+Note that,
+
+$$E(\hat{\theta}_i \mid \gamma_i)
+=
+E\left[
+E(\hat{\theta}_i \mid \theta_i, \gamma_i)
+\mid \gamma_i
+\right]
+=
+E(\theta_i \mid \gamma_i)
+=
+\alpha + \beta\gamma_i$$
+
+and
+
+$$\begin{aligned}
+\operatorname{Var}(\hat{\theta}_i \mid \gamma_i)
+&=
+E\left[
+\operatorname{Var}(\hat{\theta}_i \mid \theta_i, \gamma_i)
+\mid \gamma_i
+\right]
++
+\operatorname{Var}\left(
+E(\hat{\theta}_i \mid \theta_i, \gamma_i)
+\mid \gamma_i
+\right) \\[1em]
+&=
+E(\sigma_i^2 \mid \gamma_i)
++
+\operatorname{Var}(\theta_i \mid \gamma_i) \\[1em]
+&=
+\sigma_i^2 + \tau^2.
+\end{aligned}$$
+
+## Surrogacy Criteria
+
+A strong surrogate relationship [@TSD20] is one with
+
+- $\alpha = 0$, to ensure that no treatment effect on the surrogate endpoint implies no treatment effect on the final clinical outcome
+- $\beta \neq 0$, establishing a relationship between treatment effects on the surrogate and final clinical outcomes
+- $\tau^2 = 0$, implying that we can predict $\theta_i$ perfectly given $\gamma_i$.
+
+In practice, we consider a surrogate relationship strong if all the following is true:
+
+- the $95\%$ interval for the intercept $\alpha$ includes zero
+- the $95\%$ interval for the slope $\beta$ does not include zero
+- the conditional variance $\tau^2$ along with its upper interval is small.
+
+## Required Packages
+
+```{r}
+#| message: false
+#| warning: false
+library(MASS)
+library(gt)
+library(cmdstanr)
+```
+
+```{r}
+#| message: true
+#| warning: true
+#| include: false
+options(mc.cores = parallel::detectCores())
+```
+
+## Simulation
+
+```{r}
+set.seed(14)
+```
+
+In our simulation study, we generate data from a scenario where surrogacy criteria are satisfied. We set number of trials $N = 30$; intercept $\alpha = 0$; slope $\beta = 0.8$ and conditional variance $\tau^2$ is close to $0$.
+
+```{r}
+N <- 30
+
+alpha.true <- 0.0; beta.true <- 0.8
+
+tau.true <- 0.1
+```
+
+True treatment effects on surrogate endpoint $\gamma_i$'s are fixed effects, we generate $N$ of such fixed effects.
+
+```{r}
+gamma.true <- rnorm(N, mean = 3, sd = 1.5)
+```
+
+Following between-trials distribution [-@eq-between-trials-distribution], we generate true treatment effect on true endpoint $\theta_i$'s.
+
+```{r}
+theta.true <- rnorm(N,
+                    mean = alpha.true + beta.true * gamma.true,
+                    sd = tau.true)
+```
+
+We choose some arbitrary values for within-trial variances and covariances.
+
+```{r}
+sigma.true <- runif(N, 0.1, 0.5)
+delta.true <- runif(N, 0.1, 0.7)
+rho.true <- runif(N, -0.2, 0.2)
+```
+
+Construct within-trial covariance matrices as follows.
+
+```{r}
+Sigma <- array(0, dim = c(N, 2, 2))
+
+for (i in 1:N) {
+  Sigma[i, 1, 1] <- sigma.true[i]^2
+  Sigma[i, 1, 2] <- rho.true[i] * sigma.true[i] * delta.true[i]
+  Sigma[i, 2, 1] <- rho.true[i] * sigma.true[i] * delta.true[i]
+  Sigma[i, 2, 2] <- delta.true[i]^2
+}
+```
+
+Following within-trial distribution [-@eq-within-trial-distribution], we simulate observed treatment effects on true endpoint and surrogate endpoint as follows.
+
+```{r}
+theta.hat <- gamma.hat <- c()
+
+for (i in 1:N) {
+  
+  obs <- MASS::mvrnorm(1,
+                       mu = c(theta.true[i], gamma.true[i]),
+                       Sigma = Sigma[i, , ])
+  
+  theta.hat[i] <- obs[1]
+  gamma.hat[i] <- obs[2]
+}
+```
+
+In this simulation study, we **assume** that within-trial correlations are also included in our data. We combine all the simulated data in a data-frame.
+
+```{r}
+df <- data.frame(
+  study = 1:N,
+  theta.hat = theta.hat,
+  se.theta = sigma.true,
+  gamma.hat = gamma.hat,
+  se.gamma = delta.true,
+  rho.w = rho.true
+)
+```
+
+```{r}
+df |> gt()
+```
+
+## Model Fitting
+
+### Preparing data for STAN
+
+```{r}
+DH.data <- list(
+  N = nrow(df),
+  theta_hat = df$theta.hat,
+  gamma_hat = df$gamma.hat,
+  se_theta = df$se.theta,
+  se_gamma = df$se.gamma,
+  rho_w = df$rho.w
+)
+```
+
+### STAN Model
+
+For evaluation of candidate surrogate endpoint, the parameters of interest are $\alpha, \beta$ and $\tau^2$; in the sense that we require posterior estimates of these parameters only. 
+
+Taking a Bayesian approach, we place non-informative prior distributions on the fixed effects, $\gamma_i$ and the regression coefficients:
+
+$$\alpha \sim N(0, A_{\alpha})$$
+
+$$\beta \sim N(0, A_{\beta})$$
+
+$$\gamma_i \sim N(0, A_{\gamma_i})$$
+
+where $A_{\alpha}$, $A_{\beta}$, $A_{\gamma_i}$ are large numbers; here they are taken to be $1000$.
+
+For the between-studies variance, $\tau^2$, a uniform prior is set on $\tau$ : $\tau \sim U(0, 2)$.
+
+For smoother posterior sampling, $\tau$ has been transformed to log-scale and so has been the prior.
+
+$$\text{Since } \tau \sim U(0, 2); \;\; \text{say } Y = \ln(\tau), \text{ consequently }
+f_Y(y) =
+\begin{cases}
+\dfrac{e^y}{2}, & y < \ln 2,\\[6pt]
+0, & \text{otherwise}.
+\end{cases}$$
+
+Following the combined distribution [-@eq-combined-distribution], here is a suitable STAN model.
+
+```{r}
+DH.model.file <- "Daniels_and_Hughes_Bivariate_Meta_Analysis_01.stan"
+```
+
+```{r}
+#| echo: false
+#| results: asis
+cat("```stan\n", paste(readLines(DH.model.file), collapse = "\n"), "\n```", sep = "")
+```
+
+### Model Compilation
+
+```{r}
+#| message: false
+#| warning: false
+DH.model <- cmdstan_model(DH.model.file)
+```
+
+### Running HMC
+
+```{r}
+n.chains <- 3
+n.samples.per.chain <- 150000
+
+n.posterior.samples <- n.chains * n.samples.per.chain
+```
+
+```{r}
+fit <- DH.model$sample(
+  data = DH.data,
+  chains = n.chains,
+  parallel_chains = n.chains,
+  iter_warmup = 50000,
+  iter_sampling = n.samples.per.chain,
+  adapt_delta = 0.95,
+  max_treedepth = 15,
+  seed = 14,
+  refresh = 0
+)
+```
+
+### HMC Diagnostics
+
+```{r}
+fit$cmdstan_diagnose()
+```
+
+## Posterior Summaries of Parameters of Interest
+
+```{r}
+fit$print(variables = c("alpha", "beta", "tau"))
+```
+
+Posterior mean and median of the parameters firmly agree with the true values of the respective parameters, indicating **praise-worthy parameter recovery**.
+
+## Assessing Surrogacy
+
+Let us have posterior draws of the parameters of interest, so that we can obtain their $95\%$ credible intervals.
+
+```{r}
+posterior.draws <- fit$draws(variables = c("alpha", "beta", "tau_sq"), 
+                             format = "matrix")
+```
+
+```{r}
+apply(posterior.draws, 2, quantile, probs = c(0.025, 0.975)) |> round(5)
+```
+
+- The $95\%$ credible interval for the intercept $\alpha$ includes zero.
+- The $95\%$ credible interval for the slope $\beta$ does not include zero.
+- The conditional variance $\tau^2$ along with its upper interval is small.
+
+Hence, trial-level association of the candidate surrogate endpoint is *validated*.
