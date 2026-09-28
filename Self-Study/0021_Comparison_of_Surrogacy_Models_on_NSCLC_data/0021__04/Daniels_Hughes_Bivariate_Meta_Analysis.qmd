@@ -2,6 +2,7 @@
 title: "Daniels and Hughes Bayesian Bivariate Meta Analysis"
 author: "Ananda Biswas"
 date: "`r Sys.Date()`"
+bibliography: references.bib
 format: 
   html:
     embed-resources: true
@@ -15,6 +16,10 @@ knitr:
   opts_chunk:
     fig.path: "figures/"
 ---
+
+## Background
+
+Vickers et al presented OS and PFS data from a network of evidence drawn from randomized clinical trials in advanced non-small cell lung cancer (NSCLC)[@vickers2019]. The data include log hazard ratios with standard errors (SEs) for OS and PFS. These data include $34$ samples ($1$ trial included $2$ subgroups, which were entered as separate trials). The maximum length of follow-up for these trials ranged from $1.0$ to $5.9$ years, with median follow-up ranging from $0.3$ to $1.4$ years.
 
 ```{r}
 #| message: true
@@ -85,7 +90,7 @@ new.data <- data.frame(PFS.ln.HR = log(seq(0.2,3, length = 1000)))
 
 ## Model
 
-Consider a meta-analysis of $N$\$N\$ clinical trials each of which, for simplicity, involves the comparison of two treatments.
+Consider a meta-analysis of $N$ clinical trials each of which, for simplicity, involves the comparison of two treatments.
 
 In the $i-$th trial,
 
@@ -94,12 +99,15 @@ In the $i-$th trial,
 
 We assume that we have estimates $\widehat{\theta_i}$ and $\widehat{\gamma_i}$, respectively, available from each trial and that the size of each study is sufficiently large, that $(\widehat{\theta_i}, \widehat{\gamma_i})$ is normally distributed about $(\theta_i, \gamma_i)$.
 
-Within the $i-$th clinical trial, we assume that the following model applies:
+Within the $i-$th clinical trial, Daniels and Hughes [@danielshughes1997] assume that the following model applies:
 
 $$\begin{pmatrix}
 \hat{\theta}_i\\
 \hat{\gamma}_i
 \end{pmatrix}
+\mid
+\theta_i,
+\gamma_i
 \sim
 N\left(
 \begin{pmatrix}
@@ -110,14 +118,16 @@ N\left(
 \sigma_i^2 & \rho_i\sigma_i\delta_i\\
 \rho_i\sigma_i\delta_i & \delta_i^2
 \end{pmatrix}
-\right)$$ where
+\right)$${#eq-within-trial-distribution} where
 
 - $\sigma_i^2$ and $\delta_i^2$ are variances that reflect sampling variation
-- $\rho_i$ is the correlation between the estimated treatment differences conditional upon the true differences.
+- $\rho_i$ is the correlation between the estimated treatment differences *conditional upon the true differences*.
 
-Considering $\gamma_i$'s as fixed effects, we assume a simple linear model to describe the relationship between $\theta_i$ and $\gamma_i$ across the $N$ clinical trials
+Considering $\gamma_i$'s as **fixed effects**, we assume a simple linear model to describe the relationship between $\theta_i$ and $\gamma_i$ across the $N$ clinical trials
 
-$$\theta_i \mid \gamma_i \sim N(\alpha + \beta\gamma_i, \tau^2).$$ By combining the within-trial distribution with the between-trial distribution, we obtain a bivariate normal distribution:
+$$\theta_i \mid \gamma_i \sim N(\alpha + \beta\gamma_i, \tau^2).$${#eq-between-trials-distribution}
+
+By combining the within-trial distribution [-@eq-within-trial-distribution] with the between-trials distribution [-@eq-between-trials-distribution], we obtain a bivariate normal distribution:
 
 $$\begin{pmatrix}
 \hat{\theta}_i\\
@@ -133,7 +143,9 @@ N\left(
 \sigma_i^2 + \tau^2 & \rho_i\sigma_i\delta_i\\
 \rho_i\sigma_i\delta_i & \delta_i^2
 \end{pmatrix}
-\right)$$ Note that,
+\right)$${#eq-combined-distribution}
+
+Note that,
 
 $$E(\hat{\theta}_i \mid \gamma_i)
 =
@@ -170,11 +182,17 @@ E(\sigma_i^2 \mid \gamma_i)
 
 ## Surrogacy Criteria
 
-Daniels and Hughes described a strong surrogate relationship as one with
+A strong surrogate relationship [@TSD20] is one with
 
 - $\alpha = 0$, to ensure that no treatment effect on the surrogate endpoint implies no treatment effect on the final clinical outcome
 - $\beta \neq 0$, establishing a relationship between treatment effects on the surrogate and final clinical outcomes
 - $\tau^2 = 0$, implying that we can predict $\theta_i$ perfectly given $\gamma_i$.
+
+In practice, we consider a surrogate relationship strong if all the following is true:
+
+- the $95\%$ interval for the intercept $\alpha$ includes zero
+- the $95\%$ interval for the slope $\beta$ does not include zero
+- the conditional variance $\tau^2$ along with its upper interval is small.
 
 ## Model Fitting
 
@@ -183,7 +201,7 @@ Daniels and Hughes described a strong surrogate relationship as one with
 ```{r}
 N <- nrow(df1)
 
-STAN_data.DH <- list(
+DH.data <- list(
   N = N,
   theta_hat = df1$OS.ln.HR,
   gamma_hat = df1$PFS.ln.HR,
@@ -197,18 +215,16 @@ STAN_data.DH <- list(
 Here is a suitable STAN model.
 
 ```{r}
-#| include: false
-
-# use setwd() suitably
-DH.model.file <- "0021__04_Daniels_Hughes_model.stan"
+DH.model.file <- "Daniels_Hughes_Bivariate_Meta_Analysis.stan"
 ```
 
 ```{r}
-#| include: false
-cat(readLines(DH.model.file), sep = "\n")
+#| echo: false
+#| results: asis
+cat("```stan\n", paste(readLines(DH.model.file), collapse = "\n"), "\n```", sep = "")
 ```
 
-As IPD are not available, assume that the $\rho_i$'s for the trials with no data available are equal to some common value $\rho$, we **assume** a positive association between `HR.OS` and `HR.PFS`, accordingly we set a priori $\rho \sim U(0, 0.999)$.
+As IPD are not available, assume that the $\rho_i$'s for the trials with no IPD available are equal to some common value $\rho_w$, we **assume** a positive association between `HR.OS` and `HR.PFS`, accordingly we set a priori $\rho_w \sim U(0, 0.999)$.
 
 Taking a Bayesian approach, we place non-informative prior distributions on the fixed effects, $\gamma_i$ and the regression coefficients:
 
@@ -231,11 +247,13 @@ f_Y(y) =
 0, & \text{otherwise}.
 \end{cases}$$
 
-The within-trial bivariate normal distribution is represented by Cholesky decomposition of the covariance matrix, this is supposed to be more friendly with CmdstanR framework.
+An uniform prior on $\tau$ was also used by Vickers [@vickerscomparisonof6models].
 
 ### Model Compilation
 
 ```{r}
+#| message: false
+#| warning: false
 DH.model <- cmdstan_model(stan_file = DH.model.file)
 ```
 
@@ -256,42 +274,37 @@ init <- function() {
     alpha = 0,
     beta = 0,
     log_tau = log(0.2),
-    rho = 0.3
+    rho_w = 0.25
   )
 }
 ```
 
 ```{r}
-#| echo: true
-#| output: false
 fit <- DH.model$sample(
-  data = STAN_data.DH,
+  data = DH.data,
   chains = n.chains,
   parallel_chains = n.chains,
   iter_warmup = 50000,
   iter_sampling = n.samples.per.chain,
-  adapt_delta = 0.9999,
+  adapt_delta = 0.95,
   max_treedepth = 25,
   init = init,
   refresh = 0
 )
 ```
 
-### STAN Diagnostics
+### HMC Diagnostics
 
 ```{r}
 fit$cmdstan_diagnose()
 ```
-
-These divergence is primarily because of the variance parameter $\tau^2$. $`r mean(fit[["sampler_diagnostics"]](format = "df")[["divergent__"]]) * 100`$% divergence out of $`r length(fit[["sampler_diagnostics"]](format = "df")[["divergent__"]])`$ is negligible and does not affect the parameter estimates.
 
 ## Posterior Summaries of Parameters of Interest
 
 ### Point Estimates
 
 ```{r}
-fit$summary(c("alpha", "beta", "tau")) |>
-  gt()
+fit$summary(c("alpha", "beta", "tau")) |> gt()
 ```
 
 ### Interval Estimates
@@ -360,7 +373,7 @@ We want the predictive distribution of $\theta_{\text{new}}:$ the true treatment
 
 In any future trial, let $\gamma_{\text{new}}$ be the observed treatment effect on surrogate endpoint. Then we must have
 
-$$\theta_{\text{new}} \sim \mathcal{N}\left( \alpha + \beta \cdot  \gamma_{\text{new}}, \tau^2\right).$$
+$$\theta_{\text{new}} \mid \gamma_{\text{new}} \sim \mathcal{N}\left( \alpha + \beta \cdot  \gamma_{\text{new}}, \tau^2\right).$$
 
 In Bayesian theory, the predictive distribution is obtained by averaging the likelihood over the entire parameter space where the parameters vary in accordance to the posterior distribution.
 
@@ -424,7 +437,7 @@ DH.association.plot <- ggplot(df1, aes(x = HR.PFS, y = HR.OS)) +
   theme(legend.position = "none")
 ```
 
-```{r}
+```{r, fig.width=8, fig.height=6, out.width="100%"}
 DH.association.plot
 ```
 
