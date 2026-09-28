@@ -1,7 +1,5 @@
 df <- openxlsx::read.xlsx("data.xlsx")
 
-View(df)
-
 for (i in 1:nrow(df)) {
   df$se[i] <- (df$CI_upper[i] - df$CI_lower[i]) / (2 * 1.96)
   
@@ -80,9 +78,9 @@ n <- nrow(result.df)
 p_forest <- ggplot(result.df, aes(x = pooled.ES, y = follow.up)) +
   geom_errorbar(aes(xmin = CI.lower, xmax = CI.upper),
                 height = 0,
-                linewidth = 1.1, color = "grey50",
+                linewidth = 1.1, color = "#7C7C7C",
                 orientation = "y") +
-  geom_point(size = 3.2, shape = 15, color = "#3B5B92") +
+  geom_point(size = 3.5, shape = 23, fill = "#0F69AF") +
   scale_x_continuous(
     breaks = seq(0, 1, 0.2),
     limits = c(0.15, 0.75), # tweak
@@ -97,9 +95,9 @@ p_forest <- ggplot(result.df, aes(x = pooled.ES, y = follow.up)) +
     panel.grid.major.x = element_blank(),
     axis.text.y = element_blank(),
     axis.ticks.y = element_blank(),
-    axis.text.x = element_text(size = 12, color = "black"),
+    axis.text.x = element_text(size = 15, color = "black"),
     axis.line.x = element_line(),
-    axis.title.x = element_text(size = 11, face = "bold", margin = margin(t = 10)),
+    axis.title.x = element_text(size = 14, face = "bold", margin = margin(t = 10)),
     plot.margin = margin(t = 5, r = 4, b = 20, l = 5),
     plot.background  = element_blank(),
     panel.background = element_blank(),
@@ -124,14 +122,14 @@ tbl <- data.frame(
 )
 
 p_table <- ggplot(tbl, aes(x = col, y = follow.up, label = label)) +
-  geom_text(size = 5, color = "black", hjust = 0.5) +   # increased from 3.6
+  geom_text(size = 6, color = "black", hjust = 0.5) +   # increased from 3.6
   scale_x_discrete(position = "top") +
   coord_cartesian(ylim = c(0.5, n + 0.5), clip = "off") +
   theme_void(base_size = 11) +
   theme(
-    axis.text.x.top = element_text(size = 13, face = "bold", color = "black",   # increased from 10.5
+    axis.text.x.top = element_text(size = 14, face = "bold", color = "black",   # increased from 10.5
                                    margin = margin(b = 4)),
-    plot.margin = margin(t = 5, r = 0, b = 10, l = 0)
+    plot.margin = margin(t = 10, r = 0, b = 10, l = 0)
   )
 
 # Combine: forest plot (left) + table (right), rows aligned
@@ -151,5 +149,5 @@ ggsave("FP_MG_ADL_pooled_followup.png",
        final_plot,
        width = 12,
        height = 4.5,
-       dpi = 1000,
+       dpi = 2000,
        bg = "transparent")
