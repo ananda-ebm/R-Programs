@@ -1,0 +1,85 @@
+---
+title: "Sjogren Syndrome - ITC on Severe TEAE"
+author: "Ananda Biswas"
+date: "`r Sys.Date()`"
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    code-fold: show
+    code-tools: true
+    code-summary: "Show/Hide Code"
+knitr:
+  opts_chunk:
+    fig.path: "figures/Severe TEAE/"
+---
+
+```{r}
+df <- openxlsx::read.xlsx("Safety_Outcomes.xlsx", sheet = "Severe TEAE")
+```
+
+
+```{r}
+names(df)
+```
+
+
+```{r}
+library(gt)
+library(multinma)
+options(mc.cores = parallel::detectCores())
+```
+
+
+```{r}
+net <- set_agd_arm(data = df,
+                   study = STUDY,
+                   trt = TREATMENT,
+                   r = N.EVENT,
+                   n = N,
+                   trt_ref = "Placebo")
+
+net
+```
+
+
+```{r}
+plot(net)
+```
+
+
+```{r}
+fit <- nma(net, 
+           likelihood = "binomial", link = "logit", 
+           trt_effects = "fixed",
+           seed = 14)
+fit
+```
+
+
+```{r}
+summary(fit)
+```
+
+
+```{r}
+logOR <- relative_effects(fit, all_contrasts = TRUE)
+
+OR <- summary(exp(as.array(logOR)))
+```
+
+
+```{r}
+result <- data.frame(comparison = OR[["summary"]][["parameter"]],
+                     OR = OR[["summary"]][["mean"]] |> round(2),
+                     Q2.5 = OR[["summary"]][["2.5%"]] |> round(2),
+                     Q97.5 = OR[["summary"]][["97.5%"]] |> round(2))
+```
+
+
+```{r}
+result |> gt()
+```
+

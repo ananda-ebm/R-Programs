@@ -1,0 +1,302 @@
+---
+title: "Bayesian NMA — Risk Difference, Risk Ratio, NNT/NNH"
+author: "Sneha"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+params:
+  trt_ref: "Placebo"                   # reference/control treatment label, must match data exactly
+  trt_effects: "fixed"                 # "fixed" (default) or "random" -- see note below
+  chains: 3
+  iter: 4000
+  warmup: 2000
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(multinma)   # Stan-based Bayesian NMA
+library(dplyr)
+library(knitr)
+library(ggplot2)    # forest plot
+options(mc.cores = parallel::detectCores())
+set.seed(1234)
+```
+
+# About this template
+
+This report is parameterized so the **same code runs for any binomial
+outcome/treatment set** — the data is defined directly in the "Load data"
+section below, no external CSV/Excel file needed.
+
+**Fixed vs. random effects (`trt_effects`):** if each treatment contrast in
+your network comes from only one study (a "star" network via a common
+control, as in the example data below), a between-study heterogeneity
+variance is not identifiable and `trt_effects = "fixed"` should be used. Only
+switch to `"random"` once your data include multiple studies per contrast or
+multi-arm trials creating closed loops.
+
+## Expected data format
+
+| column  | meaning                                              |
+|---------|-------------------------------------------------------|
+| study   | study/trial identifier                                 |
+| trt     | treatment name (must include `params$trt_ref` exactly) |
+| r       | number of events                                        |
+| n       | arm sample size                                          |
+| outcome | *(optional)* — if present, one full analysis section is produced per unique value, looping automatically |
+
+# Load data
+
+```{r load-data}
+raw_data <- data.frame(
+  outcome = c("TESAE","TESAE","TESAE","TESAE"),
+  study   = c("Xu 2025","Xu 2025","Neptunus","Neptunus"),
+  trt     = c("Placebo","Telitacicept_160mg","Placebo","VAY736QM"),
+  r       = c(10,11,30,21),
+  n       = c(127,127,307,305)
+)
+
+required_cols <- c("study","trt","r","n")
+missing_cols  <- setdiff(required_cols, names(raw_data))
+if (length(missing_cols) > 0) {
+  stop("Data is missing required column(s): ", paste(missing_cols, collapse = ", "))
+}
+if (!"outcome" %in% names(raw_data)) raw_data$outcome <- "Outcome"
+
+if (!params$trt_ref %in% raw_data$trt) {
+  stop("params$trt_ref ('", params$trt_ref, "') not found in the 'trt' column of the data.")
+}
+
+kable(raw_data, caption = "Loaded arm-level data")
+```
+
+# Analysis functions
+
+```{r functions}
+run_nma <- function(df, trt_ref, trt_effects, chains, iter, warmup) {
+  net <- set_agd_arm(df, study = study, trt = trt, r = r, n = n, trt_ref = trt_ref)
+  fit <- nma(
+    net,
+    trt_effects     = trt_effects,
+    link            = "logit",
+    likelihood      = "binomial2",
+    prior_intercept = normal(scale = 10),
+    prior_trt       = normal(scale = 10),
+    chains = chains, iter = iter, warmup = warmup, refresh = 0
+  )
+  list(net = net, fit = fit)
+}
+
+# Convert a vector of posterior log-OR draws to absolute-scale measures,
+# given the baseline (comparator-arm) risk p0 that the OR is being applied to
+or_to_measures <- function(logor, p0) {
+  odds0 <- p0 / (1 - p0)
+  odds1 <- odds0 * exp(logor)
+  p1    <- odds1 / (1 + odds1)
+  data.frame(RR = p1 / p0, RD = p1 - p0, NNH = 1 / abs(p1 - p0))
+}
+
+summ_row <- function(x, label, measure) {
+  data.frame(
+    Measure = measure, Comparison = label,
+    Mean = mean(x), Lower95 = quantile(x, .025), Upper95 = quantile(x, .975),
+    row.names = NULL
+  )
+}
+
+# Runs the NMA for one outcome's data frame and returns OR/RR/RD/NNH for
+# every treatment vs trt_ref, plus every indirect active-vs-active contrast.
+#
+# KEY FIX: absolute-scale measures (RR/RD/NNH) always need *some* baseline
+# risk to apply the OR to. For "X vs trt_ref" that baseline is trt_ref's own
+# observed risk. For an indirect "X vs Y" contrast (neither arm is trt_ref),
+# the baseline must be Y's own observed risk -- not trt_ref's -- otherwise
+# the OR gets projected from the wrong starting probability, which distorts
+# RR/RD/NNH whenever arms have materially different baseline event rates.
+analyse_outcome <- function(df, trt_ref, trt_effects, chains, iter, warmup) {
+  fit_obj <- run_nma(df, trt_ref, trt_effects, chains, iter, warmup)
+  net <- fit_obj$net; fit <- fit_obj$fit
+
+  re_draws    <- as.matrix(relative_effects(fit))   # columns = non-reference treatments
+  active_cols <- colnames(re_draws)
+
+  # observed risk for EVERY treatment arm (reference included), not just trt_ref
+  baseline_risks <- df %>%
+    group_by(trt) %>%
+    summarise(p = mean(r / n), .groups = "drop") %>%
+    tibble::deframe()
+
+  p0 <- baseline_risks[[trt_ref]]   # kept for backward compatibility / reporting
+
+  rows <- list()
+
+  # --- direct comparisons: X vs trt_ref -> baseline is trt_ref's own risk ---
+  for (col in active_cols) {
+    m <- or_to_measures(re_draws[, col], p0)
+    trt_label <- sub("^d\\[(.*)\\]$", "\\1", col)
+    label <- paste(trt_label, "vs", trt_ref)
+    rows[[length(rows) + 1]] <- rbind(
+      summ_row(exp(re_draws[, col]), label, "OR"),
+      summ_row(m$RR,  label, "RR"),
+      summ_row(m$RD,  label, "RD"),
+      summ_row(m$NNH, label, "NNH")
+    )
+  }
+
+  # --- indirect comparisons: X vs Y -> baseline is Y's OWN observed risk ---
+  if (length(active_cols) >= 2) {
+    for (p in combn(active_cols, 2, simplify = FALSE)) {
+      logor_ind <- re_draws[, p[2]] - re_draws[, p[1]]   # logOR(t2 vs t1)
+      t1 <- sub("^d\\[(.*)\\]$", "\\1", p[1])             # comparator (denominator)
+      t2 <- sub("^d\\[(.*)\\]$", "\\1", p[2])             # numerator
+
+      p0_indirect <- baseline_risks[[t1]]   # <-- t1's own risk, NOT trt_ref's
+      if (is.null(p0_indirect) || is.na(p0_indirect)) {
+        stop("No observed baseline risk found for '", t1,
+             "' -- cannot back-transform this indirect contrast.")
+      }
+
+      m <- or_to_measures(logor_ind, p0_indirect)
+      label <- paste(t2, "vs", t1)
+      rows[[length(rows) + 1]] <- rbind(
+        summ_row(exp(logor_ind), label, "OR"),
+        summ_row(m$RR,  label, "RR"),
+        summ_row(m$RD,  label, "RD"),
+        summ_row(m$NNH, label, "NNH")
+      )
+    }
+  }
+
+  list(net = net, fit = fit, p0 = p0,
+       baseline_risks = baseline_risks,
+       results = do.call(rbind, rows))
+}
+```
+
+# Results by outcome
+
+Each outcome value in the data gets its own network plot, Stan model fit, and
+posterior OR / RR / RD / NNH summary table below — no code changes needed to
+add more outcomes, just add more rows (with a new `outcome` label) to the
+data frame above.
+
+```{r results, results='asis'}
+for (oc in unique(raw_data$outcome)) {
+
+  cat("\n\n## Outcome:", oc, "\n\n")
+
+  df_oc <- raw_data %>% filter(outcome == oc) %>% select(study, trt, r, n)
+
+  out <- analyse_outcome(df_oc, params$trt_ref, params$trt_effects,
+                          params$chains, params$iter, params$warmup)
+
+  cat("Baseline (", params$trt_ref, ") risk used: ",
+      round(out$p0, 4),
+      " (mean observed reference-arm risk across included studies)\n\n", sep = "")
+  
+    print(kable(
+    data.frame(Treatment = names(out$baseline_risks),
+               `Observed risk` = round(out$baseline_risks, 4),
+               check.names = FALSE),
+    caption = paste("Observed arm-level baseline risks used for back-transformation —", oc)
+  ))
+
+  print(plot(out$net) + ggplot2::ggtitle(paste("Network —", oc)))
+
+  print(kable(out$results, digits = 2,
+              caption = paste("Posterior OR / RR / RD / NNH —", oc)))
+}
+```
+
+# Forest plot (Risk Ratio)
+
+The plot below shows the posterior mean Risk Ratio (RR) and 95% credible
+interval for every comparison in `out$results` (direct comparisons vs.
+`Placebo`, plus the indirect active-vs-active comparison). The indirect
+comparison is placed at the top of the plot, comparator labels use "vs.",
+and `Placebo` is abbreviated "PBO".
+
+```{r rr-table, include=FALSE}
+RR_table <- out$results %>%
+  filter(Measure == "RR") %>%
+  transmute(Comparison = Comparison, RR = Mean, Lower = Lower95, Upper = Upper95)
+```
+
+```{r forest-data-prep, include=FALSE}
+comparison_labels <- gsub("_", " ", RR_table$Comparison)
+comparison_labels <- gsub("\\bvs\\b", "vs.", comparison_labels)
+comparison_labels <- gsub("\\bPlacebo\\b", "PBO", comparison_labels)
+
+df1 <- data.frame(comparison = comparison_labels,
+                   RR = RR_table$RR,
+                   lower = RR_table$Lower,
+                   upper = RR_table$Upper)
+```
+
+```{r forest-data-flag, include=FALSE}
+df2 <- df1 %>%
+  mutate(
+    Significant = dplyr::if_else(lower < 1 & upper < 1, "Yes", "No"),
+    Label = sprintf("%.2f (%.2f, %.2f)", RR, lower, upper)
+  ) %>%
+  # Preserve the row order from RR_table (direct comparisons first, indirect
+  # last) -- with ggplot's default discrete-axis mapping this places the
+  # indirect comparison at the TOP of the forest plot.
+  mutate(comparison = factor(comparison, levels = unique(comparison)))
+```
+
+```{r forest-plot-build, include=FALSE}
+forest_plot <- df2 %>% ggplot(
+  aes(x = RR,
+      y = comparison,
+      xmin = lower,
+      xmax = upper,
+      colour = Significant)) +
+  geom_errorbar(orientation = "y", width = 0.25, linewidth = 0.9, colour = "#2166AC") +
+  geom_point(size = 7, shape = 18, colour = "#2166AC") +
+  geom_vline(xintercept = 1, linetype = "dashed",
+             colour = "grey40", linewidth = 0.7) +
+  geom_text(aes(x = upper, label = Label),
+            hjust = -0.08, size = 6, colour = "grey20") +
+  scale_x_continuous(expand = expansion(mult = c(0.05, 0.35))) +
+  labs(x = NULL, y = NULL) +
+  theme_bw(base_size = 12) +
+  theme(plot.title = element_text(face = "bold", size = 13),
+        plot.subtitle = element_text(colour = "grey40", size = 10),
+        plot.caption = element_text(colour = "grey50", size = 9),
+        legend.position = "bottom",
+        panel.grid.minor = element_blank(),
+        axis.text.y = element_text(size = 15))
+```
+
+```{r forest-plot-show, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%"}
+forest_plot
+```
+
+```{r forest-plot-save, include=FALSE, message=FALSE, warning=FALSE}
+ggsave("FP_TESAE.png",
+       forest_plot,
+       width = 11.5,
+       height = 5.5,
+       dpi = 2000,
+       bg = "white",
+       create.dir = TRUE)
+```
+
+# Notes
+
+- **RD sign / NNH:** `RD > 0` means higher event risk than the comparator.
+  Measures here are labelled NNH (number needed to harm) since the outcome
+  is an adverse event; relabel as NNT if you reuse this for a benefit
+  outcome.
+- **Baseline risk:** absolute measures (RD, RR, NNH) depend on the chosen
+  baseline risk — this template uses the mean *observed* reference-arm risk
+  per outcome. Swap in an external/trial-specific value in `analyse_outcome()`
+  if your SAP specifies one.
+- **Indirect comparisons:** for outcomes with more than one active treatment,
+  all pairwise contrasts between active treatments are derived automatically
+  from the NMA-estimated effects vs. the common reference (fully Bayesian,
+  Bucher-equivalent).

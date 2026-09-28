@@ -1,0 +1,234 @@
+---
+title: "Sjogren Syndrome - ITC on TRSAE"
+author: "Ananda Biswas"
+date: "`r Sys.Date()`"
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    code-fold: show
+    code-tools: true
+    code-summary: "Show/Hide Code"
+knitr:
+  opts_chunk:
+    fig.path: "figures/TRSAE/"
+---
+
+## Required Packages
+
+```{r}
+#| message: false
+#| warning: false
+library(openxlsx)
+library(gt)
+library(gemtc)
+library(rjags)
+library(tidyverse)
+```
+
+## Loading Data
+
+```{r}
+df0 <- read.xlsx("Safety_Outcomes.xlsx", sheet = "TRSAE")
+```
+
+```{r}
+#| include: false
+df0 |> gt()
+```
+
+```{r}
+df1 <- data.frame(study = df0$STUDY,
+                  treatment = df0$TREATMENT,
+                  responders = df0$N.EVENT,
+                  sampleSize = df0$N)
+# column names MUST be these
+
+df1 |> gt()
+```
+
+## Creating the Network
+
+```{r}
+network <- mtc.network(data.ab = df1)
+```
+
+```{r}
+summary(network)
+```
+
+## Network Diagram
+
+```{r}
+plot(network)
+```
+
+## Model Fitting
+
+### Building the NMA Model
+
+`mtc.model()` generates random numbers using the R functions. Therefore, `set.seed()` is called before calling `mtc.model()`.
+
+```{r}
+set.seed(14)
+```
+
+```{r}
+model <- mtc.model(network,
+                   likelihood = "binom",
+                   link = "log",
+                   linearModel = "fixed",
+                   om.scale = NULL,
+                   n.chain = 4)
+```
+
+`om.scale` stands for Outcome Magnitude scale and it is used to set the width of essentially every "vague" prior in the model. Prior to heterogeneity parameter is set to `dunif(0, om.scale)` and priors of the treatment effects are set to `N(0, sd = 15 * om.scale)`.
+
+### Running MCMC
+
+Before calling `mtc.run()`, the random number generator type and seed are set for each of the chains. Refer to [gemtc::mtc.model documentation](https://cran.r-project.org/web/packages/gemtc/refman/gemtc.html#mtc.model) for more.
+
+```{r}
+seeds <- sample.int(4, n = .Machine$integer.max)
+
+model$inits <- mapply(c, model$inits, list(
+  list(.RNG.name="base::Wichmann-Hill", .RNG.seed=seeds[1]),
+  list(.RNG.name="base::Marsaglia-Multicarry", .RNG.seed=seeds[2]),
+  list(.RNG.name="base::Super-Duper", .RNG.seed=seeds[3]),
+  list(.RNG.name="base::Mersenne-Twister", .RNG.seed=seeds[4])), 
+  SIMPLIFY=FALSE)
+```
+
+Wichmann-Hill, Marsaglia-Multicarry etc. are the names of different pseudo-random number generator (PRNG) algorithms built into JAGS. JAGS needs each MCMC chain to use an independent stream of random numbers, so it ships with several distinct generator algorithms - a different one is assigned to each chain so their random draws don't overlap or correlate.
+
+```{r}
+results <- mtc.run(model, 
+                   n.adapt = 5000, 
+                   n.iter  = 20000)
+```
+
+### Assessing MCMC Convergence
+
+In case of convergence, Potential Scale Reduction Factor (PSRF) should gradually shrink down to $0$ with increasing numbers of iterations, and should at least be below $1.05$ in the end.
+
+```{r}
+gelman.plot(results)
+```
+
+From the plots, we can be assured of convergence.
+
+## Posterior Summaries
+
+```{r}
+summary(results)
+```
+
+## Relative Effects
+
+```{r}
+Relative.Effects <- relative.effect.table(results)
+Relative.Effects
+```
+
+The above results are in log-RR scale. Let us have them in RR scale.
+
+```{r}
+exp(Relative.Effects)
+```
+
+## Final Result
+
+Extract the necessary information.
+
+```{r}
+RR.array <- exp(Relative.Effects)
+
+get_comparison <- function(arr, new_drug, reference) {
+  data.frame(
+    Comparison = paste(new_drug, "vs.", reference),
+    RR = round(arr[reference, new_drug, "50%"], 2),
+    Lower = round(arr[reference, new_drug, "2.5%"], 2),
+    Upper = round(arr[reference, new_drug, "97.5%"], 2)
+  )
+}
+
+RR_table <- rbind(
+  get_comparison(RR.array, "VAY736QM", "Placebo"),
+  get_comparison(RR.array, "Telitacicept_160mg", "Placebo"),
+  get_comparison(RR.array, "VAY736QM", "Telitacicept_160mg")
+)
+
+rownames(RR_table) <- NULL
+```
+
+```{r}
+data.frame(RR_table) |> gt()
+```
+
+## Forest Plot
+
+```{r}
+#| include: false
+df1 <- data.frame(comparison = gsub("_", " ", RR_table$Comparison),
+                  RR = RR_table$RR,
+                  lower = RR_table$Lower,
+                  upper = RR_table$Upper)
+```
+
+```{r}
+#| include: false
+df2 <- df1 %>%
+  mutate(
+    Significant = dplyr::if_else(lower < 1 & upper < 1, "Yes", "No"),
+    Label = sprintf("%.2f (%.2f, %.2f)", RR, lower, upper)
+  ) %>%
+  mutate(comparison = factor(comparison, levels = unique(comparison)))
+  # Preserve the order of treatments as they appear in the data
+```
+
+```{r}
+#| include: false
+forest_plot <- df2 %>% ggplot(
+  aes(x = RR,
+      y = comparison,
+      xmin = lower,
+      xmax = upper,
+      colour = Significant)) +
+  geom_errorbar(orientation = "y", width = 0.25, linewidth = 0.9, colour = "#2166AC") +
+  geom_point(size = 4, shape = 18, colour = "#2166AC") +
+  geom_vline(xintercept = 1, linetype = "dashed", 
+             colour = "grey40", linewidth = 0.7) +
+  geom_text(aes(x = upper, label = Label),
+            hjust = -0.08, size = 3.2, colour = "grey20") +
+  scale_x_continuous(expand = expansion(mult = c(0.05, 0.35))) +
+  labs(x = NULL, y = NULL) +
+  theme_bw(base_size = 12) +
+  theme(plot.title = element_text(face = "bold", size = 13),
+        plot.subtitle = element_text(colour = "grey40", size = 10),
+        plot.caption = element_text(colour = "grey50", size = 9),
+        legend.position = "bottom",
+        panel.grid.minor = element_blank(),
+        axis.text.y = element_text(size = 11))
+```
+
+```{r out.width="100%"}
+#| echo: false
+#| message: false
+#| warning: false
+forest_plot
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+ggsave("Forest_Plots/FP_TRSAE.png",
+       forest_plot,
+       width = 10.5,
+       height = 5.5,
+       dpi = 2000,
+       bg = "white", 
+       create.dir = TRUE)
+```
