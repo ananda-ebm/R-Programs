@@ -2,7 +2,7 @@ library(tidyverse)
 library(patchwork)
 
 # suitably use setwd()
-df <- openxlsx::read.xlsx("Table_05_MG_ADL_2pt_improvement.xlsx")
+df <- openxlsx::read.xlsx("Table_09_Rescue_Therapy.xlsx")
 
 # Preserve top-to-bottom order in the plot
 df$Treatment <- factor(df$Treatment, levels = rev(df$Treatment))
@@ -17,7 +17,7 @@ n <- nrow(df)
 # ---- Axis limits & arrow logic ----
 # Any CI that extends past these limits is truncated and gets an arrowhead
 # on the truncated end(s) instead of running off the plot.
-xlim_low  <- 0
+xlim_low  <- 0.0
 xlim_high <- 4
 
 df <- df %>%
@@ -66,13 +66,13 @@ p_forest <- ggplot(df, aes(x = RR, y = Treatment)) +
              linetype = "dashed",
              color = "black",
              linewidth = 1) +
-  annotate("text", x = 1, y = -0.15, label = "\u2190 Favours placebo",
+  annotate("text", x = 1, y = -0.15, label = "\u2190 Favours treatment",
            hjust = 1.05, vjust = 3, size = 4.3, color = "black") +
-  annotate("text", x = 1, y = -0.15, label = "Favours treatment \u2192",
+  annotate("text", x = 1, y = -0.15, label = "Favours placebo \u2192",
            hjust = -0.05, vjust = 3, size = 4.3, color = "black") +
   scale_x_continuous(
-    breaks = seq(xlim_low, xlim_high, 1), # tweak
-    limits = c(xlim_low, xlim_high), # tweak
+    breaks = seq(0, 5, 1), # tweak
+    limits = c(xlim_low, xlim_high + 0.5), # tweak
     expand = c(0, 0)
   ) +
   # Lock the y-axis order explicitly. Without this, splitting the CI lines
@@ -117,7 +117,7 @@ p_table <- ggplot(tbl, aes(x = col, y = Treatment, label = label)) +
   coord_cartesian(ylim = c(0.5, n + 0.5), clip = "off") +
   theme_void(base_size = 11) +
   theme(
-    axis.text.x.top = element_text(size = 10.5, face = "bold", color = "black",
+    axis.text.x.top = element_text(size = 11.5, face = "bold", color = "black",
                                    margin = margin(b = 4)),
     plot.margin = margin(t = 5, r = 0, b = 10, l = 15)
   )
@@ -141,7 +141,7 @@ final_plot <- p_forest + p_table +
 final_plot
 
 # suitably use setwd()
-ggsave("FP_05_MG_ADL_2pt_improvement.png",
+ggsave("FP_09_Rescue_Therapy.png",
        final_plot,
        width = 12.5,
        height = 5.5,

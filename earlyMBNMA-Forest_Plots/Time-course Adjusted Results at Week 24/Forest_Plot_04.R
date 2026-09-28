@@ -44,24 +44,24 @@ p_forest <- ggplot(df, aes(x = RR, y = Treatment)) +
   geom_segment(
     data = seg_none,
     aes(x = seg_x, xend = seg_xend, y = Treatment, yend = Treatment),
-    color = "grey50", linewidth = 1.1, lineend = "round"
+    color = "#7C7C7C", linewidth = 1.1, lineend = "round"
   ) +
   geom_segment(
     data = seg_left,
     aes(x = seg_x, xend = seg_xend, y = Treatment, yend = Treatment),
-    color = "grey50", linewidth = 1.1, lineend = "round", arrow = arrow_spec("first")
+    color = "#7C7C7C", linewidth = 1.1, lineend = "round", arrow = arrow_spec("first")
   ) +
   geom_segment(
     data = seg_right,
     aes(x = seg_x, xend = seg_xend, y = Treatment, yend = Treatment),
-    color = "grey50", linewidth = 1.1, lineend = "round", arrow = arrow_spec("last")
+    color = "#7C7C7C", linewidth = 1.1, lineend = "round", arrow = arrow_spec("last")
   ) +
   geom_segment(
     data = seg_both,
     aes(x = seg_x, xend = seg_xend, y = Treatment, yend = Treatment),
-    color = "grey50", linewidth = 1.1, lineend = "round", arrow = arrow_spec("both")
+    color = "#7C7C7C", linewidth = 1.1, lineend = "round", arrow = arrow_spec("both")
   ) +
-  geom_point(size = 3.2, shape = 15, colour = "#3B5B92") +
+  geom_point(size = 3.2, shape = 15, colour = "#0F69AF") +
   geom_vline(xintercept = 1,
              linetype = "dashed",
              color = "black",
@@ -111,13 +111,13 @@ tbl <- data.frame(
 )
 
 p_table <- ggplot(tbl, aes(x = col, y = Treatment, label = label)) +
-  geom_text(size = 4.0, color = "black", hjust = 0.5) +
+  geom_text(size = 4.0, color = "black", hjust = 0.5, fontface = "bold") +
   scale_x_discrete(position = "top") +
   scale_y_discrete(limits = levels(df$Treatment), drop = FALSE) +
   coord_cartesian(ylim = c(0.5, n + 0.5), clip = "off") +
   theme_void(base_size = 11) +
   theme(
-    axis.text.x.top = element_text(size = 10.5, face = "bold", color = "black",
+    axis.text.x.top = element_text(size = 11.5, face = "bold", color = "black",
                                    margin = margin(b = 4)),
     plot.margin = margin(t = 5, r = 0, b = 10, l = 15)
   )
@@ -145,5 +145,5 @@ ggsave("FP_04_MG_ADL_0_or_1.png",
        final_plot,
        width = 12.5,
        height = 5.5,
-       dpi = 1000,
+       dpi = 2000,
        bg = "transparent")

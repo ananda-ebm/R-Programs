@@ -111,7 +111,7 @@ tbl <- data.frame(
 )
 
 p_table <- ggplot(tbl, aes(x = col, y = Treatment, label = label)) +
-  geom_text(size = 4.0, color = "black", hjust = 0.5) +
+  geom_text(size = 3.5, color = "black", hjust = 0.5, fontface = "bold") +
   scale_x_discrete(position = "top") +
   scale_y_discrete(limits = levels(df$Treatment), drop = FALSE) +
   coord_cartesian(ylim = c(0.5, n + 0.5), clip = "off") +
@@ -124,7 +124,7 @@ p_table <- ggplot(tbl, aes(x = col, y = Treatment, label = label)) +
 
 # ---- Combine: forest plot (left) + table (right), rows aligned ----
 final_plot <- p_forest + p_table +
-  plot_layout(widths = c(1, 0.75)) + # tweak
+  plot_layout(widths = c(1, 0.7)) + # tweak
   plot_annotation(
     theme = theme(
       plot.background = element_rect(
@@ -144,6 +144,6 @@ final_plot
 ggsave("FP_02_MG_ADL_score_change_from_baseline.png",
        final_plot,
        width = 12,
-       height = 5.5,
-       dpi = 1000,
+       height = 6.5,
+       dpi = 2000,
        bg = "transparent")

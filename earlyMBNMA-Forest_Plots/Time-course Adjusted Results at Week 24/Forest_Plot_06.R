@@ -2,7 +2,7 @@ library(tidyverse)
 library(patchwork)
 
 # suitably use setwd()
-df <- openxlsx::read.xlsx("Table_05_MG_ADL_2pt_improvement.xlsx")
+df <- openxlsx::read.xlsx("Table_06_MGC_3pt_improvement.xlsx")
 
 # Preserve top-to-bottom order in the plot
 df$Treatment <- factor(df$Treatment, levels = rev(df$Treatment))
@@ -17,8 +17,8 @@ n <- nrow(df)
 # ---- Axis limits & arrow logic ----
 # Any CI that extends past these limits is truncated and gets an arrowhead
 # on the truncated end(s) instead of running off the plot.
-xlim_low  <- 0
-xlim_high <- 4
+xlim_low  <- 0.5
+xlim_high <- 3
 
 df <- df %>%
   mutate(
@@ -44,24 +44,24 @@ p_forest <- ggplot(df, aes(x = RR, y = Treatment)) +
   geom_segment(
     data = seg_none,
     aes(x = seg_x, xend = seg_xend, y = Treatment, yend = Treatment),
-    color = "#7C7C7C", linewidth = 1.1, lineend = "round"
+    color = "grey50", linewidth = 1.1, lineend = "round"
   ) +
   geom_segment(
     data = seg_left,
     aes(x = seg_x, xend = seg_xend, y = Treatment, yend = Treatment),
-    color = "#7C7C7C", linewidth = 1.1, lineend = "round", arrow = arrow_spec("first")
+    color = "grey50", linewidth = 1.1, lineend = "round", arrow = arrow_spec("first")
   ) +
   geom_segment(
     data = seg_right,
     aes(x = seg_x, xend = seg_xend, y = Treatment, yend = Treatment),
-    color = "#7C7C7C", linewidth = 1.1, lineend = "round", arrow = arrow_spec("last")
+    color = "grey50", linewidth = 1.1, lineend = "round", arrow = arrow_spec("last")
   ) +
   geom_segment(
     data = seg_both,
     aes(x = seg_x, xend = seg_xend, y = Treatment, yend = Treatment),
-    color = "#7C7C7C", linewidth = 1.1, lineend = "round", arrow = arrow_spec("both")
+    color = "grey50", linewidth = 1.1, lineend = "round", arrow = arrow_spec("both")
   ) +
-  geom_point(size = 3.2, shape = 15, colour = "#0F69AF") +
+  geom_point(size = 3.2, shape = 15, colour = "#3B5B92") +
   geom_vline(xintercept = 1,
              linetype = "dashed",
              color = "black",
@@ -71,7 +71,7 @@ p_forest <- ggplot(df, aes(x = RR, y = Treatment)) +
   annotate("text", x = 1, y = -0.15, label = "Favours treatment \u2192",
            hjust = -0.05, vjust = 3, size = 4.3, color = "black") +
   scale_x_continuous(
-    breaks = seq(xlim_low, xlim_high, 1), # tweak
+    breaks = seq(0, 3, 1), # tweak
     limits = c(xlim_low, xlim_high), # tweak
     expand = c(0, 0)
   ) +
@@ -141,7 +141,7 @@ final_plot <- p_forest + p_table +
 final_plot
 
 # suitably use setwd()
-ggsave("FP_05_MG_ADL_2pt_improvement.png",
+ggsave("FP_06_MGC_3pt_improvement.png",
        final_plot,
        width = 12.5,
        height = 5.5,
