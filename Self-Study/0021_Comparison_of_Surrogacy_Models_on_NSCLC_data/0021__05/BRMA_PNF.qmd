@@ -1,0 +1,562 @@
+---
+title: "Bayesian Bivariate Random-effects Meta Analysis - Product Normal Formulation (PNF)"
+author: "Ananda Biswas"
+date: "`r Sys.Date()`"
+bibliography: references.bib
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    code-fold: show
+    code-tools: true
+    code-summary: "Show/Hide Code"
+knitr:
+  opts_chunk:
+    fig.path: "figures/"
+---
+
+## Required Packages
+
+```{r}
+#| message: false
+#| warning: false
+library(openxlsx)
+
+library(gt)
+library(tidyverse)
+
+library(cmdstanr)
+```
+
+## Loading Data
+
+```{r}
+#| include: false
+data.path <- 'https://github.com/ananda-ebm/datasets/raw/refs/heads/master/NSCLC.xlsx'
+```
+
+```{r}
+df1 <- read.xlsx(data.path, sheet = 1)
+```
+
+## Initial Sanity Checks
+
+```{r}
+str(df1)
+```
+
+```{r}
+dim(df1)
+```
+
+```{r, results='asis'}
+#| echo: false
+#| tbl-cap: "Preview of NSCLC Data"
+
+head(df1) |>
+  gt() |>
+  tab_options(
+    data_row.padding = px(8),
+    column_labels.padding = px(10)
+  )
+```
+
+## Derived Quantities
+
+Calculate the weight of individual studies included in the data-set. These weights will be used to display studies in the trial-level association plot.
+
+```{r}
+df1$weight <- 1 / (df1$OS.se)^2
+```
+
+## Generating Treatment Effect on Surrogate Endpoint in New Trials
+
+Generate $1000$ new points in the observed range of `HR.PFS` in the data-set. These points represent `HR.PFS` of $1000$ future trials.
+
+```{r}
+range(df1$HR.PFS)
+```
+
+```{r}
+new.data <- data.frame(PFS.ln.HR = log(seq(0.2,3, length=1000)))
+```
+
+## Model
+
+The BRMA model for *correlated* and *normally distributed* treatment effects on two outcomes $Y_{1i}$ and $Y_{2i}$ is usually presented in the following form [@TSD20] [@uncertainty]:
+
+$$\begin{pmatrix}
+Y_{1i}\\
+Y_{2i}
+\end{pmatrix}
+\sim
+\mathcal{N}_2\left(
+\begin{pmatrix}
+\delta_{1i}\\
+\delta_{2i}
+\end{pmatrix},
+\boldsymbol{\Sigma}_i
+\right),
+\qquad
+\boldsymbol{\Sigma}_i =
+\begin{pmatrix}
+\sigma_{1i}^2 & \sigma_{1i}\sigma_{2i}\rho_{wi}\\
+\sigma_{1i}\sigma_{2i}\rho_{wi} & \sigma_{2i}^2
+\end{pmatrix}$${#eq-within-study-model}
+
+$$\begin{pmatrix}
+\delta_{1i}\\
+\delta_{2i}
+\end{pmatrix}
+\sim
+\mathcal{N}_2\left(
+\begin{pmatrix}
+d_1\\
+d_2
+\end{pmatrix},
+\mathbf{T}
+\right),
+\qquad
+\mathbf{T} =
+\begin{pmatrix}
+\tau_1^2 & \tau_1\tau_2\rho_b\\
+\tau_1\tau_2\rho_b & \tau_2^2
+\end{pmatrix}.$${#eq-between-studies-model}
+
+In this model, the treatment effects on the two endpoints $Y_{1i}$ and $Y_{2i}$ are assumed to estimate the *correlated* true effects $\delta_{1i}$ and $\delta_{2i}$ with corresponding within-study variances $\sigma_{1i}^2$ and $\sigma_{2i}^2$ of the estimates and the **within-study correlation** $\rho_{wi}$ between them in each study $i$. In this *hierarchical framework*, these true study-level effects are assumed *exchangeable*. This means that all $\delta_{1i}$ and $\delta_{2i}$ are “similar” in a way which assumes that the trial labels, $i$, attached to these treatment effects are irrelevant. Since they are exchangeable and correlated, they follow a common bivariate normal distribution with means $(d_1,d_2)$ corresponding to the treatment effects on the two outcomes, between-studies variances $\tau_1^2$ and $\tau_2^2$ and a **between-studies correlation** $\rho_b$. @eq-within-study-model and @eq-between-studies-model represent the **within-study model** and the **between-studies model** respectively.
+
+The BRMA model [-@eq-within-study-model], [-@eq-between-studies-model] can be parameterized in an alternative form. Specifically, the between-studies model [-@eq-between-studies-model] is represented in the product normal formulation (PNF) (a product of univariate conditional normal distributions), whereas the within-study model remains the same:
+
+$$\begin{pmatrix}
+Y_{1i}\\
+Y_{2i}
+\end{pmatrix}
+\sim
+\mathcal{N}_2\left(
+\begin{pmatrix}
+\delta_{1i}\\
+\delta_{2i}
+\end{pmatrix},
+\boldsymbol{\Sigma}_i
+\right),
+\qquad
+\boldsymbol{\Sigma}_i =
+\begin{pmatrix}
+\sigma_{1i}^2 & \sigma_{1i}\sigma_{2i}\rho_{wi}\\
+\sigma_{1i}\sigma_{2i}\rho_{wi} & \sigma_{2i}^2
+\end{pmatrix}$${#eq-within-study-model-PNF}
+
+$$
+\left\{
+\begin{aligned}
+&\delta_{1i} \sim \mathcal{N}(\eta_1, \psi_1^2)\\
+&\delta_{2i} \mid \delta_{1i} \sim \mathcal{N}(\eta_{2i}, \psi_2^2)\\
+&\eta_{2i} = \lambda_0 + \lambda_1\delta_{1i}.
+\end{aligned}
+\right.
+$${#eq-between-studies-model-PNF}
+
+Note that,
+
+- in [-@eq-between-studies-model-PNF] $\delta_{1i}$ has a normal distribution, also $\delta_{2i}$ has a normal distribution. So the joint distribution of $\delta_{1i}, \delta_{2i}$
+
+$$
+p(\delta_{1i}, \delta_{2i}) = p(\delta_{1i}) \cdot p(\delta_{2i} \mid \delta_{1i})
+$$
+
+is a product of two normal distributions. Thus the name *Product Normal Formulation* is adapted.
+
+- the true treatment effects are correlated and are assumed exchangeable, and therefore are modelled here as random effects with a **linear relationship**.
+
+The main difference between BRMA-PNF and Daniels \& Hughes Bayesian bivariate meta analysis framework [@danielshughes1997] is in the assumption of random effects (exchangeability) for the true treatment effects on the surrogate endpoints $\delta_{1i} \sim N(\eta_1, \psi_1^2)$ in the BRMA-PNF model, whilst Daniels and Hughes assumed fixed affects on the surrogate endpoint. When this assumption of exchangeability is reasonable, this model can lead to *more precise predictions* due to increased borrowing of information across studies (for both outcomes).
+
+## Surrogacy Criteria
+
+The surrogacy criteria in BRMA-PNF model are *same* as described in Daniels and Hughes Bayesian bivariate meta analysis [@TSD20]. A strong surrogate relationship is the one with
+
+- $\lambda_0 = 0$, to ensure that no treatment effect on the surrogate endpoint implies no treatment effect on the final clinical outcome,
+- $\lambda_1 \neq 0$, establishing a relationship between treatment effects on the surrogate and final clinical outcomes,
+- $\psi_2^2 = 0$, implying that we can predict $\delta_{2i}$ perfectly given $\delta_{1i}$.
+
+In practice, a surrogate relationship is considered **strong** if all the following are true:
+
+- the $95\%$ credible interval for the intercept $\lambda_0$ includes zero,
+- the $95\%$ credible interval for the slope $\lambda_1$ does not include zero,
+- the conditional variance $\psi_2^2$ along with its upper interval is small.
+
+## Model Fitting
+
+### Preparing data for STAN
+
+```{r}
+N <- nrow(df1)
+
+BRMA.PNF.data <- list(
+  N = N,
+  y1 = df1$PFS.ln.HR,
+  y2 = df1$OS.ln.HR,
+  se1 = df1$PFS.se,
+  se2 = df1$OS.se
+)
+```
+
+### STAN Model
+
+For surrogate endpoint evaluation, our parameters of interest are $\lambda_0$, $\lambda_1$, $\rho_b$ and $\psi_2^2$ in the sense that we seek posterior estimates of these parameters only. The hierarchical framework presented in [-@eq-within-study-model-PNF], [-@eq-between-studies-model-PNF] has too many parameters. We derive a marginalized model with as small number of parameters as possible in the following. Note that, *less the number of parameters, easier is the posterior sampling and lesser the divergences; unnecessary parameters also bring their difficult geometries with them*.
+
+From [-@eq-within-study-model-PNF] and [-@eq-between-studies-model-PNF], the below follows:
+
+$$
+E[Y_{1i}] = E[E[Y_{1i} \mid \mu_{1i}]] = E[\mu_{1i}] = \eta_1
+$$
+
+$$
+\begin{aligned}
+E[Y_{2i}] &= E[E[Y_{2i} \mid \mu_{2i}]] \\[0.7em]
+&= E[\mu_{2i}] \\[0.7em]
+&= E[E[\mu_{2i} \mid \mu_{1i}]] \\[0.7em]
+&= E[\lambda_0 + \lambda_1\mu_{1i}] \\[0.7em]
+&= \lambda_0 + \lambda_1\eta_1
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\operatorname{Var}(Y_{1i})
+&= E[\operatorname{Var}(Y_{1i} \mid \mu_{1i})]
++ \operatorname{Var}(E[Y_{1i} \mid \mu_{1i}]) \\[0.7em]
+&= E(\sigma_{1i}^2) + \operatorname{Var}(\mu_{1i}) \\[0.7em]
+&= \sigma_{1i}^2 + \psi_1^2
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\operatorname{Var}(Y_{2i})
+&= E[\operatorname{Var}(Y_{2i} \mid \mu_{2i})]
++ \operatorname{Var}(E[Y_{2i} \mid \mu_{2i}]) \\[0.7em]
+&= E(\sigma_{2i}^2) + \operatorname{Var}(\mu_{2i}) \\[0.7em]
+&= \sigma_{2i}^2
++ E[\operatorname{Var}(\mu_{2i} \mid \mu_{1i})]
++ \operatorname{Var}(E[\mu_{2i} \mid \mu_{1i}]) \\[0.7em]
+&= \sigma_{2i}^2
++ E[\psi_2^2]
++ \operatorname{Var}(\lambda_0 + \lambda_1 \mu_{1i}) \\[0.7em]
+&= \sigma_{2i}^2 + \psi_2^2 + \lambda_1^2\psi_1^2.
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\operatorname{Cov}(Y_{1i}, Y_{2i})
+&=
+E[\operatorname{Cov}(Y_{1i}, Y_{2i} \mid \mu_{1i}, \mu_{2i})]
++
+\operatorname{Cov}(E[Y_{1i} \mid \mu_{1i}, \mu_{2i}], E[Y_{2i} \mid \mu_{1i}, \mu_{2i}]) \\[0.7em]
+&= E(\sigma_{1i}\sigma_{2i}\rho_{wi}) + \operatorname{Cov}(\mu_{1i}, \mu_{2i}) \\[0.7em]
+&= \sigma_{1i}\sigma_{2i}\rho_{wi} + \operatorname{Cov}(\mu_{1i}, E[\mu_{2i} \mid \mu_{1i}]) \\[0.7em]
+&= \sigma_{1i}\sigma_{2i}\rho_{wi} + \operatorname{Cov}(\mu_{1i}, \lambda_0 + \lambda_1\mu_{1i}) \\[0.7em]
+&= \sigma_{1i}\sigma_{2i}\rho_{wi} + \lambda_1\operatorname{Cov}(\mu_{1i}, \mu_{1i}) \\[0.7em]
+&= \sigma_{1i}\sigma_{2i}\rho_{wi} + \lambda_1\operatorname{Var}(\mu_{1i}) \\[0.7em]
+&= \sigma_{1i}\sigma_{2i}\rho_{wi} + \lambda_1\psi_1^2
+\end{aligned}
+$$
+
+Hence, combining [-@eq-within-study-model-PNF] and [-@eq-between-studies-model-PNF], we obtain a bivariate normal distribution
+
+$$
+\begin{pmatrix}
+Y_{1i}\\
+Y_{2i}
+\end{pmatrix}
+\sim
+\mathcal{N}\left(
+\begin{pmatrix}
+\eta_1\\
+\lambda_0 + \lambda_1\eta_1
+\end{pmatrix},
+\begin{pmatrix}
+\sigma_{1i}^2 + \psi_1^2 &
+\sigma_{1i}\sigma_{2i}\rho_{wi} + \lambda_1\psi_1^2\\
+\sigma_{1i}\sigma_{2i}\rho_{wi} + \lambda_1\psi_1^2 &
+\sigma_{2i}^2 + \psi_2^2 + \lambda_1^2\psi_1^2
+\end{pmatrix}
+\right).
+$${#eq-combined-model}
+
+We use [@eq-combined-model] in our STAN implementation of BRMA PNF.
+
+Instead of placing independent non-informative prior distributions on all the parameters of model [-@eq-between-studies-model-PNF], relationships between these parameters and the elements of the between-studies covariance matrix $\boldsymbol{T}$ in the between-studies model [-@eq-between-studies-model] are derived to allow to take into account the inter-relationship between the parameters. These relationships have the following forms
+
+$$
+\psi_1^2 = \tau_1^2, \qquad
+\psi_2^2 = \tau_2^2 - \lambda_1^2\tau_1^2, \qquad
+\lambda_1 = \dfrac{\tau_2}{\tau_1}\rho_b.
+$${#eq-relationships}
+
+From a comparison of [-@eq-between-studies-model] and [-@eq-between-studies-model-PNF], $\psi_1^2 = \tau_1^2$ is trivial. Moreover, from [-@eq-between-studies-model] it follows,
+
+$$
+\delta_{2i} \mid \delta_{1i} \sim \mathcal{N} \left( d_2 + \rho_b \dfrac{\tau_2}{\tau_1}(\delta_{1i} - d_1), \tau_2^2(1 - \rho_b^2)\right).
+$$
+
+Comparing [-@eq-between-studies-model-PNF] with the above gives, $\lambda_1 = \dfrac{\tau_2}{\tau_1}\rho_b$ and $\psi_2^2 = \tau_2^2(1 - \rho_b^2)$. Thus 
+
+$$
+\begin{aligned}
+\psi_2^2 &= \tau_2^2 - \tau_2^2 \cdot \rho_b^2 \\[0.5em]
+&= \tau_2^2 - \lambda_1^2 \tau_1^2 \;\; \text{as } \lambda_1 \tau_1 = \tau_2 \rho_b
+\end{aligned}
+$$
+
+Prior distributions are placed on the following parameters:
+
+$$\lambda_0 \sim \mathcal{N}(0, 1000)$$
+
+$$\eta_1 \sim \mathcal{N}(0, 1000)$$
+
+$$\tau_1, \tau_2 \sim U(0, 2)$$
+
+$$\rho_b \sim U(-1, 1)$$
+
+As IPD are not available, assume that the $\rho_{wi}$'s for the trials with no data available are equal to some common value $\rho_w$, we **assume** a positive association between `HR.OS` and `HR.PFS`, accordingly we set a priori 
+$$\rho_w \sim U(0, 1).$$
+
+Additionally, the above derived relationships [-@eq-relationships] give the *implied prior distribution* on the parameters $\lambda_1, \psi_1$ and $\psi_2$.
+
+The PNF provides *better control* over the prior distributions placed on specific parameters of the model (compared to BRMA with Wishart prior distribution).
+
+Here is a suitable STAN model.
+
+```{r}
+#| include: false
+BRMA.PNF.model <- "BRMA_PNF.stan"
+```
+
+```{r}
+#| echo: false
+#| results: asis
+cat("```stan\n", paste(readLines(BRMA.PNF.model), collapse = "\n"), "\n```", sep = "")
+```
+
+### Model Compilation
+
+```{r}
+#| message: false
+#| warning: false
+BRMA.PNF.model <- cmdstan_model(BRMA.PNF.model)
+```
+
+### Running HMC
+
+```{r}
+n.chains <- 3
+n.samples.per.chain <- 150000
+
+n.posterior.samples <- n.chains * n.samples.per.chain
+```
+
+```{r}
+#| echo: true
+#| output: false
+fit.BRMA.PNF <- BRMA.PNF.model$sample(
+  data = BRMA.PNF.data,
+  chains = n.chains,
+  parallel_chains = n.chains,
+  iter_warmup = 30000,
+  iter_sampling = n.samples.per.chain,
+  adapt_delta = 0.95,
+  max_treedepth = 15,
+  seed = 14,
+  refresh = 0
+)
+```
+
+### STAN Diagnostics
+
+```{r}
+fit.BRMA.PNF$cmdstan_diagnose()
+```
+
+## Posterior Summaries of Parameters of Interest
+
+### Posterior Draws
+
+```{r}
+posterior.draws <- fit.BRMA.PNF$draws(
+  variables = c("lambda0", "lambda1", "psi2", "rho_b", "psi1_sq", "psi2_sq"),
+  format = "matrix"
+)
+```
+
+```{r}
+data.frame(head(posterior.draws)) |>
+  gt()
+```
+
+### Correlation
+
+```{r}
+corr.target.surrogate <- mean(posterior.draws[, "rho_b"])
+corr.target.surrogate |> round(3)
+```
+
+```{r}
+corr.target.surrogate.ci <- quantile(posterior.draws[, "rho_b"], probs = c(0.025, 0.975))
+corr.target.surrogate.ci |> round(3)
+```
+
+### Examining Surrogacy Criteria
+
+```{r}
+intercept.estimate <- mean(posterior.draws[, "lambda0"])
+intercept.estimate |> round(4)
+```
+
+```{r}
+intercept.ci <- quantile(posterior.draws[, "lambda0"], probs = c(0.025, 0.975))
+intercept.ci |> round(4) 
+```
+
+Estimated $\lambda_0$ is approximately $0$ and its $95\%$ credible interval contains $0$. So criteria $1$ is satisfied. ✅
+
+```{r}
+slope.estimate <- mean(posterior.draws[, "lambda1"])
+slope.estimate |> round(4) 
+```
+
+```{r}
+slope.ci <- quantile(posterior.draws[, "lambda1"], probs = c(0.025, 0.975))
+slope.ci |> round(4) 
+```
+
+Estimated $\lambda_1$ is not $0$ and its $95\%$ credible interval excluded $0$, so criteria $2$ is satisfied. ✅
+
+```{r}
+conditional.variance.estimate <- mean(posterior.draws[, "psi2_sq"])
+conditional.variance.estimate |> round(4) 
+```
+
+```{r}
+conditional.variance.ci <- quantile(posterior.draws[, "psi2_sq"], probs = c(0.025, 0.975))
+conditional.variance.ci |> round(4)
+```
+
+Estimated $\psi_2^2$ is close to $0$ along with the upper bound of its $95\%$ credible interval. So criteria $3$ is also satisfied. ✅
+
+## Prediction of TE on Clinical Outcome in New Trials
+
+Now use posterior samples to calculate the predictions on new future trials, credible intervals and prediction intervals. These are the main components of **trial-level association plot**.
+
+Create a design matrix `X` representing new studies on which we will make future predictions.
+
+```{r}
+X <- matrix(c(rep(1, 1000), new.data$PFS.ln.HR),
+            nrow = 1000, ncol = 2, byrow = FALSE)
+```
+
+For each new trial in `X`, corresponding to 
+$`r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$ posterior samples of the parameters, there will be 
+$`r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$ predictions of `log.HR.OS`. Below is a matrix operation to obtain all the 
+$1000 \times `r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$ 
+predictions.
+
+```{r}
+new.eta.2 <- X %*% t(posterior.draws[, c("lambda0", "lambda1")])
+```
+
+Each row of `new.eta.2` represents 
+$`r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$ posterior draws of `log.HR.OS` *i.e.* the response variable, corresponding to a new `log.HR.PFS` of a new trial.
+
+### Point Estimates
+
+For a new trial, to get a prediction of `log.HR.OS`, we must calculate the mean of posterior samples.
+
+```{r}
+BRMA.PNF.fit <- apply(new.eta.2, 1, mean)
+```
+
+`BRMA.PNF.fit` has $1000$ predictions corresponding to $1000$ new future trials.
+
+### Credible Intervals
+
+Credible intervals are obtained from the quantiles of the posterior distribution. Below is the calculation for the $95\%$ credible intervals for the predictions on new trials.
+
+```{r}
+BRMA.PNF.ci <- t(apply(new.eta.2, 1, quantile, probs = c(0.025, 0.975)))
+```
+
+### Prediction Intervals
+
+Prediction intervals are obtained from the quantiles of the posterior predictive distribution.
+
+We want the predictive distribution of $\delta_{2, \text{new}} :$ the true treatment effect on clinical outcome in a future trial.
+
+**MESSAGING IS DUE HERE**
+
+```{r}
+inject.variance <- posterior.draws[, "psi2_sq"] + posterior.draws[, "lambda1"]^2 * posterior.draws[, "psi1_sq"]
+
+u <- rnorm(n.posterior.samples, 0, sd = sqrt(inject.variance))
+
+BRMA.PNF.pred <- new.eta.2 + 
+  matrix(rep(u, 1000), nrow = 1000, ncol = n.posterior.samples, byrow = TRUE)
+```
+
+```{r}
+BRMA.PNF.pi <- t(apply(BRMA.PNF.pred, 1, quantile, probs = c(0.025, 0.975)))
+```
+
+## Trial-level Association Plot
+
+```{r}
+BRMA.PNF.pred.df <- data.frame(HR.PFS = exp(new.data$PFS.ln.HR),
+                            HR.OS = exp(BRMA.PNF.fit),
+                            lower.ci = exp(BRMA.PNF.ci[,1]),
+                            upper.ci = exp(BRMA.PNF.ci[,2]),
+                            lower.pi = exp(BRMA.PNF.pi[,1]),
+                            upper.pi = exp(BRMA.PNF.pi[,2]))
+```
+
+```{r}
+BRMA.PNF.association.plot <- ggplot(df1, aes(x = HR.PFS, y = HR.OS)) +
+  geom_ribbon(aes(x = HR.PFS, ymin = lower.ci, ymax = upper.ci), data = BRMA.PNF.pred.df, alpha = 0.6, fill = "steelblue") +
+  geom_ribbon(aes(x = HR.PFS, ymin = lower.pi, ymax = upper.pi), data = BRMA.PNF.pred.df, alpha = 0.4, fill = "lightblue") +
+  geom_line(aes(x = HR.PFS, y = HR.OS), data = BRMA.PNF.pred.df, 
+            col = "steelblue", linewidth = 1, stat = 'identity') +
+  geom_point(aes(size = weight), col = "gray30", fill = "orange", shape = 21, data = df1) +
+  scale_x_continuous(transform = "log",
+                     limits = c(0.2, 3.1),
+                     breaks=c(0.1,0.2,0.3,0.4,0.5,0.7,1,1.2,1.5,2,3),
+                     expand = c(0.01, 0.01)) +
+  scale_y_continuous(transform = "log",
+                     limits = c(min(BRMA.PNF.pred.df$lower.pi), max(BRMA.PNF.pred.df$upper.pi)),
+                     breaks=c(0.1,0.2,0.3,0.4,0.5,0.7,1,1.2,1.5,2,3),
+                     expand = c(0.01, 0.01)) +
+  geom_hline(yintercept = 1, linetype = "dashed", colour = "red") +
+  xlab("Progression-free survival hazard ratio (log scale)")+ 
+  ylab(paste("Overall survival hazard ratio" , "\n", "\U00B1", "95% confidence and prediction intervals (log scale)")) +
+  ggtitle("Bivariate Random-effects Meta Analysis - Product Normal Formulation") +
+  theme_bw() +
+  scale_colour_hue("trial") +
+  theme(legend.position = "none")
+```
+
+```{r, fig.width=8, fig.height=6, out.width="100%"}
+BRMA.PNF.association.plot
+```
+
+## Surrogate Threshold Effect
+
+Surrogate Threshold Effect is defined as ***the minimum treatment effect on the surrogate necessary to predict a nonzero effect on the true endpoint*** in a future trial. $\log(HR) < 0$ implies a *beneficial* treatment effect. So STE was computed as the intersection of the upper $95\%$ prediction interval with the horizontal line for no treatment effect (i.e., in which the HR for OS equals $1$ or $\log(HR) = 0$).
+
+```{r}
+candidate.HR.PFS <- BRMA.PNF.pred.df %>%
+  filter(upper.pi < 1) %>%
+  pull(HR.PFS)
+
+BRMA.PNF.STE <- max(candidate.HR.PFS)
+BRMA.PNF.STE |> round(3)
+```
