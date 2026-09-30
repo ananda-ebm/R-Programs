@@ -2,4 +2,4 @@
 02 : Frequentist Fixed-effect Meta Regression
 03 : Bayesian Random-effects Meta Regression
 04 : Daniels and Hughes Bayesian Bivariate Meta Analysis
-05 : Bayesian Bivariate Random-effects Meta Analysis
+05 : Bayesian Bivariate Random-effects Meta Analysis - Product Normal Formulation
