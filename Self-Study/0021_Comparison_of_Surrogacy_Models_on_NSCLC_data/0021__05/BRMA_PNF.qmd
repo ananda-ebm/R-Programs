@@ -209,15 +209,15 @@ For surrogate endpoint evaluation, our parameters of interest are $\lambda_0$, $
 From [-@eq-within-study-model-PNF] and [-@eq-between-studies-model-PNF], the below follows:
 
 $$
-E[Y_{1i}] = E[E[Y_{1i} \mid \mu_{1i}]] = E[\mu_{1i}] = \eta_1
+E[Y_{1i}] = E[E[Y_{1i} \mid \delta_{1i}]] = E[\delta_{1i}] = \eta_1
 $$
 
 $$
 \begin{aligned}
-E[Y_{2i}] &= E[E[Y_{2i} \mid \mu_{2i}]] \\[0.7em]
-&= E[\mu_{2i}] \\[0.7em]
-&= E[E[\mu_{2i} \mid \mu_{1i}]] \\[0.7em]
-&= E[\lambda_0 + \lambda_1\mu_{1i}] \\[0.7em]
+E[Y_{2i}] &= E[E[Y_{2i} \mid \delta_{2i}]] \\[0.7em]
+&= E[\delta_{2i}] \\[0.7em]
+&= E[E[\delta_{2i} \mid \delta_{1i}]] \\[0.7em]
+&= E[\lambda_0 + \lambda_1\delta_{1i}] \\[0.7em]
 &= \lambda_0 + \lambda_1\eta_1
 \end{aligned}
 $$
@@ -225,9 +225,9 @@ $$
 $$
 \begin{aligned}
 \operatorname{Var}(Y_{1i})
-&= E[\operatorname{Var}(Y_{1i} \mid \mu_{1i})]
-+ \operatorname{Var}(E[Y_{1i} \mid \mu_{1i}]) \\[0.7em]
-&= E(\sigma_{1i}^2) + \operatorname{Var}(\mu_{1i}) \\[0.7em]
+&= E[\operatorname{Var}(Y_{1i} \mid \delta_{1i})]
++ \operatorname{Var}(E[Y_{1i} \mid \delta_{1i}]) \\[0.7em]
+&= E(\sigma_{1i}^2) + \operatorname{Var}(\delta_{1i}) \\[0.7em]
 &= \sigma_{1i}^2 + \psi_1^2
 \end{aligned}
 $$
@@ -235,15 +235,15 @@ $$
 $$
 \begin{aligned}
 \operatorname{Var}(Y_{2i})
-&= E[\operatorname{Var}(Y_{2i} \mid \mu_{2i})]
-+ \operatorname{Var}(E[Y_{2i} \mid \mu_{2i}]) \\[0.7em]
-&= E(\sigma_{2i}^2) + \operatorname{Var}(\mu_{2i}) \\[0.7em]
+&= E[\operatorname{Var}(Y_{2i} \mid \delta_{2i})]
++ \operatorname{Var}(E[Y_{2i} \mid \delta_{2i}]) \\[0.7em]
+&= E(\sigma_{2i}^2) + \operatorname{Var}(\delta_{2i}) \\[0.7em]
 &= \sigma_{2i}^2
-+ E[\operatorname{Var}(\mu_{2i} \mid \mu_{1i})]
-+ \operatorname{Var}(E[\mu_{2i} \mid \mu_{1i}]) \\[0.7em]
++ E[\operatorname{Var}(\delta_{2i} \mid \delta_{1i})]
++ \operatorname{Var}(E[\delta_{2i} \mid \delta_{1i}]) \\[0.7em]
 &= \sigma_{2i}^2
 + E[\psi_2^2]
-+ \operatorname{Var}(\lambda_0 + \lambda_1 \mu_{1i}) \\[0.7em]
++ \operatorname{Var}(\lambda_0 + \lambda_1 \delta_{1i}) \\[0.7em]
 &= \sigma_{2i}^2 + \psi_2^2 + \lambda_1^2\psi_1^2.
 \end{aligned}
 $$
@@ -252,14 +252,14 @@ $$
 \begin{aligned}
 \operatorname{Cov}(Y_{1i}, Y_{2i})
 &=
-E[\operatorname{Cov}(Y_{1i}, Y_{2i} \mid \mu_{1i}, \mu_{2i})]
+E[\operatorname{Cov}(Y_{1i}, Y_{2i} \mid \delta_{1i}, \delta_{2i})]
 +
-\operatorname{Cov}(E[Y_{1i} \mid \mu_{1i}, \mu_{2i}], E[Y_{2i} \mid \mu_{1i}, \mu_{2i}]) \\[0.7em]
-&= E(\sigma_{1i}\sigma_{2i}\rho_{wi}) + \operatorname{Cov}(\mu_{1i}, \mu_{2i}) \\[0.7em]
-&= \sigma_{1i}\sigma_{2i}\rho_{wi} + \operatorname{Cov}(\mu_{1i}, E[\mu_{2i} \mid \mu_{1i}]) \\[0.7em]
-&= \sigma_{1i}\sigma_{2i}\rho_{wi} + \operatorname{Cov}(\mu_{1i}, \lambda_0 + \lambda_1\mu_{1i}) \\[0.7em]
-&= \sigma_{1i}\sigma_{2i}\rho_{wi} + \lambda_1\operatorname{Cov}(\mu_{1i}, \mu_{1i}) \\[0.7em]
-&= \sigma_{1i}\sigma_{2i}\rho_{wi} + \lambda_1\operatorname{Var}(\mu_{1i}) \\[0.7em]
+\operatorname{Cov}(E[Y_{1i} \mid \delta_{1i}, \delta_{2i}], E[Y_{2i} \mid \delta_{1i}, \delta_{2i}]) \\[0.7em]
+&= E(\sigma_{1i}\sigma_{2i}\rho_{wi}) + \operatorname{Cov}(\delta_{1i}, \delta_{2i}) \\[0.7em]
+&= \sigma_{1i}\sigma_{2i}\rho_{wi} + \operatorname{Cov}(\delta_{1i}, E[\delta_{2i} \mid \delta_{1i}]) \\[0.7em]
+&= \sigma_{1i}\sigma_{2i}\rho_{wi} + \operatorname{Cov}(\delta_{1i}, \lambda_0 + \lambda_1\delta_{1i}) \\[0.7em]
+&= \sigma_{1i}\sigma_{2i}\rho_{wi} + \lambda_1\operatorname{Cov}(\delta_{1i}, \delta_{1i}) \\[0.7em]
+&= \sigma_{1i}\sigma_{2i}\rho_{wi} + \lambda_1\operatorname{Var}(\delta_{1i}) \\[0.7em]
 &= \sigma_{1i}\sigma_{2i}\rho_{wi} + \lambda_1\psi_1^2
 \end{aligned}
 $$
