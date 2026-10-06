@@ -1,0 +1,238 @@
+---
+title: "Introduction to Copula"
+author: "Ananda Biswas"
+date: "`r Sys.Date()`"
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    code-fold: show
+    code-tools: true
+    code-summary: "Show/Hide Code"
+knitr:
+  opts_chunk:
+    fig.path: "figures/"
+---
+
+## So far
+
+Already existing multivariate models like multivariate normal distribution, multivariate $t-$distribution come with primarily two *limitations*.
+
+- one, all the marginals are necessarily Gaussians or $t-$distributions;
+- two, the dependence structure is already pre-defined, there is little flexibility in designing the dependence structure.
+
+For example, in a bivariate normal distribution, dependence can only represent linear dependence is completely characterized by the Pearson's correlation coefficient $\rho$ and the conditional expectation is linear.
+
+Hence there arises a necessity of joint modelling of two or more probability distributions with flexible dependence structure. Copulas solve this exact problem. In this discussion, we restrict ourselves to joint modelling of *two* probability distributions only.
+
+## Introduction
+
+Suppose $H(x, y)$ is a joint distribution function of two random variables. Sklar's theorem tells us that $H(x, y)$ can be re-written as
+$$H(x, y) = C(F(x), G(y))$$
+with help of two marginal distribution functions $F$, $G$ and a coupling function $C(\cdot)$.
+
+$$F(x) = u \Rightarrow x = F^{-1}(u);$$
+$$G(y) = v \Rightarrow y = G^{-1}(v).$$
+
+Then, $H(x, y) = C(F(x), G(y))$ can also be expressed as
+
+$$C(u, v) = H(F^{-1}(u), G^{-1}(v)).$$
+
+Formally, a joint probability distribution function that results in both marginal distributions being uniformly distributed on $(0, 1)$ is called a **copula**.
+
+Suppose $X \sim F, Y \sim G$ and we have to construct a joint distribution of $X, Y$. 
+
+Note that, $F(X), G(Y) \sim U(0, 1)$. Then the joint CDF of $F(X), G(Y)$ will be a copula. Let $H(x, y)$ be the joint CDF of $X, Y$. Then
+
+$$
+\begin{aligned}
+H(x, y) &= P(X \leq x, Y \leq y) \\[0.75em]
+&= P(F(X) \leq F(x), G(Y) \leq G(y)) \\[0.75em]
+&= C(F(x), G(y)), \; C \text{ is the joint CDF of two uniforms } F(X), G(Y).
+\end{aligned}
+$$
+
+Hence, the copula approach for constructing a joint CDF for random variables $X$ and $Y$ is
+
+- first, decide the marginals $F$ and $G$,
+- second, choose an approximate copula to model the joint distribution of $F(X), G(Y)$.
+
+The domain of a copula of $d$ variables $C(\cdot)$ is $[0, 1]^d$.
+
+Note that, $X \sim F, Y \sim G$ and they have some dependence. A copula models the joint distribution of $F(X), G(Y)$. The dependence in $F(X), G(Y)$ survives and traverses to $X, Y$ because the monotonic transformations preserve the ordering of observations. What are preserved are the ordering of observations, rank dependence, Kendall's $\tau$, Spearman's $\rho$. However, the Pearsonian correlation generally changes if the transformations are non-linear.
+
+## Required Packages
+
+```{r}
+#| message: false
+#| warning: false
+library(MASS)
+library(copula)
+library(tidyverse)
+library(patchwork)
+```
+
+Now we briefly discuss a few common copula models.
+
+## Gaussian Copula
+
+A very popular copula used in modeling is the Gaussian copula. Let $\Phi$ be the standard normal distribution function. If $X$ and $Y$ are standard normal random variables whose joint distribution is a bivariate normal distribution with correlation $\rho$, then the joint distribution of $\Phi(X)$ and $\Phi(Y)$ is called the *Gaussian copula*. That is, the Gaussian copula $C$ is given by
+
+$$
+\begin{aligned}
+C(u, v; \rho) &= P(\Phi(X) \leq u, \Phi(Y) \leq v; \rho) \\[0.75em]
+&= P(X \leq \Phi^{-1}(u), Y \leq \Phi^{-1}(v); \rho) \\[0.75em]
+&= \Phi_2(\Phi^{-1}(u), \Phi^{-1}(v); \rho).
+\end{aligned}
+$$
+
+$$
+\boxed{C(u, v; \rho) = \Phi_2(\Phi^{-1}(u), \Phi^{-1}(v); \rho)}
+$${#eq-gaussian-copula}
+
+$\rho$ is called the dependence parameter as it controls the dependence between $U$ and $V$.
+
+Important measures -
+
+- Kendall's rank association between $U$ and $V$, $\tau = \dfrac{2}{\pi} \sin^{-1} (\rho)$
+- Spearman's rank correlation between $U$ and $V$, $\rho_S = \dfrac{6}{\pi} \sin^{-1}\left( \dfrac{\rho}{2}\right)$
+
+```{r}
+#| include: false
+set.seed(14)
+```
+
+### About Simulation
+
+Generally simulation from a copula means generating dependent $U(0, 1)$ pairs $(u, v)$ that have joint CDF $C(u, v)$. 
+
+Note that, to simulate $(X, Y)$ pairs with marginally $X \sim F$ and $Y \sim G$, we just need $U(0, 1)$ random numbers to which we can employ inverse-transformation. But there is a catch!! $X, Y$ are not independent; the simulated $X, Y$ pairs must adhere to the desired dependence structure. So we cannot use independent $U(0, 1)$ numbers, we have to create dependence in the $U(0, 1)$ pair itself. That's exactly where copula comes in, different copula models provide $U(0, 1)$ pairs of different dependence structure inherited in it.
+
+To simulate numbers from a Gaussian copula, we proceed as follows:
+
+1. Generate jointly normally distributed pairs $(x, y)$ with Pearson correlation $\rho$.
+2. Employ probability integral transformation on $x$ and $y$ marginally to obtain dependent $U(0, 1)$ pairs $(u, v)$.
+
+If one requires dependent Exponential and Weibull, say, he can employ suitable inverse-CDF transformation on $u$ and $v$.
+
+```{r}
+n <- 10^5; rho.true <- 0.7
+```
+
+### Simulation from scratch
+
+```{r}
+latent <- MASS::mvrnorm(n,
+                        mu = rep(0, 2),
+                        Sigma = matrix(c(1, rho.true,
+                                         rho.true, 1), nrow = 2))
+
+obs <- pnorm(latent)
+```
+
+`obs` has 
+$`r format(n, scientific = FALSE, trim = TRUE)`$
+random pairs having joint distribution [-@eq-gaussian-copula] with dependence $\rho = 0.7$.
+
+Let us check the association between the simulated numbers.
+
+```{r}
+observed.tau <- cor(obs[,1], obs[,2], method = "kendall")
+true.tau <- (2 / pi) * asin(rho.true)
+
+observed.tau; true.tau
+```
+
+```{r}
+observed.spearman.rho <- cor(obs[,1], obs[,2], method = "spearman")
+true.spearman.rho <- (6 / pi) * asin(rho.true / 2)
+
+observed.spearman.rho; true.spearman.rho
+```
+
+### Simulation using package
+
+```{r}
+cop <- normalCopula(param = rho.true, dim = 2)
+
+obs <- rCopula(n = n, copula = cop)
+```
+
+Let us check the association between the simulated numbers.
+
+```{r}
+observed.tau <- cor(obs[,1], obs[,2], method = "kendall")
+true.tau <- (2 / pi) * asin(rho.true)
+
+observed.tau; true.tau
+```
+
+```{r}
+observed.spearman.rho <- cor(obs[,1], obs[,2], method = "spearman")
+true.spearman.rho <- (6 / pi) * asin(rho.true / 2)
+
+observed.spearman.rho; true.spearman.rho
+```
+
+### Visualization
+
+Here we have four simulations of Gaussian copula with varying strength of dependence.
+
+```{r}
+#| include: false
+cop1 <- normalCopula(param = 0.2, dim = 2)
+obs1 <- rCopula(100, cop1)
+
+p1 <- data.frame(obs1) %>%
+  ggplot(aes(x = X1, y = X2)) +
+  geom_point(colour = "#3F60F2") +
+  labs(x = "u", y = "v", title = expression(rho == 0.2)) +
+  theme_bw()
+```
+
+```{r}
+#| include: false
+cop2 <- normalCopula(param = 0.4, dim = 2)
+obs2 <- rCopula(100, cop2)
+
+p2 <- data.frame(obs2) %>%
+  ggplot(aes(x = X1, y = X2)) +
+  geom_point(colour = "#3F60F2") +
+  labs(x = "u", y = "v", title = expression(rho == 0.4)) +
+  theme_bw()
+```
+
+```{r}
+#| include: false
+cop3 <- normalCopula(param = 0.6, dim = 2)
+obs3 <- rCopula(100, cop3)
+
+p3 <- data.frame(obs3) %>%
+  ggplot(aes(x = X1, y = X2)) +
+  geom_point(colour = "#3F60F2") +
+  labs(x = "u", y = "v", title = expression(rho == 0.6)) +
+  theme_bw()
+```
+
+```{r}
+#| include: false
+cop4 <- normalCopula(param = 0.8, dim = 2)
+obs4 <- rCopula(100, cop4)
+
+p4 <- data.frame(obs4) %>%
+  ggplot(aes(x = X1, y = X2)) +
+  geom_point(colour = "#3F60F2") +
+  labs(x = "u", y = "v", title = expression(rho == 0.8)) +
+  theme_bw()
+```
+
+```{r fig.height=6, fig.width=8, out.width="100%"}
+#| label: fig-gaussian-copula
+#| echo: false
+#| fig-cap: Scatterplots of Gaussian copulas
+combined <- (p1 | p2) / (p3 | p4)
+combined
+```
+
