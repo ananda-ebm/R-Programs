@@ -150,8 +150,7 @@ STAN_data.BREMR <- list(
 ### STAN Model
 
 ```{r}
-#| include: false
-BREMR.model.path <- "C:\\Users\\AnandaBiswas\\OneDrive - EBM Health Consultants LLP\\Documents\\R-Programs\\Self-Study\\0021_Comparison_of_Surrogacy_Models_on_NSCLC_data\\0021__03\\0021__03_BREMR.stan"
+BREMR.model.file <- "0021__03_BREMR.stan"
 ```
 
 Here is a suitable STAN model.
@@ -159,13 +158,13 @@ Here is a suitable STAN model.
 ```{r}
 #| echo: false
 #| results: asis
-cat("```stan\n", paste(readLines(BREMR.model.path), collapse = "\n"), "\n```", sep = "")
+cat("```stan\n", paste(readLines(BREMR.model.file), collapse = "\n"), "\n```", sep = "")
 ```
 
 ### Model Compilation
 
 ```{r}
-model.BREMR <- cmdstan_model(stan_file = BREMR.model.path)
+model.BREMR <- cmdstan_model(stan_file = BREMR.model.file)
 ```
 
 ### Running HMC
@@ -397,7 +396,7 @@ BREMR.association.plot <- ggplot(df1, aes(x = HR.PFS, y = HR.OS)) +
                      expand = c(0.01, 0.01)) +
   geom_hline(yintercept = 1, linetype = "dashed") +
   xlab("Progression-free survival hazard ratio (log scale)")+ 
-  ylab(paste("Overall survival hazard ratio" , "\n", "\U00B1", "95% confidence and prediction intervals (log scale)")) +
+  ylab(paste("Overall survival hazard ratio" , "\n", "\U00B1", "95% credible and prediction intervals (log scale)")) +
   ggtitle("Bayesian Random-effects Meta-regression") +
   theme_bw() +
   scale_colour_hue("trial") +
