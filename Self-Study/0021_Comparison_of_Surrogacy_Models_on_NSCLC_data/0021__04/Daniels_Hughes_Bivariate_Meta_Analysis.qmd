@@ -430,7 +430,7 @@ DH.association.plot <- ggplot(df1, aes(x = HR.PFS, y = HR.OS)) +
                      expand = c(0.01, 0.01)) +
   geom_hline(yintercept = 1, linetype = "dashed") +
   xlab("Progression-free survival hazard ratio (log scale)")+ 
-  ylab(paste("Overall survival hazard ratio" , "\n", "\U00B1", "95% confidence and prediction intervals (log scale)")) +
+  ylab(paste("Overall survival hazard ratio" , "\n", "\U00B1", "95% credible and prediction intervals (log scale)")) +
   ggtitle("Daniels and Hughes Bayesian Bivariate Meta Analysis") +
   theme_bw() +
   scale_colour_hue("trial") +
