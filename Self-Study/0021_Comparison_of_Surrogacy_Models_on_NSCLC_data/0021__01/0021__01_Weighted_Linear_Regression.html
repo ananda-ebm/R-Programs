@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ananda Biswas">
-<meta name="dcterms.date" content="2026-08-19">
+<meta name="dcterms.date" content="2026-11-03">
 
 <title>Frequentist Weighted Linear Regression</title>
 <style>
@@ -2362,6 +2362,11 @@ window.Quarto = {
   </ul></li>
   <li><a href="#trial-level-association-plot" id="toc-trial-level-association-plot" class="nav-link" data-scroll-target="#trial-level-association-plot">Trial-level Association Plot</a></li>
   <li><a href="#surrogate-threshold-effect" id="toc-surrogate-threshold-effect" class="nav-link" data-scroll-target="#surrogate-threshold-effect">Surrogate Threshold Effect</a></li>
+  <li><a href="#leave-one-out-cross-validation" id="toc-leave-one-out-cross-validation" class="nav-link" data-scroll-target="#leave-one-out-cross-validation">Leave-one-out Cross-validation</a>
+  <ul class="collapse">
+  <li><a href="#proportion-of-actual-values-from-the-validation-set-that-lies-within-the-95-prediction-interval-from-the-training-set" id="toc-proportion-of-actual-values-from-the-validation-set-that-lies-within-the-95-prediction-interval-from-the-training-set" class="nav-link" data-scroll-target="#proportion-of-actual-values-from-the-validation-set-that-lies-within-the-95-prediction-interval-from-the-training-set">Proportion of actual values from the validation set that lies within the 95% prediction interval from the training set</a></li>
+  <li><a href="#absolute-difference-between-mean-predicted-value-and-actual-value" id="toc-absolute-difference-between-mean-predicted-value-and-actual-value" class="nav-link" data-scroll-target="#absolute-difference-between-mean-predicted-value-and-actual-value">Absolute difference between mean predicted value and actual value</a></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -2386,7 +2391,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 19, 2026</p>
+      <p class="date">November 3, 2026</p>
     </div>
   </div>
   
@@ -2454,20 +2459,20 @@ window.Quarto = {
 </div>
 </div>
 <div class="cell" data-tbl-cap="Snapshot of NSCLC Data">
-<div id="czrwlitzeo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#czrwlitzeo table {
+<div id="lkxwwsorft" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#lkxwwsorft table {
 font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
-#czrwlitzeo thead, #czrwlitzeo tbody, #czrwlitzeo tfoot, #czrwlitzeo tr, #czrwlitzeo td, #czrwlitzeo th {
+#lkxwwsorft thead, #lkxwwsorft tbody, #lkxwwsorft tfoot, #lkxwwsorft tr, #lkxwwsorft td, #lkxwwsorft th {
 border-style: none;
 }
-#czrwlitzeo p {
+#lkxwwsorft p {
 margin: 0;
 padding: 0;
 }
-#czrwlitzeo .gt_table {
+#lkxwwsorft .gt_table {
 display: table;
 border-collapse: collapse;
 line-height: normal;
@@ -2492,11 +2497,11 @@ border-left-style: none;
 border-left-width: 2px;
 border-left-color: #D3D3D3;
 }
-#czrwlitzeo .gt_caption {
+#lkxwwsorft .gt_caption {
 padding-top: 4px;
 padding-bottom: 4px;
 }
-#czrwlitzeo .gt_title {
+#lkxwwsorft .gt_title {
 color: #333333;
 font-size: 125%;
 font-weight: initial;
@@ -2507,7 +2512,7 @@ padding-right: 5px;
 border-bottom-color: #FFFFFF;
 border-bottom-width: 0;
 }
-#czrwlitzeo .gt_subtitle {
+#lkxwwsorft .gt_subtitle {
 color: #333333;
 font-size: 85%;
 font-weight: initial;
@@ -2518,7 +2523,7 @@ padding-right: 5px;
 border-top-color: #FFFFFF;
 border-top-width: 0;
 }
-#czrwlitzeo .gt_heading {
+#lkxwwsorft .gt_heading {
 background-color: #FFFFFF;
 text-align: center;
 border-bottom-color: #FFFFFF;
@@ -2529,12 +2534,12 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#czrwlitzeo .gt_bottom_border {
+#lkxwwsorft .gt_bottom_border {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#czrwlitzeo .gt_col_headings {
+#lkxwwsorft .gt_col_headings {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -2548,7 +2553,7 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#czrwlitzeo .gt_col_heading {
+#lkxwwsorft .gt_col_heading {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -2567,7 +2572,7 @@ padding-left: 5px;
 padding-right: 5px;
 overflow-x: hidden;
 }
-#czrwlitzeo .gt_column_spanner_outer {
+#lkxwwsorft .gt_column_spanner_outer {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -2578,13 +2583,13 @@ padding-bottom: 0;
 padding-left: 4px;
 padding-right: 4px;
 }
-#czrwlitzeo .gt_column_spanner_outer:first-child {
+#lkxwwsorft .gt_column_spanner_outer:first-child {
 padding-left: 0;
 }
-#czrwlitzeo .gt_column_spanner_outer:last-child {
+#lkxwwsorft .gt_column_spanner_outer:last-child {
 padding-right: 0;
 }
-#czrwlitzeo .gt_column_spanner {
+#lkxwwsorft .gt_column_spanner {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
@@ -2595,10 +2600,10 @@ overflow-x: hidden;
 display: inline-block;
 width: 100%;
 }
-#czrwlitzeo .gt_spanner_row {
+#lkxwwsorft .gt_spanner_row {
 border-bottom-style: hidden;
 }
-#czrwlitzeo .gt_group_heading {
+#lkxwwsorft .gt_group_heading {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -2623,7 +2628,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 text-align: left;
 }
-#czrwlitzeo .gt_empty_group_heading {
+#lkxwwsorft .gt_empty_group_heading {
 padding: 0.5px;
 color: #333333;
 background-color: #FFFFFF;
@@ -2637,13 +2642,13 @@ border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 vertical-align: middle;
 }
-#czrwlitzeo .gt_from_md > :first-child {
+#lkxwwsorft .gt_from_md > :first-child {
 margin-top: 0;
 }
-#czrwlitzeo .gt_from_md > :last-child {
+#lkxwwsorft .gt_from_md > :last-child {
 margin-bottom: 0;
 }
-#czrwlitzeo .gt_row {
+#lkxwwsorft .gt_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -2661,7 +2666,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 overflow-x: hidden;
 }
-#czrwlitzeo .gt_stub {
+#lkxwwsorft .gt_stub {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -2673,7 +2678,7 @@ border-right-color: #D3D3D3;
 padding-left: 5px;
 padding-right: 5px;
 }
-#czrwlitzeo .gt_stub_row_group {
+#lkxwwsorft .gt_stub_row_group {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -2686,13 +2691,13 @@ padding-left: 5px;
 padding-right: 5px;
 vertical-align: top;
 }
-#czrwlitzeo .gt_row_group_first td {
+#lkxwwsorft .gt_row_group_first td {
 border-top-width: 2px;
 }
-#czrwlitzeo .gt_row_group_first th {
+#lkxwwsorft .gt_row_group_first th {
 border-top-width: 2px;
 }
-#czrwlitzeo .gt_summary_row {
+#lkxwwsorft .gt_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -2701,14 +2706,14 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#czrwlitzeo .gt_first_summary_row {
+#lkxwwsorft .gt_first_summary_row {
 border-top-style: solid;
 border-top-color: #D3D3D3;
 }
-#czrwlitzeo .gt_first_summary_row.thick {
+#lkxwwsorft .gt_first_summary_row.thick {
 border-top-width: 2px;
 }
-#czrwlitzeo .gt_last_summary_row {
+#lkxwwsorft .gt_last_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -2717,7 +2722,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#czrwlitzeo .gt_grand_summary_row {
+#lkxwwsorft .gt_grand_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -2726,7 +2731,7 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#czrwlitzeo .gt_first_grand_summary_row {
+#lkxwwsorft .gt_first_grand_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -2735,7 +2740,7 @@ border-top-style: double;
 border-top-width: 6px;
 border-top-color: #D3D3D3;
 }
-#czrwlitzeo .gt_last_grand_summary_row_top {
+#lkxwwsorft .gt_last_grand_summary_row_top {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -2744,10 +2749,10 @@ border-bottom-style: double;
 border-bottom-width: 6px;
 border-bottom-color: #D3D3D3;
 }
-#czrwlitzeo .gt_striped {
+#lkxwwsorft .gt_striped {
 background-color: rgba(128, 128, 128, 0.05);
 }
-#czrwlitzeo .gt_table_body {
+#lkxwwsorft .gt_table_body {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -2755,7 +2760,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#czrwlitzeo .gt_footnotes {
+#lkxwwsorft .gt_footnotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -2768,7 +2773,7 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#czrwlitzeo .gt_footnote {
+#lkxwwsorft .gt_footnote {
 margin: 0px;
 font-size: 90%;
 padding-top: 4px;
@@ -2776,7 +2781,7 @@ padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#czrwlitzeo .gt_sourcenotes {
+#lkxwwsorft .gt_sourcenotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -2789,64 +2794,64 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#czrwlitzeo .gt_sourcenote {
+#lkxwwsorft .gt_sourcenote {
 font-size: 90%;
 padding-top: 4px;
 padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#czrwlitzeo .gt_left {
+#lkxwwsorft .gt_left {
 text-align: left;
 }
-#czrwlitzeo .gt_center {
+#lkxwwsorft .gt_center {
 text-align: center;
 }
-#czrwlitzeo .gt_right {
+#lkxwwsorft .gt_right {
 text-align: right;
 font-variant-numeric: tabular-nums;
 }
-#czrwlitzeo .gt_font_normal {
+#lkxwwsorft .gt_font_normal {
 font-weight: normal;
 }
-#czrwlitzeo .gt_font_bold {
+#lkxwwsorft .gt_font_bold {
 font-weight: bold;
 }
-#czrwlitzeo .gt_font_italic {
+#lkxwwsorft .gt_font_italic {
 font-style: italic;
 }
-#czrwlitzeo .gt_super {
+#lkxwwsorft .gt_super {
 font-size: 65%;
 }
-#czrwlitzeo .gt_footnote_marks {
+#lkxwwsorft .gt_footnote_marks {
 font-size: 75%;
 vertical-align: 0.4em;
 position: initial;
 }
-#czrwlitzeo .gt_asterisk {
+#lkxwwsorft .gt_asterisk {
 font-size: 100%;
 vertical-align: 0;
 }
-#czrwlitzeo .gt_indent_1 {
+#lkxwwsorft .gt_indent_1 {
 text-indent: 5px;
 }
-#czrwlitzeo .gt_indent_2 {
+#lkxwwsorft .gt_indent_2 {
 text-indent: 10px;
 }
-#czrwlitzeo .gt_indent_3 {
+#lkxwwsorft .gt_indent_3 {
 text-indent: 15px;
 }
-#czrwlitzeo .gt_indent_4 {
+#lkxwwsorft .gt_indent_4 {
 text-indent: 20px;
 }
-#czrwlitzeo .gt_indent_5 {
+#lkxwwsorft .gt_indent_5 {
 text-indent: 25px;
 }
-#czrwlitzeo .katex-display {
+#lkxwwsorft .katex-display {
 display: inline-flex !important;
 margin-bottom: 0.75em !important;
 }
-#czrwlitzeo div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#lkxwwsorft div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
 height: 0px !important;
 }
 </style>
@@ -3193,8 +3198,102 @@ F-statistic: 49.77 on 1 and 32 DF,  p-value: 5.333e-08</code></pre>
 <pre><code>[1] 0.489</code></pre>
 </div>
 </div>
+</section>
+<section id="leave-one-out-cross-validation" class="level2">
+<h2 class="anchored" data-anchor-id="leave-one-out-cross-validation">Leave-one-out Cross-validation</h2>
+<p>Leave-one-out cross-validation (LOOCV) is performed by selecting each trial in a data set in turns and using it as the validation set while using the rest <span class="math inline">\((n-1)\)</span> of the trials as the training set. This is repeated <span class="math inline">\(n\)</span> times. For each iteration in the LOOCV procedure, models are ﬁtted to the training set, and the dependent variable of interest (target endpoint) is predicted on the basis of the explanatory variable(s) in the models (surrogate endpoint) in the validation set.</p>
+<p>Three different criteria were used to assess the performance of each model for each iteration of the LOOCV. For each criterion, the median and range of the output values were used to assess model performance.</p>
+<section id="proportion-of-actual-values-from-the-validation-set-that-lies-within-the-95-prediction-interval-from-the-training-set" class="level3">
+<h3 class="anchored" data-anchor-id="proportion-of-actual-values-from-the-validation-set-that-lies-within-the-95-prediction-interval-from-the-training-set">Proportion of actual values from the validation set that lies within the 95% prediction interval from the training set</h3>
+<p>The steps are as follows:</p>
+<ul>
+<li>Leave out <span class="math inline">\(i-\)</span>th study and train the model with remaining <span class="math inline">\(n - 1\)</span> studies.</li>
+<li>Obtain <span class="math inline">\(95\%\)</span> prediction interval for the treatment effect on target endpoint (OS) in the left-out trial, using its surrogate endpoint (PFS) treatment effect.</li>
+<li>Simulate <span class="math inline">\(1000\)</span> OS treatment effects based on normal distribution using the observed OS treatment effect and its standard error from the left-out trial.</li>
+<li>Calculate the proportion of the <span class="math inline">\(1000\)</span> simulated values falling within the prediction interval, <span class="math inline">\(p_i\)</span>.</li>
+<li>Repeat these steps for all the studies, leaving out one at a time.</li>
+<li>Calculate <span class="math inline">\(median(p_1, \ldots, p_n)\)</span> and <span class="math inline">\(range(p_1, \ldots, p_n)\)</span>.</li>
+</ul>
+<div class="cell">
+<details open class="code-fold">
+<summary>Show/Hide Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(df1)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>prop <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>absolute.difference <span class="ot">&lt;-</span> <span class="fu">c</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<details open class="code-fold">
+<summary>Show/Hide Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df1[<span class="sc">-</span>i,]</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(OS.ln.HR <span class="sc">~</span> PFS.ln.HR, <span class="at">weights =</span> weight, <span class="at">data =</span> df)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  new.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">PFS.ln.HR =</span> df1<span class="sc">$</span>PFS.ln.HR[i])</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  wlr.pi <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> new.data, <span class="at">interval =</span> <span class="st">&quot;prediction&quot;</span>, </span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>                               <span class="at">weight =</span> <span class="dv">1</span> <span class="sc">/</span> (<span class="fu">mean</span>(df<span class="sc">$</span>OS.se)<span class="sc">^</span><span class="dv">2</span>) ))</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for criterion 1</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  simulated.OS.ln.HR <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="at">mean =</span> df1<span class="sc">$</span>OS.ln.HR[i], <span class="at">sd =</span> df1<span class="sc">$</span>OS.se[i])</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>  prop[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>((simulated.OS.ln.HR <span class="sc">&gt;=</span> wlr.pi[,<span class="dv">2</span>] <span class="sc">&amp;</span> simulated.OS.ln.HR <span class="sc">&lt;=</span> wlr.pi[,<span class="dv">3</span>]))</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for criterion 2</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>  absolute.difference[i] <span class="ot">&lt;-</span> <span class="fu">abs</span>(wlr.pi<span class="sc">$</span>fit <span class="sc">-</span> df1<span class="sc">$</span>OS.ln.HR[i])</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<details open class="code-fold">
+<summary>Show/Hide Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>median.prop <span class="ot">&lt;-</span> <span class="fu">median</span>(prop)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>median.prop</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.916</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open class="code-fold">
+<summary>Show/Hide Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>range.prop <span class="ot">&lt;-</span> <span class="fu">range</span>(prop)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>range.prop</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.207 1.000</code></pre>
+</div>
+</div>
+</section>
+<section id="absolute-difference-between-mean-predicted-value-and-actual-value" class="level3">
+<h3 class="anchored" data-anchor-id="absolute-difference-between-mean-predicted-value-and-actual-value">Absolute difference between mean predicted value and actual value</h3>
+<p>The absolute difference between the actual log hazard ratio and the predicted log hazard ratio for OS for each trial left out will be recorded.</p>
+<div class="cell">
+<details open class="code-fold">
+<summary>Show/Hide Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>median.absolute.difference <span class="ot">&lt;-</span> <span class="fu">median</span>(absolute.difference)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>median.absolute.difference <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.143</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open class="code-fold">
+<summary>Show/Hide Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>range.absolute.difference <span class="ot">&lt;-</span> <span class="fu">range</span>(absolute.difference)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>range.absolute.difference <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.000 0.521</code></pre>
+</div>
+</div>
 <!-- -->
 
+</section>
 </section>
 
 </main>
@@ -3650,226 +3749,303 @@ F-statistic: 49.77 on 1 and 32 DF,  p-value: 5.333e-08</code></pre>
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;Frequentist Weighted Linear Regression&quot;</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> &quot;Ananda Biswas&quot;</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> &quot;`r Sys.Date()`&quot;</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> </span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="co">    embed-resources: true</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 3</span></span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: right</span></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a><span class="co">    code-summary: &quot;Show/Hide Code&quot;</span></span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a><span class="an">knitr:</span></span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a><span class="co">  opts_chunk:</span></span>
-<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a><span class="co">    fig.path: &quot;figures/&quot;</span></span>
-<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a><span class="fu">## Required Libraries</span></span>
-<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a><span class="in">```{r message=FALSE, warning=FALSE}</span></span>
-<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
-<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wCorr)</span>
-<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DescTools)</span>
-<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
-<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span>
-<span id="cb30-30"><a href="#cb30-30" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-31"><a href="#cb30-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-32"><a href="#cb30-32" aria-hidden="true" tabindex="-1"></a><span class="fu">## Loading Data</span></span>
-<span id="cb30-33"><a href="#cb30-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-36"><a href="#cb30-36" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-37"><a href="#cb30-37" aria-hidden="true" tabindex="-1"></a><span class="co">#| include: false</span></span>
-<span id="cb30-38"><a href="#cb30-38" aria-hidden="true" tabindex="-1"></a>data.path <span class="ot">&lt;-</span> <span class="st">&#39;https://github.com/ananda-ebm/datasets/raw/refs/heads/master/NSCLC.xlsx&#39;</span></span>
-<span id="cb30-39"><a href="#cb30-39" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-40"><a href="#cb30-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-43"><a href="#cb30-43" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-44"><a href="#cb30-44" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">read.xlsx</span>(data.path, <span class="at">sheet =</span> <span class="dv">1</span>)</span>
-<span id="cb30-45"><a href="#cb30-45" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-46"><a href="#cb30-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-47"><a href="#cb30-47" aria-hidden="true" tabindex="-1"></a><span class="fu">## Initial Sanity Checks</span></span>
-<span id="cb30-48"><a href="#cb30-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-51"><a href="#cb30-51" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-52"><a href="#cb30-52" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df1)</span>
-<span id="cb30-53"><a href="#cb30-53" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-54"><a href="#cb30-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-57"><a href="#cb30-57" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-58"><a href="#cb30-58" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(df1)</span>
-<span id="cb30-59"><a href="#cb30-59" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-60"><a href="#cb30-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-61"><a href="#cb30-61" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, results=&#39;asis&#39;}</span></span>
-<span id="cb30-62"><a href="#cb30-62" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb30-63"><a href="#cb30-63" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: &quot;Snapshot of NSCLC Data&quot;</span></span>
-<span id="cb30-64"><a href="#cb30-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-65"><a href="#cb30-65" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df1) <span class="sc">|&gt;</span></span>
-<span id="cb30-66"><a href="#cb30-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span></span>
-<span id="cb30-67"><a href="#cb30-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_options</span>(</span>
-<span id="cb30-68"><a href="#cb30-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">data_row.padding =</span> <span class="fu">px</span>(<span class="dv">8</span>),</span>
-<span id="cb30-69"><a href="#cb30-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">column_labels.padding =</span> <span class="fu">px</span>(<span class="dv">10</span>)</span>
-<span id="cb30-70"><a href="#cb30-70" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb30-71"><a href="#cb30-71" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-72"><a href="#cb30-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-73"><a href="#cb30-73" aria-hidden="true" tabindex="-1"></a><span class="fu">## Generating Treatment Effect on Surrogate Endpoint in New Trials</span></span>
-<span id="cb30-74"><a href="#cb30-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-77"><a href="#cb30-77" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-78"><a href="#cb30-78" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(df1<span class="sc">$</span>HR.PFS)</span>
-<span id="cb30-79"><a href="#cb30-79" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-80"><a href="#cb30-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-83"><a href="#cb30-83" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-84"><a href="#cb30-84" aria-hidden="true" tabindex="-1"></a><span class="co"># Suppose 1000 new trials reporting TE on surrogate endpoint only</span></span>
-<span id="cb30-85"><a href="#cb30-85" aria-hidden="true" tabindex="-1"></a>new.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">PFS.ln.HR =</span> <span class="fu">log</span>(<span class="fu">seq</span>(<span class="fl">0.2</span>,<span class="dv">3</span>, <span class="at">length=</span><span class="dv">1000</span>)))</span>
-<span id="cb30-86"><a href="#cb30-86" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-87"><a href="#cb30-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-88"><a href="#cb30-88" aria-hidden="true" tabindex="-1"></a><span class="fu">## Some Derived Quantities</span></span>
-<span id="cb30-89"><a href="#cb30-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-90"><a href="#cb30-90" aria-hidden="true" tabindex="-1"></a>The weights used in this analysis were the inverse variance $1/{\text{SE}^2}$ of the log HR of OS.</span>
-<span id="cb30-91"><a href="#cb30-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-94"><a href="#cb30-94" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-95"><a href="#cb30-95" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>weight <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">/</span> (df1<span class="sc">$</span>OS.se)<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb30-96"><a href="#cb30-96" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-97"><a href="#cb30-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-98"><a href="#cb30-98" aria-hidden="true" tabindex="-1"></a>The weighted correlation coefficient $(\rho)$ was estimated using the Pearson weighted correlation of the target and the surrogate endpoints.</span>
-<span id="cb30-99"><a href="#cb30-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-102"><a href="#cb30-102" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-103"><a href="#cb30-103" aria-hidden="true" tabindex="-1"></a>rho <span class="ot">&lt;-</span> <span class="fu">weightedCorr</span>(df1<span class="sc">$</span>OS.ln.HR, df1<span class="sc">$</span>PFS.ln.HR,</span>
-<span id="cb30-104"><a href="#cb30-104" aria-hidden="true" tabindex="-1"></a>             <span class="at">method =</span> <span class="st">&quot;Pearson&quot;</span>,</span>
-<span id="cb30-105"><a href="#cb30-105" aria-hidden="true" tabindex="-1"></a>             <span class="at">weights =</span> <span class="dv">1</span> <span class="sc">/</span> df1<span class="sc">$</span>OS.se<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb30-106"><a href="#cb30-106" aria-hidden="true" tabindex="-1"></a>rho</span>
-<span id="cb30-107"><a href="#cb30-107" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-108"><a href="#cb30-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-109"><a href="#cb30-109" aria-hidden="true" tabindex="-1"></a>Confidence intervals around Pearson $\rho$ are not symmetrical. Therefore, a Fisher&#39;s $z-$transformation was applied to estimate the $95\%$ confidence intervals, which is conducted using the <span class="in">`CorCI()`</span> function in the <span class="in">`DescTools`</span> package.</span>
-<span id="cb30-110"><a href="#cb30-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-113"><a href="#cb30-113" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-114"><a href="#cb30-114" aria-hidden="true" tabindex="-1"></a>effective.n <span class="ot">&lt;-</span> <span class="fu">sum</span>(df1<span class="sc">$</span>weight)<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> <span class="fu">sum</span>(df1<span class="sc">$</span>weight<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb30-115"><a href="#cb30-115" aria-hidden="true" tabindex="-1"></a>effective.n <span class="ot">&lt;-</span> <span class="fu">round</span>(effective.n, <span class="dv">1</span>)</span>
-<span id="cb30-116"><a href="#cb30-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-117"><a href="#cb30-117" aria-hidden="true" tabindex="-1"></a>effective.n</span>
-<span id="cb30-118"><a href="#cb30-118" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-119"><a href="#cb30-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-122"><a href="#cb30-122" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-123"><a href="#cb30-123" aria-hidden="true" tabindex="-1"></a><span class="fu">CorCI</span>(<span class="at">rho =</span> rho, </span>
-<span id="cb30-124"><a href="#cb30-124" aria-hidden="true" tabindex="-1"></a>      <span class="at">n =</span> effective.n, </span>
-<span id="cb30-125"><a href="#cb30-125" aria-hidden="true" tabindex="-1"></a>      <span class="at">conf.level =</span> <span class="fl">0.95</span>, <span class="at">alternative =</span> <span class="st">&quot;two.sided&quot;</span>)</span>
-<span id="cb30-126"><a href="#cb30-126" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-127"><a href="#cb30-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-128"><a href="#cb30-128" aria-hidden="true" tabindex="-1"></a><span class="fu">## Model</span></span>
-<span id="cb30-129"><a href="#cb30-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-130"><a href="#cb30-130" aria-hidden="true" tabindex="-1"></a>The weighted linear regression (WLR) model is given by</span>
-<span id="cb30-131"><a href="#cb30-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-132"><a href="#cb30-132" aria-hidden="true" tabindex="-1"></a>$$\theta_i = \alpha + \beta\gamma_i + \varepsilon_i,</span>
-<span id="cb30-133"><a href="#cb30-133" aria-hidden="true" tabindex="-1"></a>\qquad i = 1,\ldots,n,$$</span>
-<span id="cb30-134"><a href="#cb30-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-135"><a href="#cb30-135" aria-hidden="true" tabindex="-1"></a>where</span>
-<span id="cb30-136"><a href="#cb30-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-137"><a href="#cb30-137" aria-hidden="true" tabindex="-1"></a>$$\varepsilon_i \sim</span>
-<span id="cb30-138"><a href="#cb30-138" aria-hidden="true" tabindex="-1"></a>N\left(0,\sigma_{\theta_i}^2\right); </span>
-<span id="cb30-139"><a href="#cb30-139" aria-hidden="true" tabindex="-1"></a>\qquad </span>
-<span id="cb30-140"><a href="#cb30-140" aria-hidden="true" tabindex="-1"></a>w_i = \dfrac{1}{\sigma_{\theta_i}^2}.$$</span>
-<span id="cb30-141"><a href="#cb30-141" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-142"><a href="#cb30-142" aria-hidden="true" tabindex="-1"></a>The parameters $\alpha$ and $\beta$ are estimated by minimizing the weighted sum of squared residuals:</span>
-<span id="cb30-143"><a href="#cb30-143" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-144"><a href="#cb30-144" aria-hidden="true" tabindex="-1"></a>$$\underset{\alpha,\beta}{\operatorname{minimize}}</span>
-<span id="cb30-145"><a href="#cb30-145" aria-hidden="true" tabindex="-1"></a>\sum_{i=1}^{n}</span>
-<span id="cb30-146"><a href="#cb30-146" aria-hidden="true" tabindex="-1"></a>w_i</span>
-<span id="cb30-147"><a href="#cb30-147" aria-hidden="true" tabindex="-1"></a>\left(</span>
-<span id="cb30-148"><a href="#cb30-148" aria-hidden="true" tabindex="-1"></a>\theta_i-\alpha-\beta\gamma_i</span>
-<span id="cb30-149"><a href="#cb30-149" aria-hidden="true" tabindex="-1"></a>\right)^2.$$ Here:</span>
-<span id="cb30-150"><a href="#cb30-150" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-151"><a href="#cb30-151" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\theta_i$ is the treatment effect on the final endpoint in study $i$;</span>
-<span id="cb30-152"><a href="#cb30-152" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\gamma_i$ is the treatment effect on the surrogate endpoint in study $i$;</span>
-<span id="cb30-153"><a href="#cb30-153" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\alpha$ is the intercept;</span>
-<span id="cb30-154"><a href="#cb30-154" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\beta$ is the regression coefficient measuring the association between treatment effects on the surrogate and final endpoints; and</span>
-<span id="cb30-155"><a href="#cb30-155" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$w_i$ is the weight assigned to study $i$.</span>
-<span id="cb30-156"><a href="#cb30-156" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-157"><a href="#cb30-157" aria-hidden="true" tabindex="-1"></a><span class="fu">## Model Fitting</span></span>
-<span id="cb30-158"><a href="#cb30-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-159"><a href="#cb30-159" aria-hidden="true" tabindex="-1"></a>Frequentist weighted linear regression is arguably the *simplest* approach to a surrogate analysis. A weighted linear regression model was used to relate the target endpoint (log HRs of OS) to the surrogate endpoint (log HRs of PFS). The data were *weighted* by the inverse of the variance of the log HRs of the target variable.</span>
-<span id="cb30-160"><a href="#cb30-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-163"><a href="#cb30-163" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-164"><a href="#cb30-164" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(OS.ln.HR <span class="sc">~</span> PFS.ln.HR, <span class="at">weights =</span> weight, <span class="at">data =</span> df1)</span>
-<span id="cb30-165"><a href="#cb30-165" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span>
-<span id="cb30-166"><a href="#cb30-166" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-167"><a href="#cb30-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-170"><a href="#cb30-170" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-171"><a href="#cb30-171" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">summary</span>(fit1)<span class="sc">$</span>r.squared)</span>
-<span id="cb30-172"><a href="#cb30-172" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-173"><a href="#cb30-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-174"><a href="#cb30-174" aria-hidden="true" tabindex="-1"></a><span class="fu">## Prediction of TE on Clinical Outcome in New Trials</span></span>
-<span id="cb30-175"><a href="#cb30-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-176"><a href="#cb30-176" aria-hidden="true" tabindex="-1"></a><span class="fu">### Confidence Intervals</span></span>
-<span id="cb30-177"><a href="#cb30-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-180"><a href="#cb30-180" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-181"><a href="#cb30-181" aria-hidden="true" tabindex="-1"></a>wlr.ci <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">predict</span>(fit1, <span class="at">newdata =</span> new.data, <span class="at">interval =</span> <span class="st">&quot;confidence&quot;</span>))</span>
-<span id="cb30-182"><a href="#cb30-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-183"><a href="#cb30-183" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(wlr.ci)</span>
-<span id="cb30-184"><a href="#cb30-184" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-185"><a href="#cb30-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-186"><a href="#cb30-186" aria-hidden="true" tabindex="-1"></a><span class="fu">### Prediction Intervals</span></span>
-<span id="cb30-187"><a href="#cb30-187" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-190"><a href="#cb30-190" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-191"><a href="#cb30-191" aria-hidden="true" tabindex="-1"></a>wlr.pi <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">predict</span>(fit1, <span class="at">newdata =</span> new.data, <span class="at">interval =</span> <span class="st">&quot;prediction&quot;</span>,</span>
-<span id="cb30-192"><a href="#cb30-192" aria-hidden="true" tabindex="-1"></a>                  <span class="at">weight =</span> <span class="dv">1</span> <span class="sc">/</span> (<span class="fu">mean</span>(df1<span class="sc">$</span>OS.se)<span class="sc">^</span><span class="dv">2</span>) ))</span>
-<span id="cb30-193"><a href="#cb30-193" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-194"><a href="#cb30-194" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(wlr.pi)</span>
-<span id="cb30-195"><a href="#cb30-195" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-196"><a href="#cb30-196" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-197"><a href="#cb30-197" aria-hidden="true" tabindex="-1"></a><span class="fu">## Trial-level Association Plot</span></span>
-<span id="cb30-198"><a href="#cb30-198" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-201"><a href="#cb30-201" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-202"><a href="#cb30-202" aria-hidden="true" tabindex="-1"></a>wlr.pred.df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">HR.OS =</span> <span class="fu">exp</span>(wlr.ci[,<span class="dv">1</span>]),</span>
-<span id="cb30-203"><a href="#cb30-203" aria-hidden="true" tabindex="-1"></a>                        <span class="at">HR.PFS =</span> <span class="fu">exp</span>(new.data<span class="sc">$</span>PFS.ln.HR),</span>
-<span id="cb30-204"><a href="#cb30-204" aria-hidden="true" tabindex="-1"></a>                        <span class="at">lower.ci =</span> <span class="fu">exp</span>(wlr.ci[,<span class="dv">2</span>]),</span>
-<span id="cb30-205"><a href="#cb30-205" aria-hidden="true" tabindex="-1"></a>                        <span class="at">upper.ci =</span> <span class="fu">exp</span>(wlr.ci[,<span class="dv">3</span>]),</span>
-<span id="cb30-206"><a href="#cb30-206" aria-hidden="true" tabindex="-1"></a>                        <span class="at">lower.pi =</span> <span class="fu">exp</span>(wlr.pi[,<span class="dv">2</span>]),</span>
-<span id="cb30-207"><a href="#cb30-207" aria-hidden="true" tabindex="-1"></a>                        <span class="at">upper.pi =</span> <span class="fu">exp</span>(wlr.pi[,<span class="dv">3</span>]))</span>
-<span id="cb30-208"><a href="#cb30-208" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-209"><a href="#cb30-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-212"><a href="#cb30-212" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-213"><a href="#cb30-213" aria-hidden="true" tabindex="-1"></a>wlr.association.plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df1, <span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">y =</span> HR.OS)) <span class="sc">+</span></span>
-<span id="cb30-214"><a href="#cb30-214" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">ymin =</span> lower.ci, <span class="at">ymax =</span> upper.ci), <span class="at">data =</span> wlr.pred.df, <span class="at">stat =</span> <span class="st">&#39;identity&#39;</span>, <span class="at">fill =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb30-215"><a href="#cb30-215" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">ymin =</span> lower.pi, <span class="at">ymax =</span> upper.pi), <span class="at">data =</span> wlr.pred.df, <span class="at">stat =</span> <span class="st">&#39;identity&#39;</span>, <span class="at">fill =</span> <span class="st">&quot;lightblue&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb30-216"><a href="#cb30-216" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log&quot;</span>, </span>
-<span id="cb30-217"><a href="#cb30-217" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits =</span> <span class="fu">c</span>(<span class="fu">min</span>(df1<span class="sc">$</span>HR.PFS)<span class="sc">*</span><span class="fl">0.9</span>, <span class="fu">max</span>(df1<span class="sc">$</span>HR.PFS)<span class="sc">*</span><span class="fl">1.1</span>),</span>
-<span id="cb30-218"><a href="#cb30-218" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>,<span class="fl">0.4</span>,<span class="fl">0.5</span>,<span class="fl">0.7</span>,<span class="dv">1</span>,<span class="fl">1.2</span>,<span class="fl">1.5</span>,<span class="dv">2</span>,<span class="dv">3</span>),</span>
-<span id="cb30-219"><a href="#cb30-219" aria-hidden="true" tabindex="-1"></a>                     <span class="at">expand =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>)) <span class="sc">+</span></span>
-<span id="cb30-220"><a href="#cb30-220" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log&quot;</span>,</span>
-<span id="cb30-221"><a href="#cb30-221" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits=</span><span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">3.1</span>),</span>
-<span id="cb30-222"><a href="#cb30-222" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>,<span class="fl">0.4</span>,<span class="fl">0.5</span>,<span class="fl">0.7</span>,<span class="dv">1</span>,<span class="fl">1.2</span>,<span class="fl">1.5</span>,<span class="dv">2</span>,<span class="dv">3</span>),</span>
-<span id="cb30-223"><a href="#cb30-223" aria-hidden="true" tabindex="-1"></a>                     <span class="at">expand =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>)) <span class="sc">+</span></span>
-<span id="cb30-224"><a href="#cb30-224" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">y =</span> HR.OS), <span class="at">data =</span> wlr.pred.df, <span class="at">stat =</span> <span class="st">&#39;identity&#39;</span>) <span class="sc">+</span></span>
-<span id="cb30-225"><a href="#cb30-225" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">y =</span> HR.OS, <span class="at">size =</span> weight), </span>
-<span id="cb30-226"><a href="#cb30-226" aria-hidden="true" tabindex="-1"></a>             <span class="at">col =</span> <span class="st">&quot;gray30&quot;</span>, <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">&quot;orange&quot;</span>) <span class="sc">+</span></span>
-<span id="cb30-227"><a href="#cb30-227" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">&#39;dashed&#39;</span>) <span class="sc">+</span></span>
-<span id="cb30-228"><a href="#cb30-228" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Progression-free survival hazard ratio (log scale)&quot;</span>)<span class="sc">+</span> </span>
-<span id="cb30-229"><a href="#cb30-229" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">&quot;Overall survival hazard ratio&quot;</span> , <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="st">&quot;\U00B1&quot;</span>, <span class="st">&quot;95% confidence and prediction intervals (log scale)&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb30-230"><a href="#cb30-230" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Weighted Linear Regression&quot;</span>) <span class="sc">+</span></span>
-<span id="cb30-231"><a href="#cb30-231" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb30-232"><a href="#cb30-232" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_hue</span>(<span class="st">&quot;trial&quot;</span>) <span class="sc">+</span></span>
-<span id="cb30-233"><a href="#cb30-233" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
-<span id="cb30-234"><a href="#cb30-234" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-235"><a href="#cb30-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-236"><a href="#cb30-236" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.width=8, fig.height=6, out.width=&quot;100%&quot;}</span></span>
-<span id="cb30-237"><a href="#cb30-237" aria-hidden="true" tabindex="-1"></a>wlr.association.plot</span>
-<span id="cb30-238"><a href="#cb30-238" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb30-239"><a href="#cb30-239" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-240"><a href="#cb30-240" aria-hidden="true" tabindex="-1"></a><span class="fu">## Surrogate Threshold Effect</span></span>
-<span id="cb30-241"><a href="#cb30-241" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-242"><a href="#cb30-242" aria-hidden="true" tabindex="-1"></a>Surrogate Threshold Effect is defined as ***the minimum treatment effect on the surrogate necessary to predict a nonzero effect on the true endpoint*** in a future trial. $\log(HR) &lt; 0$ implies a *beneficial* treatment effect. So STE was computed as the intersection of the upper $95\%$ prediction interval with the horizontal line for no treatment effect (i.e., in which the HR for OS equals $1$ or $\log(HR) = 0$).</span>
-<span id="cb30-243"><a href="#cb30-243" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-246"><a href="#cb30-246" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb30-247"><a href="#cb30-247" aria-hidden="true" tabindex="-1"></a>candidate.HR.PFS <span class="ot">&lt;-</span> wlr.pred.df <span class="sc">%&gt;%</span></span>
-<span id="cb30-248"><a href="#cb30-248" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(upper.pi <span class="sc">&lt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb30-249"><a href="#cb30-249" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(HR.PFS)</span>
-<span id="cb30-250"><a href="#cb30-250" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-251"><a href="#cb30-251" aria-hidden="true" tabindex="-1"></a>WLR.STE <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">max</span>(candidate.HR.PFS), <span class="at">digits =</span> <span class="dv">3</span>)</span>
-<span id="cb30-252"><a href="#cb30-252" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-253"><a href="#cb30-253" aria-hidden="true" tabindex="-1"></a>WLR.STE</span>
-<span id="cb30-254"><a href="#cb30-254" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;Frequentist Weighted Linear Regression&quot;</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> &quot;Ananda Biswas&quot;</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> &quot;`r Sys.Date()`&quot;</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> </span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="co">    embed-resources: true</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 3</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: right</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a><span class="co">    code-summary: &quot;Show/Hide Code&quot;</span></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a><span class="an">knitr:</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a><span class="co">  opts_chunk:</span></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a><span class="co">    fig.path: &quot;figures/&quot;</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a><span class="fu">## Required Libraries</span></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a><span class="in">```{r message=FALSE, warning=FALSE}</span></span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wCorr)</span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DescTools)</span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-32"><a href="#cb40-32" aria-hidden="true" tabindex="-1"></a><span class="fu">## Loading Data</span></span>
+<span id="cb40-33"><a href="#cb40-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-36"><a href="#cb40-36" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-37"><a href="#cb40-37" aria-hidden="true" tabindex="-1"></a><span class="co">#| include: false</span></span>
+<span id="cb40-38"><a href="#cb40-38" aria-hidden="true" tabindex="-1"></a>data.path <span class="ot">&lt;-</span> <span class="st">&#39;https://github.com/ananda-ebm/datasets/raw/refs/heads/master/NSCLC.xlsx&#39;</span></span>
+<span id="cb40-39"><a href="#cb40-39" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-40"><a href="#cb40-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-43"><a href="#cb40-43" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-44"><a href="#cb40-44" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">read.xlsx</span>(data.path, <span class="at">sheet =</span> <span class="dv">1</span>)</span>
+<span id="cb40-45"><a href="#cb40-45" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-46"><a href="#cb40-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-47"><a href="#cb40-47" aria-hidden="true" tabindex="-1"></a><span class="fu">## Initial Sanity Checks</span></span>
+<span id="cb40-48"><a href="#cb40-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-51"><a href="#cb40-51" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-52"><a href="#cb40-52" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df1)</span>
+<span id="cb40-53"><a href="#cb40-53" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-54"><a href="#cb40-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-57"><a href="#cb40-57" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-58"><a href="#cb40-58" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(df1)</span>
+<span id="cb40-59"><a href="#cb40-59" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-60"><a href="#cb40-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-61"><a href="#cb40-61" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, results=&#39;asis&#39;}</span></span>
+<span id="cb40-62"><a href="#cb40-62" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb40-63"><a href="#cb40-63" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: &quot;Snapshot of NSCLC Data&quot;</span></span>
+<span id="cb40-64"><a href="#cb40-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-65"><a href="#cb40-65" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df1) <span class="sc">|&gt;</span></span>
+<span id="cb40-66"><a href="#cb40-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span></span>
+<span id="cb40-67"><a href="#cb40-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_options</span>(</span>
+<span id="cb40-68"><a href="#cb40-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">data_row.padding =</span> <span class="fu">px</span>(<span class="dv">8</span>),</span>
+<span id="cb40-69"><a href="#cb40-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">column_labels.padding =</span> <span class="fu">px</span>(<span class="dv">10</span>)</span>
+<span id="cb40-70"><a href="#cb40-70" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-71"><a href="#cb40-71" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-72"><a href="#cb40-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-73"><a href="#cb40-73" aria-hidden="true" tabindex="-1"></a><span class="fu">## Generating Treatment Effect on Surrogate Endpoint in New Trials</span></span>
+<span id="cb40-74"><a href="#cb40-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-77"><a href="#cb40-77" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-78"><a href="#cb40-78" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(df1<span class="sc">$</span>HR.PFS)</span>
+<span id="cb40-79"><a href="#cb40-79" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-80"><a href="#cb40-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-83"><a href="#cb40-83" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-84"><a href="#cb40-84" aria-hidden="true" tabindex="-1"></a><span class="co"># Suppose 1000 new trials reporting TE on surrogate endpoint only</span></span>
+<span id="cb40-85"><a href="#cb40-85" aria-hidden="true" tabindex="-1"></a>new.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">PFS.ln.HR =</span> <span class="fu">log</span>(<span class="fu">seq</span>(<span class="fl">0.2</span>,<span class="dv">3</span>, <span class="at">length=</span><span class="dv">1000</span>)))</span>
+<span id="cb40-86"><a href="#cb40-86" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-87"><a href="#cb40-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-88"><a href="#cb40-88" aria-hidden="true" tabindex="-1"></a><span class="fu">## Some Derived Quantities</span></span>
+<span id="cb40-89"><a href="#cb40-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-90"><a href="#cb40-90" aria-hidden="true" tabindex="-1"></a>The weights used in this analysis were the inverse variance $1/{\text{SE}^2}$ of the log HR of OS.</span>
+<span id="cb40-91"><a href="#cb40-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-94"><a href="#cb40-94" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-95"><a href="#cb40-95" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>weight <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">/</span> (df1<span class="sc">$</span>OS.se)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb40-96"><a href="#cb40-96" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-97"><a href="#cb40-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-98"><a href="#cb40-98" aria-hidden="true" tabindex="-1"></a>The weighted correlation coefficient $(\rho)$ was estimated using the Pearson weighted correlation of the target and the surrogate endpoints.</span>
+<span id="cb40-99"><a href="#cb40-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-102"><a href="#cb40-102" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-103"><a href="#cb40-103" aria-hidden="true" tabindex="-1"></a>rho <span class="ot">&lt;-</span> <span class="fu">weightedCorr</span>(df1<span class="sc">$</span>OS.ln.HR, df1<span class="sc">$</span>PFS.ln.HR,</span>
+<span id="cb40-104"><a href="#cb40-104" aria-hidden="true" tabindex="-1"></a>             <span class="at">method =</span> <span class="st">&quot;Pearson&quot;</span>,</span>
+<span id="cb40-105"><a href="#cb40-105" aria-hidden="true" tabindex="-1"></a>             <span class="at">weights =</span> <span class="dv">1</span> <span class="sc">/</span> df1<span class="sc">$</span>OS.se<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb40-106"><a href="#cb40-106" aria-hidden="true" tabindex="-1"></a>rho</span>
+<span id="cb40-107"><a href="#cb40-107" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-108"><a href="#cb40-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-109"><a href="#cb40-109" aria-hidden="true" tabindex="-1"></a>Confidence intervals around Pearson $\rho$ are not symmetrical. Therefore, a Fisher&#39;s $z-$transformation was applied to estimate the $95\%$ confidence intervals, which is conducted using the <span class="in">`CorCI()`</span> function in the <span class="in">`DescTools`</span> package.</span>
+<span id="cb40-110"><a href="#cb40-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-113"><a href="#cb40-113" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-114"><a href="#cb40-114" aria-hidden="true" tabindex="-1"></a>effective.n <span class="ot">&lt;-</span> <span class="fu">sum</span>(df1<span class="sc">$</span>weight)<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> <span class="fu">sum</span>(df1<span class="sc">$</span>weight<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb40-115"><a href="#cb40-115" aria-hidden="true" tabindex="-1"></a>effective.n <span class="ot">&lt;-</span> <span class="fu">round</span>(effective.n, <span class="dv">1</span>)</span>
+<span id="cb40-116"><a href="#cb40-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-117"><a href="#cb40-117" aria-hidden="true" tabindex="-1"></a>effective.n</span>
+<span id="cb40-118"><a href="#cb40-118" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-119"><a href="#cb40-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-122"><a href="#cb40-122" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-123"><a href="#cb40-123" aria-hidden="true" tabindex="-1"></a><span class="fu">CorCI</span>(<span class="at">rho =</span> rho, </span>
+<span id="cb40-124"><a href="#cb40-124" aria-hidden="true" tabindex="-1"></a>      <span class="at">n =</span> effective.n, </span>
+<span id="cb40-125"><a href="#cb40-125" aria-hidden="true" tabindex="-1"></a>      <span class="at">conf.level =</span> <span class="fl">0.95</span>, <span class="at">alternative =</span> <span class="st">&quot;two.sided&quot;</span>)</span>
+<span id="cb40-126"><a href="#cb40-126" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-127"><a href="#cb40-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-128"><a href="#cb40-128" aria-hidden="true" tabindex="-1"></a><span class="fu">## Model</span></span>
+<span id="cb40-129"><a href="#cb40-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-130"><a href="#cb40-130" aria-hidden="true" tabindex="-1"></a>The weighted linear regression (WLR) model is given by</span>
+<span id="cb40-131"><a href="#cb40-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-132"><a href="#cb40-132" aria-hidden="true" tabindex="-1"></a>$$\theta_i = \alpha + \beta\gamma_i + \varepsilon_i,</span>
+<span id="cb40-133"><a href="#cb40-133" aria-hidden="true" tabindex="-1"></a>\qquad i = 1,\ldots,n,$$</span>
+<span id="cb40-134"><a href="#cb40-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-135"><a href="#cb40-135" aria-hidden="true" tabindex="-1"></a>where</span>
+<span id="cb40-136"><a href="#cb40-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-137"><a href="#cb40-137" aria-hidden="true" tabindex="-1"></a>$$\varepsilon_i \sim</span>
+<span id="cb40-138"><a href="#cb40-138" aria-hidden="true" tabindex="-1"></a>N\left(0,\sigma_{\theta_i}^2\right); </span>
+<span id="cb40-139"><a href="#cb40-139" aria-hidden="true" tabindex="-1"></a>\qquad </span>
+<span id="cb40-140"><a href="#cb40-140" aria-hidden="true" tabindex="-1"></a>w_i = \dfrac{1}{\sigma_{\theta_i}^2}.$$</span>
+<span id="cb40-141"><a href="#cb40-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-142"><a href="#cb40-142" aria-hidden="true" tabindex="-1"></a>The parameters $\alpha$ and $\beta$ are estimated by minimizing the weighted sum of squared residuals:</span>
+<span id="cb40-143"><a href="#cb40-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-144"><a href="#cb40-144" aria-hidden="true" tabindex="-1"></a>$$\underset{\alpha,\beta}{\operatorname{minimize}}</span>
+<span id="cb40-145"><a href="#cb40-145" aria-hidden="true" tabindex="-1"></a>\sum_{i=1}^{n}</span>
+<span id="cb40-146"><a href="#cb40-146" aria-hidden="true" tabindex="-1"></a>w_i</span>
+<span id="cb40-147"><a href="#cb40-147" aria-hidden="true" tabindex="-1"></a>\left(</span>
+<span id="cb40-148"><a href="#cb40-148" aria-hidden="true" tabindex="-1"></a>\theta_i-\alpha-\beta\gamma_i</span>
+<span id="cb40-149"><a href="#cb40-149" aria-hidden="true" tabindex="-1"></a>\right)^2.$$ Here:</span>
+<span id="cb40-150"><a href="#cb40-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-151"><a href="#cb40-151" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\theta_i$ is the treatment effect on the final endpoint in study $i$;</span>
+<span id="cb40-152"><a href="#cb40-152" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\gamma_i$ is the treatment effect on the surrogate endpoint in study $i$;</span>
+<span id="cb40-153"><a href="#cb40-153" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\alpha$ is the intercept;</span>
+<span id="cb40-154"><a href="#cb40-154" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\beta$ is the regression coefficient measuring the association between treatment effects on the surrogate and final endpoints; and</span>
+<span id="cb40-155"><a href="#cb40-155" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$w_i$ is the weight assigned to study $i$.</span>
+<span id="cb40-156"><a href="#cb40-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-157"><a href="#cb40-157" aria-hidden="true" tabindex="-1"></a><span class="fu">## Model Fitting</span></span>
+<span id="cb40-158"><a href="#cb40-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-159"><a href="#cb40-159" aria-hidden="true" tabindex="-1"></a>Frequentist weighted linear regression is arguably the *simplest* approach to a surrogate analysis. A weighted linear regression model was used to relate the target endpoint (log HRs of OS) to the surrogate endpoint (log HRs of PFS). The data were *weighted* by the inverse of the variance of the log HRs of the target variable.</span>
+<span id="cb40-160"><a href="#cb40-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-163"><a href="#cb40-163" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-164"><a href="#cb40-164" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(OS.ln.HR <span class="sc">~</span> PFS.ln.HR, <span class="at">weights =</span> weight, <span class="at">data =</span> df1)</span>
+<span id="cb40-165"><a href="#cb40-165" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span>
+<span id="cb40-166"><a href="#cb40-166" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-167"><a href="#cb40-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-170"><a href="#cb40-170" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-171"><a href="#cb40-171" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">summary</span>(fit1)<span class="sc">$</span>r.squared)</span>
+<span id="cb40-172"><a href="#cb40-172" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-173"><a href="#cb40-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-174"><a href="#cb40-174" aria-hidden="true" tabindex="-1"></a><span class="fu">## Prediction of TE on Clinical Outcome in New Trials</span></span>
+<span id="cb40-175"><a href="#cb40-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-176"><a href="#cb40-176" aria-hidden="true" tabindex="-1"></a><span class="fu">### Confidence Intervals</span></span>
+<span id="cb40-177"><a href="#cb40-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-180"><a href="#cb40-180" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-181"><a href="#cb40-181" aria-hidden="true" tabindex="-1"></a>wlr.ci <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">predict</span>(fit1, <span class="at">newdata =</span> new.data, <span class="at">interval =</span> <span class="st">&quot;confidence&quot;</span>))</span>
+<span id="cb40-182"><a href="#cb40-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-183"><a href="#cb40-183" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(wlr.ci)</span>
+<span id="cb40-184"><a href="#cb40-184" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-185"><a href="#cb40-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-186"><a href="#cb40-186" aria-hidden="true" tabindex="-1"></a><span class="fu">### Prediction Intervals</span></span>
+<span id="cb40-187"><a href="#cb40-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-190"><a href="#cb40-190" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-191"><a href="#cb40-191" aria-hidden="true" tabindex="-1"></a>wlr.pi <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">predict</span>(fit1, <span class="at">newdata =</span> new.data, <span class="at">interval =</span> <span class="st">&quot;prediction&quot;</span>,</span>
+<span id="cb40-192"><a href="#cb40-192" aria-hidden="true" tabindex="-1"></a>                  <span class="at">weight =</span> <span class="dv">1</span> <span class="sc">/</span> (<span class="fu">mean</span>(df1<span class="sc">$</span>OS.se)<span class="sc">^</span><span class="dv">2</span>) ))</span>
+<span id="cb40-193"><a href="#cb40-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-194"><a href="#cb40-194" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(wlr.pi)</span>
+<span id="cb40-195"><a href="#cb40-195" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-196"><a href="#cb40-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-197"><a href="#cb40-197" aria-hidden="true" tabindex="-1"></a><span class="fu">## Trial-level Association Plot</span></span>
+<span id="cb40-198"><a href="#cb40-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-201"><a href="#cb40-201" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-202"><a href="#cb40-202" aria-hidden="true" tabindex="-1"></a>wlr.pred.df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">HR.OS =</span> <span class="fu">exp</span>(wlr.ci[,<span class="dv">1</span>]),</span>
+<span id="cb40-203"><a href="#cb40-203" aria-hidden="true" tabindex="-1"></a>                        <span class="at">HR.PFS =</span> <span class="fu">exp</span>(new.data<span class="sc">$</span>PFS.ln.HR),</span>
+<span id="cb40-204"><a href="#cb40-204" aria-hidden="true" tabindex="-1"></a>                        <span class="at">lower.ci =</span> <span class="fu">exp</span>(wlr.ci[,<span class="dv">2</span>]),</span>
+<span id="cb40-205"><a href="#cb40-205" aria-hidden="true" tabindex="-1"></a>                        <span class="at">upper.ci =</span> <span class="fu">exp</span>(wlr.ci[,<span class="dv">3</span>]),</span>
+<span id="cb40-206"><a href="#cb40-206" aria-hidden="true" tabindex="-1"></a>                        <span class="at">lower.pi =</span> <span class="fu">exp</span>(wlr.pi[,<span class="dv">2</span>]),</span>
+<span id="cb40-207"><a href="#cb40-207" aria-hidden="true" tabindex="-1"></a>                        <span class="at">upper.pi =</span> <span class="fu">exp</span>(wlr.pi[,<span class="dv">3</span>]))</span>
+<span id="cb40-208"><a href="#cb40-208" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-209"><a href="#cb40-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-212"><a href="#cb40-212" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-213"><a href="#cb40-213" aria-hidden="true" tabindex="-1"></a>wlr.association.plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df1, <span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">y =</span> HR.OS)) <span class="sc">+</span></span>
+<span id="cb40-214"><a href="#cb40-214" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">ymin =</span> lower.ci, <span class="at">ymax =</span> upper.ci), <span class="at">data =</span> wlr.pred.df, <span class="at">stat =</span> <span class="st">&#39;identity&#39;</span>, <span class="at">fill =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb40-215"><a href="#cb40-215" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">ymin =</span> lower.pi, <span class="at">ymax =</span> upper.pi), <span class="at">data =</span> wlr.pred.df, <span class="at">stat =</span> <span class="st">&#39;identity&#39;</span>, <span class="at">fill =</span> <span class="st">&quot;lightblue&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb40-216"><a href="#cb40-216" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log&quot;</span>, </span>
+<span id="cb40-217"><a href="#cb40-217" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits =</span> <span class="fu">c</span>(<span class="fu">min</span>(df1<span class="sc">$</span>HR.PFS)<span class="sc">*</span><span class="fl">0.9</span>, <span class="fu">max</span>(df1<span class="sc">$</span>HR.PFS)<span class="sc">*</span><span class="fl">1.1</span>),</span>
+<span id="cb40-218"><a href="#cb40-218" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>,<span class="fl">0.4</span>,<span class="fl">0.5</span>,<span class="fl">0.7</span>,<span class="dv">1</span>,<span class="fl">1.2</span>,<span class="fl">1.5</span>,<span class="dv">2</span>,<span class="dv">3</span>),</span>
+<span id="cb40-219"><a href="#cb40-219" aria-hidden="true" tabindex="-1"></a>                     <span class="at">expand =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>)) <span class="sc">+</span></span>
+<span id="cb40-220"><a href="#cb40-220" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log&quot;</span>,</span>
+<span id="cb40-221"><a href="#cb40-221" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits=</span><span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">3.1</span>),</span>
+<span id="cb40-222"><a href="#cb40-222" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>,<span class="fl">0.4</span>,<span class="fl">0.5</span>,<span class="fl">0.7</span>,<span class="dv">1</span>,<span class="fl">1.2</span>,<span class="fl">1.5</span>,<span class="dv">2</span>,<span class="dv">3</span>),</span>
+<span id="cb40-223"><a href="#cb40-223" aria-hidden="true" tabindex="-1"></a>                     <span class="at">expand =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>)) <span class="sc">+</span></span>
+<span id="cb40-224"><a href="#cb40-224" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">y =</span> HR.OS), <span class="at">data =</span> wlr.pred.df, <span class="at">stat =</span> <span class="st">&#39;identity&#39;</span>) <span class="sc">+</span></span>
+<span id="cb40-225"><a href="#cb40-225" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">y =</span> HR.OS, <span class="at">size =</span> weight), </span>
+<span id="cb40-226"><a href="#cb40-226" aria-hidden="true" tabindex="-1"></a>             <span class="at">col =</span> <span class="st">&quot;gray30&quot;</span>, <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">&quot;orange&quot;</span>) <span class="sc">+</span></span>
+<span id="cb40-227"><a href="#cb40-227" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">&#39;dashed&#39;</span>) <span class="sc">+</span></span>
+<span id="cb40-228"><a href="#cb40-228" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Progression-free survival hazard ratio (log scale)&quot;</span>)<span class="sc">+</span> </span>
+<span id="cb40-229"><a href="#cb40-229" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">&quot;Overall survival hazard ratio&quot;</span> , <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="st">&quot;\U00B1&quot;</span>, <span class="st">&quot;95% confidence and prediction intervals (log scale)&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb40-230"><a href="#cb40-230" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Weighted Linear Regression&quot;</span>) <span class="sc">+</span></span>
+<span id="cb40-231"><a href="#cb40-231" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb40-232"><a href="#cb40-232" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_hue</span>(<span class="st">&quot;trial&quot;</span>) <span class="sc">+</span></span>
+<span id="cb40-233"><a href="#cb40-233" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb40-234"><a href="#cb40-234" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-235"><a href="#cb40-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-236"><a href="#cb40-236" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.width=8, fig.height=6, out.width=&quot;100%&quot;}</span></span>
+<span id="cb40-237"><a href="#cb40-237" aria-hidden="true" tabindex="-1"></a>wlr.association.plot</span>
+<span id="cb40-238"><a href="#cb40-238" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-239"><a href="#cb40-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-240"><a href="#cb40-240" aria-hidden="true" tabindex="-1"></a><span class="fu">## Surrogate Threshold Effect</span></span>
+<span id="cb40-241"><a href="#cb40-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-242"><a href="#cb40-242" aria-hidden="true" tabindex="-1"></a>Surrogate Threshold Effect is defined as ***the minimum treatment effect on the surrogate necessary to predict a nonzero effect on the true endpoint*** in a future trial. $\log(HR) &lt; 0$ implies a *beneficial* treatment effect. So STE was computed as the intersection of the upper $95\%$ prediction interval with the horizontal line for no treatment effect (i.e., in which the HR for OS equals $1$ or $\log(HR) = 0$).</span>
+<span id="cb40-243"><a href="#cb40-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-246"><a href="#cb40-246" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-247"><a href="#cb40-247" aria-hidden="true" tabindex="-1"></a>candidate.HR.PFS <span class="ot">&lt;-</span> wlr.pred.df <span class="sc">%&gt;%</span></span>
+<span id="cb40-248"><a href="#cb40-248" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(upper.pi <span class="sc">&lt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb40-249"><a href="#cb40-249" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(HR.PFS)</span>
+<span id="cb40-250"><a href="#cb40-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-251"><a href="#cb40-251" aria-hidden="true" tabindex="-1"></a>WLR.STE <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">max</span>(candidate.HR.PFS), <span class="at">digits =</span> <span class="dv">3</span>)</span>
+<span id="cb40-252"><a href="#cb40-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-253"><a href="#cb40-253" aria-hidden="true" tabindex="-1"></a>WLR.STE</span>
+<span id="cb40-254"><a href="#cb40-254" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-255"><a href="#cb40-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-256"><a href="#cb40-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-257"><a href="#cb40-257" aria-hidden="true" tabindex="-1"></a><span class="fu">## Leave-one-out Cross-validation</span></span>
+<span id="cb40-258"><a href="#cb40-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-259"><a href="#cb40-259" aria-hidden="true" tabindex="-1"></a>Leave-one-out cross-validation (LOOCV) is performed by selecting each trial in a data set in turns and using it as the validation set while using the rest $(n-1)$ of the trials as the training set.</span>
+<span id="cb40-260"><a href="#cb40-260" aria-hidden="true" tabindex="-1"></a>This is repeated $n$ times. For each iteration in the LOOCV procedure, models are ﬁtted to the training set, and the dependent variable of interest (target endpoint) is predicted on the basis of the explanatory variable(s) in the models (surrogate endpoint) in the validation set.</span>
+<span id="cb40-261"><a href="#cb40-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-262"><a href="#cb40-262" aria-hidden="true" tabindex="-1"></a>Three different criteria were used to assess the performance of each model for each iteration of the LOOCV. For each criterion, the median and range of the output values were used to assess model performance.</span>
+<span id="cb40-263"><a href="#cb40-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-264"><a href="#cb40-264" aria-hidden="true" tabindex="-1"></a><span class="fu">### Proportion of actual values from the validation set that lies within the 95% prediction interval from the training set</span></span>
+<span id="cb40-265"><a href="#cb40-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-266"><a href="#cb40-266" aria-hidden="true" tabindex="-1"></a>The steps are as follows:</span>
+<span id="cb40-267"><a href="#cb40-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-268"><a href="#cb40-268" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Leave out $i-$th study and train the model with remaining $n - 1$ studies.</span>
+<span id="cb40-269"><a href="#cb40-269" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Obtain $95\%$ prediction interval for the treatment effect on target endpoint (OS) in the left-out trial, using its surrogate endpoint (PFS) treatment effect.</span>
+<span id="cb40-270"><a href="#cb40-270" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Simulate $1000$ OS treatment effects based on normal distribution using the observed OS treatment effect and its standard error from the left-out trial.</span>
+<span id="cb40-271"><a href="#cb40-271" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Calculate the proportion of the $1000$ simulated values falling within the prediction interval, $p_i$.</span>
+<span id="cb40-272"><a href="#cb40-272" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Repeat these steps for all the studies, leaving out one at a time.</span>
+<span id="cb40-273"><a href="#cb40-273" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Calculate $median(p_1, \ldots, p_n)$ and $range(p_1, \ldots, p_n)$.</span>
+<span id="cb40-274"><a href="#cb40-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-277"><a href="#cb40-277" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-278"><a href="#cb40-278" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(df1)</span>
+<span id="cb40-279"><a href="#cb40-279" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-280"><a href="#cb40-280" aria-hidden="true" tabindex="-1"></a>prop <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb40-281"><a href="#cb40-281" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-282"><a href="#cb40-282" aria-hidden="true" tabindex="-1"></a>absolute.difference <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb40-283"><a href="#cb40-283" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-284"><a href="#cb40-284" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-287"><a href="#cb40-287" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-288"><a href="#cb40-288" aria-hidden="true" tabindex="-1"></a><span class="co">#| include: false</span></span>
+<span id="cb40-289"><a href="#cb40-289" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">22</span>)</span>
+<span id="cb40-290"><a href="#cb40-290" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-291"><a href="#cb40-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-294"><a href="#cb40-294" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-295"><a href="#cb40-295" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
+<span id="cb40-296"><a href="#cb40-296" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df1[<span class="sc">-</span>i,]</span>
+<span id="cb40-297"><a href="#cb40-297" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-298"><a href="#cb40-298" aria-hidden="true" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(OS.ln.HR <span class="sc">~</span> PFS.ln.HR, <span class="at">weights =</span> weight, <span class="at">data =</span> df)</span>
+<span id="cb40-299"><a href="#cb40-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-300"><a href="#cb40-300" aria-hidden="true" tabindex="-1"></a>  new.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">PFS.ln.HR =</span> df1<span class="sc">$</span>PFS.ln.HR[i])</span>
+<span id="cb40-301"><a href="#cb40-301" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-302"><a href="#cb40-302" aria-hidden="true" tabindex="-1"></a>  wlr.pi <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> new.data, <span class="at">interval =</span> <span class="st">&quot;prediction&quot;</span>, </span>
+<span id="cb40-303"><a href="#cb40-303" aria-hidden="true" tabindex="-1"></a>                               <span class="at">weight =</span> <span class="dv">1</span> <span class="sc">/</span> (<span class="fu">mean</span>(df<span class="sc">$</span>OS.se)<span class="sc">^</span><span class="dv">2</span>) ))</span>
+<span id="cb40-304"><a href="#cb40-304" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-305"><a href="#cb40-305" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for criterion 1</span></span>
+<span id="cb40-306"><a href="#cb40-306" aria-hidden="true" tabindex="-1"></a>  simulated.OS.ln.HR <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="at">mean =</span> df1<span class="sc">$</span>OS.ln.HR[i], <span class="at">sd =</span> df1<span class="sc">$</span>OS.se[i])</span>
+<span id="cb40-307"><a href="#cb40-307" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-308"><a href="#cb40-308" aria-hidden="true" tabindex="-1"></a>  prop[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>((simulated.OS.ln.HR <span class="sc">&gt;=</span> wlr.pi[,<span class="dv">2</span>] <span class="sc">&amp;</span> simulated.OS.ln.HR <span class="sc">&lt;=</span> wlr.pi[,<span class="dv">3</span>]))</span>
+<span id="cb40-309"><a href="#cb40-309" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-310"><a href="#cb40-310" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for criterion 2</span></span>
+<span id="cb40-311"><a href="#cb40-311" aria-hidden="true" tabindex="-1"></a>  absolute.difference[i] <span class="ot">&lt;-</span> <span class="fu">abs</span>(wlr.pi<span class="sc">$</span>fit <span class="sc">-</span> df1<span class="sc">$</span>OS.ln.HR[i])</span>
+<span id="cb40-312"><a href="#cb40-312" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb40-313"><a href="#cb40-313" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-314"><a href="#cb40-314" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-317"><a href="#cb40-317" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-318"><a href="#cb40-318" aria-hidden="true" tabindex="-1"></a>median.prop <span class="ot">&lt;-</span> <span class="fu">median</span>(prop)</span>
+<span id="cb40-319"><a href="#cb40-319" aria-hidden="true" tabindex="-1"></a>median.prop</span>
+<span id="cb40-320"><a href="#cb40-320" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-321"><a href="#cb40-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-324"><a href="#cb40-324" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-325"><a href="#cb40-325" aria-hidden="true" tabindex="-1"></a>range.prop <span class="ot">&lt;-</span> <span class="fu">range</span>(prop)</span>
+<span id="cb40-326"><a href="#cb40-326" aria-hidden="true" tabindex="-1"></a>range.prop</span>
+<span id="cb40-327"><a href="#cb40-327" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-328"><a href="#cb40-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-329"><a href="#cb40-329" aria-hidden="true" tabindex="-1"></a><span class="fu">### Absolute difference between mean predicted value and actual value</span></span>
+<span id="cb40-330"><a href="#cb40-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-331"><a href="#cb40-331" aria-hidden="true" tabindex="-1"></a>The absolute difference between the actual log hazard ratio and the predicted log hazard ratio for OS for each trial left out will be recorded.</span>
+<span id="cb40-332"><a href="#cb40-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-335"><a href="#cb40-335" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-336"><a href="#cb40-336" aria-hidden="true" tabindex="-1"></a>median.absolute.difference <span class="ot">&lt;-</span> <span class="fu">median</span>(absolute.difference)</span>
+<span id="cb40-337"><a href="#cb40-337" aria-hidden="true" tabindex="-1"></a>median.absolute.difference <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">3</span>)</span>
+<span id="cb40-338"><a href="#cb40-338" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-339"><a href="#cb40-339" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-342"><a href="#cb40-342" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-343"><a href="#cb40-343" aria-hidden="true" tabindex="-1"></a>range.absolute.difference <span class="ot">&lt;-</span> <span class="fu">range</span>(absolute.difference)</span>
+<span id="cb40-344"><a href="#cb40-344" aria-hidden="true" tabindex="-1"></a>range.absolute.difference <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">3</span>)</span>
+<span id="cb40-345"><a href="#cb40-345" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
