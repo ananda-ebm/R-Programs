@@ -269,6 +269,22 @@ posterior.draws <- fit.BREMR$draws(
 apply(posterior.draws, 2, quantile, probs = c(0.025, 0.975))
 ```
 
+### Distribution of the heterogeneity parameter
+
+```{r}
+psi.draws <- fit.BREMR$draws(variables = "psi", format = "draws_df")
+```
+
+```{r, fig.width=8, fig.height=6, out.width="100%"}
+psi.draws %>% 
+  ggplot(aes(x = psi)) +
+  geom_density(linewidth = 1, fill = "#28B1ED") +
+  labs(x = expression(psi),
+       title = "Distribution of heterogeneity parameter") +
+  theme_bw() +
+  scale_colour_hue("trial")
+```
+
 ## Prediction of TE on Clinical Outcome in New Trials
 
 Now use posterior samples to calculate the predictions on new future trials, credible intervals and prediction intervals. These are the main components of **trial-level association plot**.
@@ -409,6 +425,8 @@ BREMR.association.plot
 
 ## Surrogate Threshold Effect
 
+Surrogate Threshold Effect is defined as ***the minimum treatment effect on the surrogate necessary to predict a nonzero effect on the true endpoint*** in a future trial. $\log(HR) < 0$ implies a *beneficial* treatment effect. So STE was computed as the intersection of the upper $95\%$ prediction interval with the horizontal line for no treatment effect (i.e., in which the HR for OS equals $1$ or $\log(HR) = 0$).
+
 ```{r}
 candidate.HR.PFS <- BREMR.pred.df %>%
   filter(upper.pi < 1) %>%
@@ -417,7 +435,6 @@ candidate.HR.PFS <- BREMR.pred.df %>%
 BREMR.STE <- round(max(candidate.HR.PFS), digits = 3)
 BREMR.STE
 ```
-
 
 ## Leave-one-out Cross-validation
 
@@ -455,15 +472,16 @@ set.seed(7)
 for(i in 1:n){
   df <- df1[-i,]
   
-  BREMR.data <- list(N = nrow(df1), 
-                     Y2 = df1$OS.ln.HR, Y1 = df1$PFS.ln.HR, 
-                     sigma2 = df1$OS.se)
+  BREMR.data <- list(N = nrow(df), 
+                     Y2 = df$OS.ln.HR, Y1 = df$PFS.ln.HR, 
+                     sigma2 = df$OS.se)
   
   fit.BREMR <- model.BREMR$sample(data = BREMR.data, 
                                   chains = 4, parallel_chains = 4,
                                   iter_warmup = 250, 
                                   iter_sampling = 1000,
-                                  adapt_delta = 0.96, seed = 14,
+                                  adapt_delta = 0.96, 
+                                  seed = 14,
                                   refresh = 0)
   
   posterior.draws <- fit.BREMR$draws(variables = c("beta", "lambda1", "psi"),
