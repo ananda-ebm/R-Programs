@@ -1,0 +1,535 @@
+---
+title: "Bayesian Random-effects Meta Regression"
+author: "Ananda Biswas"
+date: "`r Sys.Date()`"
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    code-fold: show
+    code-tools: true
+    code-summary: "Show/Hide Code"
+knitr:
+  opts_chunk:
+    fig.path: "figures/"
+---
+
+## Required Libraries
+
+```{r message=FALSE, warning=FALSE}
+library(openxlsx)
+
+library(gt)
+library(tidyverse)
+
+library(cmdstanr)
+
+library(bayesplot)
+```
+
+## Loading Data
+
+```{r}
+#| include: false
+data.path <- 'https://github.com/ananda-ebm/datasets/raw/refs/heads/master/Gastric_Cancer.xlsx'
+```
+
+```{r}
+df1 <- read.xlsx(data.path, sheet = 1)
+
+df2 <- df1[1:14, ]
+```
+
+## Initial Sanity Checks
+
+```{r}
+str(df2)
+```
+
+```{r}
+dim(df2)
+```
+
+```{r, results='asis'}
+#| echo: false
+#| tbl-cap: "Snapshot of Gastric Cancer Data"
+
+head(df2) |>
+  gt() |>
+  tab_options(
+    data_row.padding = px(8),
+    column_labels.padding = px(10)
+  )
+```
+
+## Derived Quantities
+
+```{r}
+df2$weight <- 1 / (df2$OS.se)^2
+```
+
+## Generating Treatment Effect on Surrogate Endpoint in New Trials
+
+```{r}
+range(df2$HR.DFS)
+```
+
+```{r}
+new.data <- data.frame(DFS.ln.HR = log(seq(0.45, 1.2, length=1000)))
+```
+
+## Model
+
+A random-effects meta-analysis allows for the differences in the treatment effect between studies. In a Bayesian random-effects meta-regression framework, the model can be written as
+
+$$Y_{2i}
+\sim
+N\left(\mu_{2i},\sigma_{2i}^2\right),
+\qquad
+i=1,\ldots,N,$$
+
+where the mean (study-specific treatment effect) is modeled as
+
+$$\mu_{2i}
+=
+\lambda_{0i}
++
+\lambda_1 Y_{1i}.$$
+
+The study-specific intercepts are assumed to follow a common Normal distribution:
+
+$$\lambda_{0i}
+\sim
+N\left(\beta,\psi^2\right).$$
+
+Here:
+
+- $Y_{1i}$ = summary measure of the treatment effect on the candidate surrogate outcome in study $i$;
+- $Y_{2i}$ = summary measure of the treatment effect on the target outcome in study $i$;
+- $\mu_{2i}$ = underlying true treatment effect on the target outcome in study $i$;
+- $\sigma_{2i}$ = standard deviation of the estimated treatment effect $Y_{2i}$;
+- $\lambda_{0i}$ = study-specific true effect on the target outcome when the treatment effect on the surrogate is zero;
+- $\lambda_1$ = regression coefficient describing the relationship between treatment effects on the surrogate and target outcomes;
+- $\beta$ = mean of the overarching distribution of the study-specific intercepts; and
+- $\psi^2$ = between-study variance representing heterogeneity in the study-specific intercepts.
+
+In the Bayesian framework, all parameters are given prior distributions :
+
+$$\beta \sim N(0,10^2),$$
+
+$$\lambda_1 \sim N(0,10^2),$$
+
+$$\psi \sim \operatorname{Half}\text{-}t_3(0,2.5), \qquad \psi > 0,$$
+
+and
+
+$$\lambda_{0i}^{\mathrm{raw}} \sim N(0,1),
+\qquad i=1,\ldots,N.$$
+
+## Surrogacy Criteria
+
+A perfect surrogate requires all the following conditions simultaneously :
+
+- $\beta = 0$, to ensure that no treatment effect on the surrogate endpoint implies no treatment effect on the final clinical outcome
+- $\lambda_1 \neq 0$, establishing a relationship between treatment effects on the surrogate and final clinical outcomes
+- $\psi^2 = 0$, implying that one can predict $\mu_{2i}$ perfectly given $Y_{1i}$.
+
+## Model Fitting
+
+### Preparing data for STAN
+
+```{r}
+STAN_data.BREMR <- list(
+  N = nrow(df2),
+  Y2 = df2$OS.ln.HR,
+  Y1 = df2$DFS.ln.HR,
+  sigma2 = df2$OS.se
+)
+```
+
+### STAN Model
+
+```{r}
+#| include: false
+BREMR.model.file <- "BREMR.stan"
+```
+
+Here is a suitable STAN model.
+
+```{r}
+#| echo: false
+#| results: asis
+cat("```stan\n", paste(readLines(BREMR.model.file), collapse = "\n"), "\n```", sep = "")
+```
+
+### Model Compilation
+
+```{r}
+model.BREMR <- cmdstan_model(stan_file = BREMR.model.file)
+```
+
+### Running HMC
+
+```{r}
+n.chains <- 4
+n.samples.per.chain <- 100000
+```
+
+```{r}
+fit.BREMR <- model.BREMR$sample(
+  data = STAN_data.BREMR,
+  chains = n.chains,
+  parallel_chains = n.chains,
+  iter_warmup = 25000,
+  iter_sampling = n.samples.per.chain,
+  adapt_delta = 0.96,
+  seed = 14,
+  refresh = 0 # suppress the iteration progress messages
+)
+```
+
+```{r}
+n.posterior.samples <- n.chains * n.samples.per.chain
+```
+
+### STAN Diagnostics
+
+```{r}
+fit.BREMR$cmdstan_diagnose()
+```
+
+### Posterior Predictive Check - PPC
+
+It is a way of checking whether my Bayesian model can generate data that look reasonably similar to the data I actually observed.
+
+Suppose we observe $n$ data-points. For each posterior draw of the parameters, we draw a random sample of $n$ data-points.
+
+Here in NSCLC data-set, there are $`r nrow(df2)`$ studies. So we shall have $`r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$ replicated data-sets, each having $`r nrow(df2)`$ studies.
+
+```{r}
+Y2.replicated.draws <- fit.BREMR$draws(variables = "Y2_rep", format = "matrix")
+
+dim(Y2.replicated.draws)
+```
+
+### Check 1
+
+Plot the density of the observed data and densities of a few randomly selected replicated data-sets to assess the Bayesian model.
+
+```{r fig.height=6, fig.width=8, out.width="100%"}
+#| message: false
+#| warning: false
+# a few randomly selected replications
+temp <- sample(1:n.posterior.samples, 300)
+
+ppc_dens_overlay(y = df2$OS.ln.HR,
+                 yrep = Y2.replicated.draws[temp, ])
+```
+
+The thin colored lines are supposed to closely envelope the thick dark line.
+
+### Check 2
+
+Plot the observed `y~x` along with the prediction intervals calculated from the replications of each `y`.
+
+For instance, here I shall have $`r nrow(df2)`$ points each corresponding to a study in the NSCLC data, and $`r nrow(df2)`$ prediction intervals accompanying them. Prediction interval for $Y_{2j}$ was calculated from the $`r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$ replications of $Y_{2j}$ $\forall j = 1(1)`r nrow(df2)`$.
+
+```{r fig.height=6, fig.width=8, out.width="100%"}
+#| message: false
+#| warning: false
+ppc_intervals(y = df2$OS.ln.HR,
+              yrep = Y2.replicated.draws,
+              x = df2$DFS.ln.HR)
+```
+
+The narrow inner bands represent $50\%$ prediction intervals and the wide outer bands represent $95\%$ prediction intervals. The wide outer bands are supposed to contain the dark dots.
+
+In the above, the wide outer bands always contain the dark dots.
+
+## Posterior Summaries of Parameters of Interest
+
+### Point Estimates
+
+```{r}
+fit.BREMR$summary(variables = c("beta", "lambda1", "psi", "psi_square")) |>
+  gt()
+```
+
+Posterior means/medians can be used as Bayesian estimates of the parameters.
+
+### Interval Estimates
+
+```{r}
+posterior.draws <- fit.BREMR$draws(
+  variables = c("beta", "lambda1", "psi_square"),
+  format = "matrix")
+```
+
+```{r}
+apply(posterior.draws, 2, quantile, probs = c(0.025, 0.975))
+```
+
+### Distribution of the heterogeneity parameter
+
+```{r}
+psi.draws <- fit.BREMR$draws(variables = "psi", format = "draws_df")
+```
+
+```{r, fig.width=8, fig.height=6, out.width="100%"}
+psi.draws %>% 
+  ggplot(aes(x = psi)) +
+  geom_density(linewidth = 1, fill = "#28B1ED") +
+  labs(x = expression(psi),
+       title = "Distribution of heterogeneity parameter") +
+  theme_bw() +
+  scale_colour_hue("trial")
+```
+
+## Prediction of TE on Clinical Outcome in New Trials
+
+Now use posterior samples to calculate the predictions on new future trials, credible intervals and prediction intervals. These are the main components of **trial-level association plot**.
+
+```{r}
+#| tbl-cap: "Preview of Posterior Sample"
+
+data.frame(head(posterior.draws)) |>
+  gt()
+```
+
+```{r}
+dim(posterior.draws)
+```
+
+Each row of `posterior.draws` is a posterior sample from the joint posterior distribution of the parameters.
+
+Now I create a design matrix `X` representing new studies on which we will make future predictions.
+
+```{r}
+X <- matrix(c(rep(1, 1000), new.data$DFS.ln.HR), 
+            nrow = 1000, ncol = 2, byrow = FALSE)
+```
+
+For each new trial in `X`, corresponding to $`r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$ posterior samples of the parameters, there will be $`r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$ predictions of `log.HR.OS`. Below I do a matrix operation to obtain all the $1000 \times `r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$ predictions.
+
+```{r}
+BREMR.posterior <- X %*% t(posterior.draws[,1:2])
+```
+
+```{r}
+dim(BREMR.posterior)
+```
+
+Each row of `BREMR.posterior` represents $`r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$ posterior draws of `log.HR.OS` *i.e.* the response variable, corresponding to a new `log.HR.DFS` of a new trial.
+
+### Point Estimates
+
+For a new trial, to get a prediction of `log.HR.OS`, we must calculate the mean of the posterior samples.
+
+```{r}
+BREMR.fit <- apply(BREMR.posterior, 1, mean)
+```
+
+`BREMR.fit` has $1000$ predictions corresponding to $1000$ new future trials.
+
+### Credible Intervals
+
+Credible intervals are obtained from the quantiles of the posterior distribution. Here I calculate the $95\%$ credible intervals for the predictions on new trials.
+
+```{r}
+BREMR.ci <- t(apply(BREMR.posterior, 1, quantile, probs = c(0.025, 0.975)))
+```
+
+### Prediction Intervals
+
+Prediction intervals are obtained from the quantiles of the posterior predictive distribution.
+
+The posterior distribution of concern here is
+
+$$p\left(\beta, \lambda_1, \psi \mid Y_{11}, Y_{21}, Y_{12}, Y_{22}, \ldots, Y_{1N}, Y_{2N}\right).$$ Already I have $`r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$ samples from this posterior distribution.
+
+We want the predictive distribution of $\widehat{\mu_{2 \cdot \text{new}}}:$ the true treatment effect on clinical outcome in a future trial.
+
+In any future trial, let $Y_{1 \cdot \text{new}}$ be the observed treatment effect on surrogate endpoint. Then we must have
+
+$$\widehat{\mu_{2 \cdot \text{new}}} \sim \mathcal{N}\left( \beta + \lambda_1 Y_{1 \cdot \text{new}}, \psi^2\right).$$
+
+In Bayesian theory, the predictive distribution is obtained by averaging the likelihood over the entire parameter space where the parameters vary in accordance to the posterior distribution.
+
+Mathematically, we can write the posterior predictive distribution as
+
+$$\displaystyle{\int \limits_{(\beta, \lambda_1, \psi)}} \mathcal{N}\left( \beta + \lambda_1 Y_{1 \cdot \text{new}}, \psi^2\right) \cdot p\left(\beta, \lambda_1, \psi \mid \cdots \right) d\beta \; d\lambda_1 \; d\psi.$$
+
+As analytical solution cannot be traced, we resort to numerical solution as follows :
+
+- Using posterior sample $(\beta_{(m)}, \lambda_{1(m)}, \psi_{(m)})$ calculate $\beta_{(m)} + \lambda_{1(m)} Y_{1 \cdot \text{new}}$ $\forall m = 1(1)`r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$.
+- Take a random sample from $\mathcal{N}\left(\beta_{(m)} + \lambda_{1(m)}, \psi_{(m)}^2 \right)$ $\forall m = 1(1)`r format(n.posterior.samples, scientific = FALSE, trim = TRUE)`$.
+- Calculate $q_{0.025}$, $q_{0.975}$ for the random samples just obtained.
+- Repeat the above $3$ for all the new trials to get predictive interval around their predictions.
+
+Now I proceed to calculate the $95\%$ posterior prediction intervals.
+
+```{r}
+u <- rnorm(n.posterior.samples, 0, sd = sqrt(posterior.draws[,3]))
+
+BREMR.predictions <- BREMR.posterior + 
+                     matrix(rep(u, 1000), 
+                            nrow = 1000, 
+                            ncol = n.posterior.samples,
+                            byrow = TRUE)
+```
+
+```{r}
+BREMR.pi <- t(apply(BREMR.predictions, 1, quantile, probs = c(0.025, 0.975)))
+```
+
+## Trial-level Association Plot
+
+I combine all the required components for the trial-level association plot.
+
+```{r}
+BREMR.pred.df <- data.frame(HR.OS = exp(BREMR.fit),
+                            HR.DFS = exp(new.data$DFS.ln.HR),
+                            lower.ci = exp(BREMR.ci[,1]),
+                            upper.ci = exp(BREMR.ci[,2]),
+                            lower.pi = exp(BREMR.pi[,1]),
+                            upper.pi = exp(BREMR.pi[,2]))
+```
+
+```{r}
+BREMR.association.plot <- ggplot(df2, aes(x = HR.DFS, y = HR.OS)) +
+  geom_ribbon(aes(x = HR.DFS, ymin = lower.ci, ymax = upper.ci), data = BREMR.pred.df, alpha = 0.6, fill = "steelblue") +
+  geom_ribbon(aes(x = HR.DFS, ymin = lower.pi, ymax = upper.pi), data = BREMR.pred.df, alpha = 0.4, fill = "lightblue") +
+  geom_line(aes(x = HR.DFS, y = HR.OS), data = BREMR.pred.df, 
+            col = "steelblue", linewidth = 1, stat = 'identity') +
+  geom_point(aes(size = weight), col = "gray30", fill = "orange", shape = 21, data = df2) +
+  scale_x_continuous(transform = "log",
+                     limits = c(0.45, 1.2),
+                     breaks=c(0.4,0.5,0.7,1,1.2),
+                     expand = c(0.01, 0.01)) +
+  scale_y_continuous(transform = "log",
+                     limits = c(0.3, 1.7),
+                     breaks=c(0.3,0.4,0.5,0.7,1,1.2,1.5),
+                     expand = c(0.01, 0.01)) +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  xlab("Disease-free survival hazard ratio (log scale)")+ 
+  ylab(paste("Overall survival hazard ratio" , "\n", "\U00B1", "95% credible and prediction intervals (log scale)")) +
+  ggtitle("Bayesian Random-effects Meta-regression") +
+  theme_bw() +
+  scale_colour_hue("trial") +
+  theme(legend.position = "none")
+```
+
+```{r, fig.width=8, fig.height=6, out.width="100%"}
+BREMR.association.plot
+```
+
+## Surrogate Threshold Effect
+
+Surrogate Threshold Effect is defined as ***the minimum treatment effect on the surrogate necessary to predict a nonzero effect on the true endpoint*** in a future trial. $\log(HR) < 0$ implies a *beneficial* treatment effect. So STE was computed as the intersection of the upper $95\%$ prediction interval with the horizontal line for no treatment effect (i.e., in which the HR for OS equals $1$ or $\log(HR) = 0$).
+
+```{r}
+candidate.HR.DFS <- BREMR.pred.df %>%
+  filter(upper.pi < 1) %>%
+  pull(HR.DFS)
+
+BREMR.STE <- round(max(candidate.HR.DFS), digits = 3)
+BREMR.STE
+```
+
+## Leave-one-out Cross-validation
+
+Leave-one-out cross-validation (LOOCV) is performed by selecting each trial in a data set in turns and using it as the validation set while using the rest $(n-1)$ of the trials as the training set. This is repeated $n$ times. For each iteration in the LOOCV procedure, models are ﬁtted to the training set, and the dependent variable of interest (target endpoint) is predicted on the basis of the explanatory variable(s) in the models (surrogate endpoint) in the validation set.
+
+Two different criteria were used to assess the performance of each model for each iteration of the LOOCV. For each criterion, the median and range of the output values were used to assess model performance.
+
+### Proportion of actual values from the validation set that lies within the 95% prediction interval from the training set
+
+The steps are as follows:
+
+- Leave out $i-$th study and train the model with remaining $n - 1$ studies.
+- Obtain $95\%$ prediction interval for the treatment effect on target endpoint (OS) in the left-out trial, using its surrogate endpoint (DFS) treatment effect.
+- Simulate $1000$ OS treatment effects based on normal distribution using the observed OS treatment effect and its standard error from the left-out trial.
+- Calculate the proportion of the $1000$ simulated values falling within the prediction interval, $p_i$.
+- Repeat these steps for all the studies, leaving out one at a time.
+- Calculate $median(p_1, \ldots, p_n)$ and $range(p_1, \ldots, p_n)$.
+
+```{r}
+n <- nrow(df2)
+
+prop <- c()
+
+absolute.difference <- c()
+```
+
+```{r}
+#| include: false
+set.seed(14)
+```
+
+```{r}
+#| echo: true
+#| output: false
+for(i in 1:n){
+  df <- df2[-i,]
+  
+  BREMR.data <- list(N = nrow(df), 
+                     Y2 = df$OS.ln.HR, Y1 = df$DFS.ln.HR, 
+                     sigma2 = df$OS.se)
+  
+  fit.BREMR <- model.BREMR$sample(data = BREMR.data, 
+                                  chains = 4, parallel_chains = 4,
+                                  iter_warmup = 250, 
+                                  iter_sampling = 1000,
+                                  adapt_delta = 0.96, seed = 14,
+                                  refresh = 0)
+  
+  posterior.draws <- fit.BREMR$draws(variables = c("beta", "lambda1", "psi"),
+                                     format = "draws_df")
+  
+  new.data <- data.frame(DFS.ln.HR = df2$DFS.ln.HR[i])
+  
+  BREMR.posterior <- posterior.draws$beta + new.data$DFS.ln.HR * posterior.draws$lambda1
+  
+  u <- rnorm(4 * 1000, 0, sd = posterior.draws$psi)
+  
+  BREMR.predictions <- BREMR.posterior + u
+  
+  # for criterion 1
+  BREMR.pi <- quantile(BREMR.predictions, probs = c(0.025, 0.975))
+  
+  simulated.OS.ln.HR <- rnorm(1000, mean = df2$OS.ln.HR[i], sd = df2$OS.se[i])
+  
+  prop[i] <- mean((simulated.OS.ln.HR >= BREMR.pi["2.5%"]) & (simulated.OS.ln.HR <= BREMR.pi["97.5%"]))
+  
+  # for criterion 2
+  BREMR.fit <- mean(BREMR.predictions)
+  
+  absolute.difference[i] <- abs(df2$OS.ln.HR[i] - BREMR.fit)
+}
+```
+
+```{r}
+median.prop <- median(prop)
+median.prop
+```
+
+```{r}
+range.prop <- range(prop)
+range.prop
+```
+
+### Absolute difference between mean predicted value and actual value
+
+The absolute difference between the actual log hazard ratio and the predicted log hazard ratio for OS for each trial left out will be recorded.
+
+```{r}
+median.absolute.difference <- median(absolute.difference)
+median.absolute.difference |> round(3)
+```
+
+```{r}
+range.absolute.difference <- range(absolute.difference)
+range.absolute.difference |> round(3)
+```
