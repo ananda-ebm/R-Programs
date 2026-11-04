@@ -222,10 +222,9 @@ WLR.STE
 
 ## Leave-one-out Cross-validation
 
-Leave-one-out cross-validation (LOOCV) is performed by selecting each trial in a data set in turns and using it as the validation set while using the rest $(n-1)$ of the trials as the training set.
-This is repeated $n$ times. For each iteration in the LOOCV procedure, models are ﬁtted to the training set, and the dependent variable of interest (target endpoint) is predicted on the basis of the explanatory variable(s) in the models (surrogate endpoint) in the validation set.
+Leave-one-out cross-validation (LOOCV) is performed by selecting each trial in a data set in turns and using it as the validation set while using the rest $(n-1)$ of the trials as the training set. This is repeated $n$ times. For each iteration in the LOOCV procedure, models are ﬁtted to the training set, and the dependent variable of interest (target endpoint) is predicted on the basis of the explanatory variable(s) in the models (surrogate endpoint) in the validation set.
 
-Three different criteria were used to assess the performance of each model for each iteration of the LOOCV. For each criterion, the median and range of the output values were used to assess model performance.
+Two different criteria were used to assess the performance of each model for each iteration of the LOOCV. For each criterion, the median and range of the output values were used to assess model performance.
 
 ### Proportion of actual values from the validation set that lies within the 95% prediction interval from the training set
 
@@ -265,7 +264,7 @@ for(i in 1:n){
   # for criterion 1
   simulated.OS.ln.HR <- rnorm(1000, mean = df1$OS.ln.HR[i], sd = df1$OS.se[i])
   
-  prop[i] <- mean((simulated.OS.ln.HR >= wlr.pi[,2] & simulated.OS.ln.HR <= wlr.pi[,3]))
+  prop[i] <- mean((simulated.OS.ln.HR >= wlr.pi[,2]) & (simulated.OS.ln.HR <= wlr.pi[,3]))
   
   # for criterion 2
   absolute.difference[i] <- abs(wlr.pi$fit - df1$OS.ln.HR[i])
@@ -295,4 +294,3 @@ median.absolute.difference |> round(3)
 range.absolute.difference <- range(absolute.difference)
 range.absolute.difference |> round(3)
 ```
-
