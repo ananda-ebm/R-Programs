@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ananda Biswas">
-<meta name="dcterms.date" content="2026-08-19">
+<meta name="dcterms.date" content="2026-11-04">
 
 <title>Frequentist Fixed-effects Meta Regression</title>
 <style>
@@ -2358,6 +2358,11 @@ window.Quarto = {
   <li><a href="#prediction-of-te-on-clinical-outcome-in-new-trials-and-confidence-intervals" id="toc-prediction-of-te-on-clinical-outcome-in-new-trials-and-confidence-intervals" class="nav-link" data-scroll-target="#prediction-of-te-on-clinical-outcome-in-new-trials-and-confidence-intervals">Prediction of TE on Clinical Outcome in New Trials and Confidence Intervals</a></li>
   <li><a href="#trial-level-association-plot" id="toc-trial-level-association-plot" class="nav-link" data-scroll-target="#trial-level-association-plot">Trial-level Association Plot</a></li>
   <li><a href="#surrogate-threshold-effect" id="toc-surrogate-threshold-effect" class="nav-link" data-scroll-target="#surrogate-threshold-effect">Surrogate Threshold Effect</a></li>
+  <li><a href="#leave-one-out-cross-validation" id="toc-leave-one-out-cross-validation" class="nav-link" data-scroll-target="#leave-one-out-cross-validation">Leave-one-out Cross-validation</a>
+  <ul class="collapse">
+  <li><a href="#proportion-of-actual-values-from-the-validation-set-that-lies-within-the-95-prediction-interval-from-the-training-set" id="toc-proportion-of-actual-values-from-the-validation-set-that-lies-within-the-95-prediction-interval-from-the-training-set" class="nav-link" data-scroll-target="#proportion-of-actual-values-from-the-validation-set-that-lies-within-the-95-prediction-interval-from-the-training-set">Proportion of actual values from the validation set that lies within the 95% prediction interval from the training set</a></li>
+  <li><a href="#absolute-difference-between-mean-predicted-value-and-actual-value" id="toc-absolute-difference-between-mean-predicted-value-and-actual-value" class="nav-link" data-scroll-target="#absolute-difference-between-mean-predicted-value-and-actual-value">Absolute difference between mean predicted value and actual value</a></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -2382,7 +2387,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 19, 2026</p>
+      <p class="date">November 4, 2026</p>
     </div>
   </div>
   
@@ -2448,20 +2453,20 @@ window.Quarto = {
 </div>
 </div>
 <div class="cell" data-tbl-cap="Snapshot of NSCLC Data">
-<div id="tvcbsrkfys" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#tvcbsrkfys table {
+<div id="wcadiqhprv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#wcadiqhprv table {
 font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
-#tvcbsrkfys thead, #tvcbsrkfys tbody, #tvcbsrkfys tfoot, #tvcbsrkfys tr, #tvcbsrkfys td, #tvcbsrkfys th {
+#wcadiqhprv thead, #wcadiqhprv tbody, #wcadiqhprv tfoot, #wcadiqhprv tr, #wcadiqhprv td, #wcadiqhprv th {
 border-style: none;
 }
-#tvcbsrkfys p {
+#wcadiqhprv p {
 margin: 0;
 padding: 0;
 }
-#tvcbsrkfys .gt_table {
+#wcadiqhprv .gt_table {
 display: table;
 border-collapse: collapse;
 line-height: normal;
@@ -2486,11 +2491,11 @@ border-left-style: none;
 border-left-width: 2px;
 border-left-color: #D3D3D3;
 }
-#tvcbsrkfys .gt_caption {
+#wcadiqhprv .gt_caption {
 padding-top: 4px;
 padding-bottom: 4px;
 }
-#tvcbsrkfys .gt_title {
+#wcadiqhprv .gt_title {
 color: #333333;
 font-size: 125%;
 font-weight: initial;
@@ -2501,7 +2506,7 @@ padding-right: 5px;
 border-bottom-color: #FFFFFF;
 border-bottom-width: 0;
 }
-#tvcbsrkfys .gt_subtitle {
+#wcadiqhprv .gt_subtitle {
 color: #333333;
 font-size: 85%;
 font-weight: initial;
@@ -2512,7 +2517,7 @@ padding-right: 5px;
 border-top-color: #FFFFFF;
 border-top-width: 0;
 }
-#tvcbsrkfys .gt_heading {
+#wcadiqhprv .gt_heading {
 background-color: #FFFFFF;
 text-align: center;
 border-bottom-color: #FFFFFF;
@@ -2523,12 +2528,12 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#tvcbsrkfys .gt_bottom_border {
+#wcadiqhprv .gt_bottom_border {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#tvcbsrkfys .gt_col_headings {
+#wcadiqhprv .gt_col_headings {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -2542,7 +2547,7 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#tvcbsrkfys .gt_col_heading {
+#wcadiqhprv .gt_col_heading {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -2561,7 +2566,7 @@ padding-left: 5px;
 padding-right: 5px;
 overflow-x: hidden;
 }
-#tvcbsrkfys .gt_column_spanner_outer {
+#wcadiqhprv .gt_column_spanner_outer {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -2572,13 +2577,13 @@ padding-bottom: 0;
 padding-left: 4px;
 padding-right: 4px;
 }
-#tvcbsrkfys .gt_column_spanner_outer:first-child {
+#wcadiqhprv .gt_column_spanner_outer:first-child {
 padding-left: 0;
 }
-#tvcbsrkfys .gt_column_spanner_outer:last-child {
+#wcadiqhprv .gt_column_spanner_outer:last-child {
 padding-right: 0;
 }
-#tvcbsrkfys .gt_column_spanner {
+#wcadiqhprv .gt_column_spanner {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
@@ -2589,10 +2594,10 @@ overflow-x: hidden;
 display: inline-block;
 width: 100%;
 }
-#tvcbsrkfys .gt_spanner_row {
+#wcadiqhprv .gt_spanner_row {
 border-bottom-style: hidden;
 }
-#tvcbsrkfys .gt_group_heading {
+#wcadiqhprv .gt_group_heading {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -2617,7 +2622,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 text-align: left;
 }
-#tvcbsrkfys .gt_empty_group_heading {
+#wcadiqhprv .gt_empty_group_heading {
 padding: 0.5px;
 color: #333333;
 background-color: #FFFFFF;
@@ -2631,13 +2636,13 @@ border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 vertical-align: middle;
 }
-#tvcbsrkfys .gt_from_md > :first-child {
+#wcadiqhprv .gt_from_md > :first-child {
 margin-top: 0;
 }
-#tvcbsrkfys .gt_from_md > :last-child {
+#wcadiqhprv .gt_from_md > :last-child {
 margin-bottom: 0;
 }
-#tvcbsrkfys .gt_row {
+#wcadiqhprv .gt_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -2655,7 +2660,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 overflow-x: hidden;
 }
-#tvcbsrkfys .gt_stub {
+#wcadiqhprv .gt_stub {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -2667,7 +2672,7 @@ border-right-color: #D3D3D3;
 padding-left: 5px;
 padding-right: 5px;
 }
-#tvcbsrkfys .gt_stub_row_group {
+#wcadiqhprv .gt_stub_row_group {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -2680,13 +2685,13 @@ padding-left: 5px;
 padding-right: 5px;
 vertical-align: top;
 }
-#tvcbsrkfys .gt_row_group_first td {
+#wcadiqhprv .gt_row_group_first td {
 border-top-width: 2px;
 }
-#tvcbsrkfys .gt_row_group_first th {
+#wcadiqhprv .gt_row_group_first th {
 border-top-width: 2px;
 }
-#tvcbsrkfys .gt_summary_row {
+#wcadiqhprv .gt_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -2695,14 +2700,14 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#tvcbsrkfys .gt_first_summary_row {
+#wcadiqhprv .gt_first_summary_row {
 border-top-style: solid;
 border-top-color: #D3D3D3;
 }
-#tvcbsrkfys .gt_first_summary_row.thick {
+#wcadiqhprv .gt_first_summary_row.thick {
 border-top-width: 2px;
 }
-#tvcbsrkfys .gt_last_summary_row {
+#wcadiqhprv .gt_last_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -2711,7 +2716,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#tvcbsrkfys .gt_grand_summary_row {
+#wcadiqhprv .gt_grand_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -2720,7 +2725,7 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#tvcbsrkfys .gt_first_grand_summary_row {
+#wcadiqhprv .gt_first_grand_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -2729,7 +2734,7 @@ border-top-style: double;
 border-top-width: 6px;
 border-top-color: #D3D3D3;
 }
-#tvcbsrkfys .gt_last_grand_summary_row_top {
+#wcadiqhprv .gt_last_grand_summary_row_top {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -2738,10 +2743,10 @@ border-bottom-style: double;
 border-bottom-width: 6px;
 border-bottom-color: #D3D3D3;
 }
-#tvcbsrkfys .gt_striped {
+#wcadiqhprv .gt_striped {
 background-color: rgba(128, 128, 128, 0.05);
 }
-#tvcbsrkfys .gt_table_body {
+#wcadiqhprv .gt_table_body {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -2749,7 +2754,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#tvcbsrkfys .gt_footnotes {
+#wcadiqhprv .gt_footnotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -2762,7 +2767,7 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#tvcbsrkfys .gt_footnote {
+#wcadiqhprv .gt_footnote {
 margin: 0px;
 font-size: 90%;
 padding-top: 4px;
@@ -2770,7 +2775,7 @@ padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#tvcbsrkfys .gt_sourcenotes {
+#wcadiqhprv .gt_sourcenotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -2783,64 +2788,64 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#tvcbsrkfys .gt_sourcenote {
+#wcadiqhprv .gt_sourcenote {
 font-size: 90%;
 padding-top: 4px;
 padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#tvcbsrkfys .gt_left {
+#wcadiqhprv .gt_left {
 text-align: left;
 }
-#tvcbsrkfys .gt_center {
+#wcadiqhprv .gt_center {
 text-align: center;
 }
-#tvcbsrkfys .gt_right {
+#wcadiqhprv .gt_right {
 text-align: right;
 font-variant-numeric: tabular-nums;
 }
-#tvcbsrkfys .gt_font_normal {
+#wcadiqhprv .gt_font_normal {
 font-weight: normal;
 }
-#tvcbsrkfys .gt_font_bold {
+#wcadiqhprv .gt_font_bold {
 font-weight: bold;
 }
-#tvcbsrkfys .gt_font_italic {
+#wcadiqhprv .gt_font_italic {
 font-style: italic;
 }
-#tvcbsrkfys .gt_super {
+#wcadiqhprv .gt_super {
 font-size: 65%;
 }
-#tvcbsrkfys .gt_footnote_marks {
+#wcadiqhprv .gt_footnote_marks {
 font-size: 75%;
 vertical-align: 0.4em;
 position: initial;
 }
-#tvcbsrkfys .gt_asterisk {
+#wcadiqhprv .gt_asterisk {
 font-size: 100%;
 vertical-align: 0;
 }
-#tvcbsrkfys .gt_indent_1 {
+#wcadiqhprv .gt_indent_1 {
 text-indent: 5px;
 }
-#tvcbsrkfys .gt_indent_2 {
+#wcadiqhprv .gt_indent_2 {
 text-indent: 10px;
 }
-#tvcbsrkfys .gt_indent_3 {
+#wcadiqhprv .gt_indent_3 {
 text-indent: 15px;
 }
-#tvcbsrkfys .gt_indent_4 {
+#wcadiqhprv .gt_indent_4 {
 text-indent: 20px;
 }
-#tvcbsrkfys .gt_indent_5 {
+#wcadiqhprv .gt_indent_5 {
 text-indent: 25px;
 }
-#tvcbsrkfys .katex-display {
+#wcadiqhprv .katex-display {
 display: inline-flex !important;
 margin-bottom: 0.75em !important;
 }
-#tvcbsrkfys div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#wcadiqhprv div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
 height: 0px !important;
 }
 </style>
@@ -2964,7 +2969,7 @@ height: 0px !important;
 <details open class="code-fold">
 <summary>Show/Hide Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Suppose 1000 new trials reporting TE on surrogate endpoint only</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>new.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">PFS.ln.HR =</span> <span class="fu">log</span>(<span class="fu">seq</span>(<span class="fl">0.2</span>,<span class="dv">3</span>, <span class="at">length=</span><span class="dv">1000</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>new.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">PFS.ln.HR =</span> <span class="fu">log</span>(<span class="fu">seq</span>(<span class="fl">0.2</span>, <span class="dv">3</span>, <span class="at">length =</span> <span class="dv">1000</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
@@ -3035,20 +3040,20 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div id="ifdygpmyal" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#ifdygpmyal table {
+<div id="foobbdckjg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#foobbdckjg table {
 font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
-#ifdygpmyal thead, #ifdygpmyal tbody, #ifdygpmyal tfoot, #ifdygpmyal tr, #ifdygpmyal td, #ifdygpmyal th {
+#foobbdckjg thead, #foobbdckjg tbody, #foobbdckjg tfoot, #foobbdckjg tr, #foobbdckjg td, #foobbdckjg th {
 border-style: none;
 }
-#ifdygpmyal p {
+#foobbdckjg p {
 margin: 0;
 padding: 0;
 }
-#ifdygpmyal .gt_table {
+#foobbdckjg .gt_table {
 display: table;
 border-collapse: collapse;
 line-height: normal;
@@ -3073,11 +3078,11 @@ border-left-style: none;
 border-left-width: 2px;
 border-left-color: #D3D3D3;
 }
-#ifdygpmyal .gt_caption {
+#foobbdckjg .gt_caption {
 padding-top: 4px;
 padding-bottom: 4px;
 }
-#ifdygpmyal .gt_title {
+#foobbdckjg .gt_title {
 color: #333333;
 font-size: 125%;
 font-weight: initial;
@@ -3088,7 +3093,7 @@ padding-right: 5px;
 border-bottom-color: #FFFFFF;
 border-bottom-width: 0;
 }
-#ifdygpmyal .gt_subtitle {
+#foobbdckjg .gt_subtitle {
 color: #333333;
 font-size: 85%;
 font-weight: initial;
@@ -3099,7 +3104,7 @@ padding-right: 5px;
 border-top-color: #FFFFFF;
 border-top-width: 0;
 }
-#ifdygpmyal .gt_heading {
+#foobbdckjg .gt_heading {
 background-color: #FFFFFF;
 text-align: center;
 border-bottom-color: #FFFFFF;
@@ -3110,12 +3115,12 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#ifdygpmyal .gt_bottom_border {
+#foobbdckjg .gt_bottom_border {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#ifdygpmyal .gt_col_headings {
+#foobbdckjg .gt_col_headings {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -3129,7 +3134,7 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#ifdygpmyal .gt_col_heading {
+#foobbdckjg .gt_col_heading {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3148,7 +3153,7 @@ padding-left: 5px;
 padding-right: 5px;
 overflow-x: hidden;
 }
-#ifdygpmyal .gt_column_spanner_outer {
+#foobbdckjg .gt_column_spanner_outer {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3159,13 +3164,13 @@ padding-bottom: 0;
 padding-left: 4px;
 padding-right: 4px;
 }
-#ifdygpmyal .gt_column_spanner_outer:first-child {
+#foobbdckjg .gt_column_spanner_outer:first-child {
 padding-left: 0;
 }
-#ifdygpmyal .gt_column_spanner_outer:last-child {
+#foobbdckjg .gt_column_spanner_outer:last-child {
 padding-right: 0;
 }
-#ifdygpmyal .gt_column_spanner {
+#foobbdckjg .gt_column_spanner {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
@@ -3176,10 +3181,10 @@ overflow-x: hidden;
 display: inline-block;
 width: 100%;
 }
-#ifdygpmyal .gt_spanner_row {
+#foobbdckjg .gt_spanner_row {
 border-bottom-style: hidden;
 }
-#ifdygpmyal .gt_group_heading {
+#foobbdckjg .gt_group_heading {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3204,7 +3209,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 text-align: left;
 }
-#ifdygpmyal .gt_empty_group_heading {
+#foobbdckjg .gt_empty_group_heading {
 padding: 0.5px;
 color: #333333;
 background-color: #FFFFFF;
@@ -3218,13 +3223,13 @@ border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 vertical-align: middle;
 }
-#ifdygpmyal .gt_from_md > :first-child {
+#foobbdckjg .gt_from_md > :first-child {
 margin-top: 0;
 }
-#ifdygpmyal .gt_from_md > :last-child {
+#foobbdckjg .gt_from_md > :last-child {
 margin-bottom: 0;
 }
-#ifdygpmyal .gt_row {
+#foobbdckjg .gt_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3242,7 +3247,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 overflow-x: hidden;
 }
-#ifdygpmyal .gt_stub {
+#foobbdckjg .gt_stub {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3254,7 +3259,7 @@ border-right-color: #D3D3D3;
 padding-left: 5px;
 padding-right: 5px;
 }
-#ifdygpmyal .gt_stub_row_group {
+#foobbdckjg .gt_stub_row_group {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3267,13 +3272,13 @@ padding-left: 5px;
 padding-right: 5px;
 vertical-align: top;
 }
-#ifdygpmyal .gt_row_group_first td {
+#foobbdckjg .gt_row_group_first td {
 border-top-width: 2px;
 }
-#ifdygpmyal .gt_row_group_first th {
+#foobbdckjg .gt_row_group_first th {
 border-top-width: 2px;
 }
-#ifdygpmyal .gt_summary_row {
+#foobbdckjg .gt_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -3282,14 +3287,14 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#ifdygpmyal .gt_first_summary_row {
+#foobbdckjg .gt_first_summary_row {
 border-top-style: solid;
 border-top-color: #D3D3D3;
 }
-#ifdygpmyal .gt_first_summary_row.thick {
+#foobbdckjg .gt_first_summary_row.thick {
 border-top-width: 2px;
 }
-#ifdygpmyal .gt_last_summary_row {
+#foobbdckjg .gt_last_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3298,7 +3303,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#ifdygpmyal .gt_grand_summary_row {
+#foobbdckjg .gt_grand_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -3307,7 +3312,7 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#ifdygpmyal .gt_first_grand_summary_row {
+#foobbdckjg .gt_first_grand_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3316,7 +3321,7 @@ border-top-style: double;
 border-top-width: 6px;
 border-top-color: #D3D3D3;
 }
-#ifdygpmyal .gt_last_grand_summary_row_top {
+#foobbdckjg .gt_last_grand_summary_row_top {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3325,10 +3330,10 @@ border-bottom-style: double;
 border-bottom-width: 6px;
 border-bottom-color: #D3D3D3;
 }
-#ifdygpmyal .gt_striped {
+#foobbdckjg .gt_striped {
 background-color: rgba(128, 128, 128, 0.05);
 }
-#ifdygpmyal .gt_table_body {
+#foobbdckjg .gt_table_body {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -3336,7 +3341,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#ifdygpmyal .gt_footnotes {
+#foobbdckjg .gt_footnotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -3349,7 +3354,7 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#ifdygpmyal .gt_footnote {
+#foobbdckjg .gt_footnote {
 margin: 0px;
 font-size: 90%;
 padding-top: 4px;
@@ -3357,7 +3362,7 @@ padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#ifdygpmyal .gt_sourcenotes {
+#foobbdckjg .gt_sourcenotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -3370,64 +3375,64 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#ifdygpmyal .gt_sourcenote {
+#foobbdckjg .gt_sourcenote {
 font-size: 90%;
 padding-top: 4px;
 padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#ifdygpmyal .gt_left {
+#foobbdckjg .gt_left {
 text-align: left;
 }
-#ifdygpmyal .gt_center {
+#foobbdckjg .gt_center {
 text-align: center;
 }
-#ifdygpmyal .gt_right {
+#foobbdckjg .gt_right {
 text-align: right;
 font-variant-numeric: tabular-nums;
 }
-#ifdygpmyal .gt_font_normal {
+#foobbdckjg .gt_font_normal {
 font-weight: normal;
 }
-#ifdygpmyal .gt_font_bold {
+#foobbdckjg .gt_font_bold {
 font-weight: bold;
 }
-#ifdygpmyal .gt_font_italic {
+#foobbdckjg .gt_font_italic {
 font-style: italic;
 }
-#ifdygpmyal .gt_super {
+#foobbdckjg .gt_super {
 font-size: 65%;
 }
-#ifdygpmyal .gt_footnote_marks {
+#foobbdckjg .gt_footnote_marks {
 font-size: 75%;
 vertical-align: 0.4em;
 position: initial;
 }
-#ifdygpmyal .gt_asterisk {
+#foobbdckjg .gt_asterisk {
 font-size: 100%;
 vertical-align: 0;
 }
-#ifdygpmyal .gt_indent_1 {
+#foobbdckjg .gt_indent_1 {
 text-indent: 5px;
 }
-#ifdygpmyal .gt_indent_2 {
+#foobbdckjg .gt_indent_2 {
 text-indent: 10px;
 }
-#ifdygpmyal .gt_indent_3 {
+#foobbdckjg .gt_indent_3 {
 text-indent: 15px;
 }
-#ifdygpmyal .gt_indent_4 {
+#foobbdckjg .gt_indent_4 {
 text-indent: 20px;
 }
-#ifdygpmyal .gt_indent_5 {
+#foobbdckjg .gt_indent_5 {
 text-indent: 25px;
 }
-#ifdygpmyal .katex-display {
+#foobbdckjg .katex-display {
 display: inline-flex !important;
 margin-bottom: 0.75em !important;
 }
-#ifdygpmyal div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#foobbdckjg div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
 height: 0px !important;
 }
 </style>
@@ -3494,20 +3499,20 @@ height: 0px !important;
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div id="nfqaclkppe" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#nfqaclkppe table {
+<div id="uicsensswy" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#uicsensswy table {
 font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
-#nfqaclkppe thead, #nfqaclkppe tbody, #nfqaclkppe tfoot, #nfqaclkppe tr, #nfqaclkppe td, #nfqaclkppe th {
+#uicsensswy thead, #uicsensswy tbody, #uicsensswy tfoot, #uicsensswy tr, #uicsensswy td, #uicsensswy th {
 border-style: none;
 }
-#nfqaclkppe p {
+#uicsensswy p {
 margin: 0;
 padding: 0;
 }
-#nfqaclkppe .gt_table {
+#uicsensswy .gt_table {
 display: table;
 border-collapse: collapse;
 line-height: normal;
@@ -3532,11 +3537,11 @@ border-left-style: none;
 border-left-width: 2px;
 border-left-color: #D3D3D3;
 }
-#nfqaclkppe .gt_caption {
+#uicsensswy .gt_caption {
 padding-top: 4px;
 padding-bottom: 4px;
 }
-#nfqaclkppe .gt_title {
+#uicsensswy .gt_title {
 color: #333333;
 font-size: 125%;
 font-weight: initial;
@@ -3547,7 +3552,7 @@ padding-right: 5px;
 border-bottom-color: #FFFFFF;
 border-bottom-width: 0;
 }
-#nfqaclkppe .gt_subtitle {
+#uicsensswy .gt_subtitle {
 color: #333333;
 font-size: 85%;
 font-weight: initial;
@@ -3558,7 +3563,7 @@ padding-right: 5px;
 border-top-color: #FFFFFF;
 border-top-width: 0;
 }
-#nfqaclkppe .gt_heading {
+#uicsensswy .gt_heading {
 background-color: #FFFFFF;
 text-align: center;
 border-bottom-color: #FFFFFF;
@@ -3569,12 +3574,12 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#nfqaclkppe .gt_bottom_border {
+#uicsensswy .gt_bottom_border {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#nfqaclkppe .gt_col_headings {
+#uicsensswy .gt_col_headings {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -3588,7 +3593,7 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#nfqaclkppe .gt_col_heading {
+#uicsensswy .gt_col_heading {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3607,7 +3612,7 @@ padding-left: 5px;
 padding-right: 5px;
 overflow-x: hidden;
 }
-#nfqaclkppe .gt_column_spanner_outer {
+#uicsensswy .gt_column_spanner_outer {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3618,13 +3623,13 @@ padding-bottom: 0;
 padding-left: 4px;
 padding-right: 4px;
 }
-#nfqaclkppe .gt_column_spanner_outer:first-child {
+#uicsensswy .gt_column_spanner_outer:first-child {
 padding-left: 0;
 }
-#nfqaclkppe .gt_column_spanner_outer:last-child {
+#uicsensswy .gt_column_spanner_outer:last-child {
 padding-right: 0;
 }
-#nfqaclkppe .gt_column_spanner {
+#uicsensswy .gt_column_spanner {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
@@ -3635,10 +3640,10 @@ overflow-x: hidden;
 display: inline-block;
 width: 100%;
 }
-#nfqaclkppe .gt_spanner_row {
+#uicsensswy .gt_spanner_row {
 border-bottom-style: hidden;
 }
-#nfqaclkppe .gt_group_heading {
+#uicsensswy .gt_group_heading {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3663,7 +3668,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 text-align: left;
 }
-#nfqaclkppe .gt_empty_group_heading {
+#uicsensswy .gt_empty_group_heading {
 padding: 0.5px;
 color: #333333;
 background-color: #FFFFFF;
@@ -3677,13 +3682,13 @@ border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 vertical-align: middle;
 }
-#nfqaclkppe .gt_from_md > :first-child {
+#uicsensswy .gt_from_md > :first-child {
 margin-top: 0;
 }
-#nfqaclkppe .gt_from_md > :last-child {
+#uicsensswy .gt_from_md > :last-child {
 margin-bottom: 0;
 }
-#nfqaclkppe .gt_row {
+#uicsensswy .gt_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3701,7 +3706,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 overflow-x: hidden;
 }
-#nfqaclkppe .gt_stub {
+#uicsensswy .gt_stub {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3713,7 +3718,7 @@ border-right-color: #D3D3D3;
 padding-left: 5px;
 padding-right: 5px;
 }
-#nfqaclkppe .gt_stub_row_group {
+#uicsensswy .gt_stub_row_group {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3726,13 +3731,13 @@ padding-left: 5px;
 padding-right: 5px;
 vertical-align: top;
 }
-#nfqaclkppe .gt_row_group_first td {
+#uicsensswy .gt_row_group_first td {
 border-top-width: 2px;
 }
-#nfqaclkppe .gt_row_group_first th {
+#uicsensswy .gt_row_group_first th {
 border-top-width: 2px;
 }
-#nfqaclkppe .gt_summary_row {
+#uicsensswy .gt_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -3741,14 +3746,14 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#nfqaclkppe .gt_first_summary_row {
+#uicsensswy .gt_first_summary_row {
 border-top-style: solid;
 border-top-color: #D3D3D3;
 }
-#nfqaclkppe .gt_first_summary_row.thick {
+#uicsensswy .gt_first_summary_row.thick {
 border-top-width: 2px;
 }
-#nfqaclkppe .gt_last_summary_row {
+#uicsensswy .gt_last_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3757,7 +3762,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#nfqaclkppe .gt_grand_summary_row {
+#uicsensswy .gt_grand_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -3766,7 +3771,7 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#nfqaclkppe .gt_first_grand_summary_row {
+#uicsensswy .gt_first_grand_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3775,7 +3780,7 @@ border-top-style: double;
 border-top-width: 6px;
 border-top-color: #D3D3D3;
 }
-#nfqaclkppe .gt_last_grand_summary_row_top {
+#uicsensswy .gt_last_grand_summary_row_top {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3784,10 +3789,10 @@ border-bottom-style: double;
 border-bottom-width: 6px;
 border-bottom-color: #D3D3D3;
 }
-#nfqaclkppe .gt_striped {
+#uicsensswy .gt_striped {
 background-color: rgba(128, 128, 128, 0.05);
 }
-#nfqaclkppe .gt_table_body {
+#uicsensswy .gt_table_body {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -3795,7 +3800,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#nfqaclkppe .gt_footnotes {
+#uicsensswy .gt_footnotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -3808,7 +3813,7 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#nfqaclkppe .gt_footnote {
+#uicsensswy .gt_footnote {
 margin: 0px;
 font-size: 90%;
 padding-top: 4px;
@@ -3816,7 +3821,7 @@ padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#nfqaclkppe .gt_sourcenotes {
+#uicsensswy .gt_sourcenotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -3829,64 +3834,64 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#nfqaclkppe .gt_sourcenote {
+#uicsensswy .gt_sourcenote {
 font-size: 90%;
 padding-top: 4px;
 padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#nfqaclkppe .gt_left {
+#uicsensswy .gt_left {
 text-align: left;
 }
-#nfqaclkppe .gt_center {
+#uicsensswy .gt_center {
 text-align: center;
 }
-#nfqaclkppe .gt_right {
+#uicsensswy .gt_right {
 text-align: right;
 font-variant-numeric: tabular-nums;
 }
-#nfqaclkppe .gt_font_normal {
+#uicsensswy .gt_font_normal {
 font-weight: normal;
 }
-#nfqaclkppe .gt_font_bold {
+#uicsensswy .gt_font_bold {
 font-weight: bold;
 }
-#nfqaclkppe .gt_font_italic {
+#uicsensswy .gt_font_italic {
 font-style: italic;
 }
-#nfqaclkppe .gt_super {
+#uicsensswy .gt_super {
 font-size: 65%;
 }
-#nfqaclkppe .gt_footnote_marks {
+#uicsensswy .gt_footnote_marks {
 font-size: 75%;
 vertical-align: 0.4em;
 position: initial;
 }
-#nfqaclkppe .gt_asterisk {
+#uicsensswy .gt_asterisk {
 font-size: 100%;
 vertical-align: 0;
 }
-#nfqaclkppe .gt_indent_1 {
+#uicsensswy .gt_indent_1 {
 text-indent: 5px;
 }
-#nfqaclkppe .gt_indent_2 {
+#uicsensswy .gt_indent_2 {
 text-indent: 10px;
 }
-#nfqaclkppe .gt_indent_3 {
+#uicsensswy .gt_indent_3 {
 text-indent: 15px;
 }
-#nfqaclkppe .gt_indent_4 {
+#uicsensswy .gt_indent_4 {
 text-indent: 20px;
 }
-#nfqaclkppe .gt_indent_5 {
+#uicsensswy .gt_indent_5 {
 text-indent: 25px;
 }
-#nfqaclkppe .katex-display {
+#uicsensswy .katex-display {
 display: inline-flex !important;
 margin-bottom: 0.75em !important;
 }
-#nfqaclkppe div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#uicsensswy div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
 height: 0px !important;
 }
 </style>
@@ -4014,8 +4019,101 @@ height: 0px !important;
 <pre><code>[1] 0.906</code></pre>
 </div>
 </div>
+</section>
+<section id="leave-one-out-cross-validation" class="level2">
+<h2 class="anchored" data-anchor-id="leave-one-out-cross-validation">Leave-one-out Cross-validation</h2>
+<p>Leave-one-out cross-validation (LOOCV) is performed by selecting each trial in a data set in turns and using it as the validation set while using the rest <span class="math inline">\((n-1)\)</span> of the trials as the training set. This is repeated <span class="math inline">\(n\)</span> times. For each iteration in the LOOCV procedure, models are ﬁtted to the training set, and the dependent variable of interest (target endpoint) is predicted on the basis of the explanatory variable(s) in the models (surrogate endpoint) in the validation set.</p>
+<p>Two different criteria were used to assess the performance of each model for each iteration of the LOOCV. For each criterion, the median and range of the output values were used to assess model performance.</p>
+<section id="proportion-of-actual-values-from-the-validation-set-that-lies-within-the-95-prediction-interval-from-the-training-set" class="level3">
+<h3 class="anchored" data-anchor-id="proportion-of-actual-values-from-the-validation-set-that-lies-within-the-95-prediction-interval-from-the-training-set">Proportion of actual values from the validation set that lies within the 95% prediction interval from the training set</h3>
+<p>The steps are as follows:</p>
+<ul>
+<li>Leave out <span class="math inline">\(i-\)</span>th study and train the model with remaining <span class="math inline">\(n - 1\)</span> studies.</li>
+<li>Obtain <span class="math inline">\(95\%\)</span> prediction interval for the treatment effect on target endpoint (OS) in the left-out trial, using its surrogate endpoint (PFS) treatment effect.</li>
+<li>Simulate <span class="math inline">\(1000\)</span> OS treatment effects based on normal distribution using the observed OS treatment effect and its standard error from the left-out trial.</li>
+<li>Calculate the proportion of the <span class="math inline">\(1000\)</span> simulated values falling within the prediction interval, <span class="math inline">\(p_i\)</span>.</li>
+<li>Repeat these steps for all the studies, leaving out one at a time.</li>
+<li>Calculate <span class="math inline">\(median(p_1, \ldots, p_n)\)</span> and <span class="math inline">\(range(p_1, \ldots, p_n)\)</span>.</li>
+</ul>
+<div class="cell">
+<details open class="code-fold">
+<summary>Show/Hide Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(df1)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>prop <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>absolute.difference <span class="ot">&lt;-</span> <span class="fu">c</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<details open class="code-fold">
+<summary>Show/Hide Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df1[<span class="sc">-</span>i,]</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> metafor<span class="sc">::</span><span class="fu">rma</span>(OS.ln.HR <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> PFS.ln.HR, <span class="at">sei =</span> OS.se, <span class="at">data =</span> df, <span class="at">method =</span> <span class="st">&quot;FE&quot;</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  new.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">PFS.ln.HR =</span> df1<span class="sc">$</span>PFS.ln.HR[i])</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  FEMR.ci <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">predict</span>(fit, new.data<span class="sc">$</span>PFS.ln.HR))</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for criterion 1</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  simulated.OS.ln.HR <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="at">mean =</span> df1<span class="sc">$</span>OS.ln.HR[i], <span class="at">sd =</span> df1<span class="sc">$</span>OS.se[i])</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  prop[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>((simulated.OS.ln.HR <span class="sc">&gt;=</span> FEMR.ci<span class="sc">$</span>ci.lb) <span class="sc">&amp;</span> (simulated.OS.ln.HR <span class="sc">&lt;=</span> FEMR.ci<span class="sc">$</span>ci.ub))</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for criterion 2</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  absolute.difference[i] <span class="ot">&lt;-</span> <span class="fu">abs</span>(df1<span class="sc">$</span>OS.ln.HR[i] <span class="sc">-</span> FEMR.ci<span class="sc">$</span>pred)</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<details open class="code-fold">
+<summary>Show/Hide Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>median.prop <span class="ot">&lt;-</span> <span class="fu">median</span>(prop)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>median.prop</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.181</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open class="code-fold">
+<summary>Show/Hide Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>range.prop <span class="ot">&lt;-</span> <span class="fu">range</span>(prop)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>range.prop</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.015 0.700</code></pre>
+</div>
+</div>
+</section>
+<section id="absolute-difference-between-mean-predicted-value-and-actual-value" class="level3">
+<h3 class="anchored" data-anchor-id="absolute-difference-between-mean-predicted-value-and-actual-value">Absolute difference between mean predicted value and actual value</h3>
+<p>The absolute difference between the actual log hazard ratio and the predicted log hazard ratio for OS for each trial left out will be recorded.</p>
+<div class="cell">
+<details open class="code-fold">
+<summary>Show/Hide Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>median.absolute.difference <span class="ot">&lt;-</span> <span class="fu">median</span>(absolute.difference)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>median.absolute.difference <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.143</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open class="code-fold">
+<summary>Show/Hide Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>range.absolute.difference <span class="ot">&lt;-</span> <span class="fu">range</span>(absolute.difference)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>range.absolute.difference <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.000 0.521</code></pre>
+</div>
+</div>
 <!-- -->
 
+</section>
 </section>
 
 </main>
@@ -4471,171 +4569,245 @@ height: 0px !important;
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;Frequentist Fixed-effects Meta Regression&quot;</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> &quot;Ananda Biswas&quot;</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> &quot;`r Sys.Date()`&quot;</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> </span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">    embed-resources: true</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 3</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: right</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co">    code-summary: &quot;Show/Hide Code&quot;</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="an">knitr:</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co">  opts_chunk:</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="co">    fig.path: &quot;figures/&quot;</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="fu">## Required Libraries</span></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="in">```{r message=FALSE, warning=FALSE}</span></span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(metafor)</span>
-<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a><span class="fu">## Loading Data</span></span>
-<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a><span class="co">#| include: false</span></span>
-<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>data.path <span class="ot">&lt;-</span> <span class="st">&#39;https://github.com/ananda-ebm/datasets/raw/refs/heads/master/NSCLC.xlsx&#39;</span></span>
-<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">read.xlsx</span>(data.path, <span class="at">sheet =</span> <span class="dv">1</span>)</span>
-<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a><span class="fu">## Initial Sanity Checks</span></span>
-<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df1)</span>
-<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-56"><a href="#cb19-56" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(df1)</span>
-<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, results=&#39;asis&#39;}</span></span>
-<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb19-61"><a href="#cb19-61" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: &quot;Snapshot of NSCLC Data&quot;</span></span>
-<span id="cb19-62"><a href="#cb19-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-63"><a href="#cb19-63" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df1) <span class="sc">|&gt;</span></span>
-<span id="cb19-64"><a href="#cb19-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span></span>
-<span id="cb19-65"><a href="#cb19-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_options</span>(</span>
-<span id="cb19-66"><a href="#cb19-66" aria-hidden="true" tabindex="-1"></a>    <span class="at">data_row.padding =</span> <span class="fu">px</span>(<span class="dv">8</span>),</span>
-<span id="cb19-67"><a href="#cb19-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">column_labels.padding =</span> <span class="fu">px</span>(<span class="dv">10</span>)</span>
-<span id="cb19-68"><a href="#cb19-68" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb19-69"><a href="#cb19-69" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-70"><a href="#cb19-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-71"><a href="#cb19-71" aria-hidden="true" tabindex="-1"></a><span class="fu">## Derived Quantities</span></span>
-<span id="cb19-72"><a href="#cb19-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-75"><a href="#cb19-75" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-76"><a href="#cb19-76" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>weight <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">/</span> (df1<span class="sc">$</span>OS.se)<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb19-77"><a href="#cb19-77" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-78"><a href="#cb19-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-79"><a href="#cb19-79" aria-hidden="true" tabindex="-1"></a><span class="fu">## Generating Treatment Effect on Surrogate Endpoint in New Trials</span></span>
-<span id="cb19-80"><a href="#cb19-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-83"><a href="#cb19-83" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-84"><a href="#cb19-84" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(df1<span class="sc">$</span>HR.PFS)</span>
-<span id="cb19-85"><a href="#cb19-85" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-86"><a href="#cb19-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-89"><a href="#cb19-89" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-90"><a href="#cb19-90" aria-hidden="true" tabindex="-1"></a><span class="co"># Suppose 1000 new trials reporting TE on surrogate endpoint only</span></span>
-<span id="cb19-91"><a href="#cb19-91" aria-hidden="true" tabindex="-1"></a>new.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">PFS.ln.HR =</span> <span class="fu">log</span>(<span class="fu">seq</span>(<span class="fl">0.2</span>,<span class="dv">3</span>, <span class="at">length=</span><span class="dv">1000</span>)))</span>
-<span id="cb19-92"><a href="#cb19-92" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-93"><a href="#cb19-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-94"><a href="#cb19-94" aria-hidden="true" tabindex="-1"></a><span class="fu">## Model</span></span>
-<span id="cb19-95"><a href="#cb19-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-96"><a href="#cb19-96" aria-hidden="true" tabindex="-1"></a>Meta-regression is an extension of meta-analysis that includes the surrogate endpoint as a study-level covariate. The model is written as</span>
-<span id="cb19-97"><a href="#cb19-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-98"><a href="#cb19-98" aria-hidden="true" tabindex="-1"></a>$$\widehat{\theta}_i</span>
-<span id="cb19-99"><a href="#cb19-99" aria-hidden="true" tabindex="-1"></a>=</span>
-<span id="cb19-100"><a href="#cb19-100" aria-hidden="true" tabindex="-1"></a>\theta+\beta\widehat{\alpha}_i+\varepsilon_i,</span>
-<span id="cb19-101"><a href="#cb19-101" aria-hidden="true" tabindex="-1"></a>\qquad</span>
-<span id="cb19-102"><a href="#cb19-102" aria-hidden="true" tabindex="-1"></a>i=1,\ldots,N,$$</span>
-<span id="cb19-103"><a href="#cb19-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-104"><a href="#cb19-104" aria-hidden="true" tabindex="-1"></a>where</span>
-<span id="cb19-105"><a href="#cb19-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-106"><a href="#cb19-106" aria-hidden="true" tabindex="-1"></a>$$\varepsilon_i</span>
-<span id="cb19-107"><a href="#cb19-107" aria-hidden="true" tabindex="-1"></a>\overset{\mathrm{iid}}{\sim}</span>
-<span id="cb19-108"><a href="#cb19-108" aria-hidden="true" tabindex="-1"></a>N(0,\sigma^2).$$ Here:</span>
-<span id="cb19-109"><a href="#cb19-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-110"><a href="#cb19-110" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\widehat{\theta}_i$ = estimated treatment effect on the final endpoint in study $i$;</span>
-<span id="cb19-111"><a href="#cb19-111" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\widehat{\alpha}_i$ = estimated treatment effect on the surrogate endpoint in study $i$;</span>
-<span id="cb19-112"><a href="#cb19-112" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\theta$ = intercept;</span>
-<span id="cb19-113"><a href="#cb19-113" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\beta$ = regression coefficient describing the association between surrogate and final treatment effects.</span>
-<span id="cb19-114"><a href="#cb19-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-115"><a href="#cb19-115" aria-hidden="true" tabindex="-1"></a>Here we assume that $\theta$ is common for all studies and the only reason observed treatment effect $\widehat{\theta_i}$&#39;s are different from $\theta$ is the sampling error (in addition to the observed treatment effect on surrogate endpoint of that study).</span>
-<span id="cb19-116"><a href="#cb19-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-117"><a href="#cb19-117" aria-hidden="true" tabindex="-1"></a><span class="fu">## Model Fitting</span></span>
-<span id="cb19-118"><a href="#cb19-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-121"><a href="#cb19-121" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-122"><a href="#cb19-122" aria-hidden="true" tabindex="-1"></a>fit.FEMR <span class="ot">&lt;-</span> metafor<span class="sc">::</span><span class="fu">rma</span>(OS.ln.HR <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> PFS.ln.HR, <span class="at">sei =</span> OS.se, <span class="at">data =</span> df1, <span class="at">method =</span> <span class="st">&quot;FE&quot;</span>)</span>
-<span id="cb19-123"><a href="#cb19-123" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit.FEMR)</span>
-<span id="cb19-124"><a href="#cb19-124" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-125"><a href="#cb19-125" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-126"><a href="#cb19-126" aria-hidden="true" tabindex="-1"></a><span class="fu">## Prediction of TE on Clinical Outcome in New Trials and Confidence Intervals</span></span>
-<span id="cb19-127"><a href="#cb19-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-128"><a href="#cb19-128" aria-hidden="true" tabindex="-1"></a>We assume that there is no between-trial heterogeneity in either the target or the surrogate endpoint (fixed-effects assumption). So confidence intervals can be interpreted as prediction intervals.</span>
-<span id="cb19-129"><a href="#cb19-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-132"><a href="#cb19-132" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-133"><a href="#cb19-133" aria-hidden="true" tabindex="-1"></a>FEMR.ci <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">predict</span>(fit.FEMR, new.data<span class="sc">$</span>PFS.ln.HR))</span>
-<span id="cb19-134"><a href="#cb19-134" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(FEMR.ci) <span class="sc">|&gt;</span></span>
-<span id="cb19-135"><a href="#cb19-135" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>()</span>
-<span id="cb19-136"><a href="#cb19-136" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-137"><a href="#cb19-137" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-140"><a href="#cb19-140" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-141"><a href="#cb19-141" aria-hidden="true" tabindex="-1"></a>FEMR.ci<span class="sc">$</span>HR.OS <span class="ot">&lt;-</span> <span class="fu">exp</span>(FEMR.ci<span class="sc">$</span>pred)</span>
-<span id="cb19-142"><a href="#cb19-142" aria-hidden="true" tabindex="-1"></a>FEMR.ci<span class="sc">$</span>HR.PFS <span class="ot">&lt;-</span> <span class="fu">exp</span>(new.data<span class="sc">$</span>PFS.ln.HR)</span>
-<span id="cb19-143"><a href="#cb19-143" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-144"><a href="#cb19-144" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(FEMR.ci) <span class="sc">|&gt;</span></span>
-<span id="cb19-145"><a href="#cb19-145" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>()</span>
-<span id="cb19-146"><a href="#cb19-146" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-147"><a href="#cb19-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-148"><a href="#cb19-148" aria-hidden="true" tabindex="-1"></a><span class="fu">## Trial-level Association Plot</span></span>
-<span id="cb19-149"><a href="#cb19-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-152"><a href="#cb19-152" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-153"><a href="#cb19-153" aria-hidden="true" tabindex="-1"></a>FEMR.association.plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df1, <span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">y =</span> HR.OS)) <span class="sc">+</span></span>
-<span id="cb19-154"><a href="#cb19-154" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">ymin =</span> <span class="fu">exp</span>(ci.lb), <span class="at">ymax =</span> <span class="fu">exp</span>(ci.ub)), <span class="at">data =</span> FEMR.ci, <span class="at">fill =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb19-155"><a href="#cb19-155" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">y =</span> HR.OS), <span class="at">data =</span> FEMR.ci, <span class="at">stat =</span> <span class="st">&#39;identity&#39;</span>) <span class="sc">+</span></span>
-<span id="cb19-156"><a href="#cb19-156" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">size =</span> weight), <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">col =</span> <span class="st">&quot;gray30&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;orange&quot;</span>) <span class="sc">+</span></span>
-<span id="cb19-157"><a href="#cb19-157" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">transform =</span> <span class="st">&quot;log&quot;</span>,</span>
-<span id="cb19-158"><a href="#cb19-158" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">3.1</span>),</span>
-<span id="cb19-159"><a href="#cb19-159" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>,<span class="fl">0.4</span>,<span class="fl">0.5</span>,<span class="fl">0.7</span>,<span class="dv">1</span>,<span class="fl">1.2</span>,<span class="fl">1.5</span>,<span class="dv">2</span>,<span class="dv">3</span>),</span>
-<span id="cb19-160"><a href="#cb19-160" aria-hidden="true" tabindex="-1"></a>                     <span class="at">expand =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>)) <span class="sc">+</span></span>
-<span id="cb19-161"><a href="#cb19-161" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">transform =</span> <span class="st">&quot;log&quot;</span>,</span>
-<span id="cb19-162"><a href="#cb19-162" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">3.1</span>),</span>
-<span id="cb19-163"><a href="#cb19-163" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>,<span class="fl">0.4</span>,<span class="fl">0.5</span>,<span class="fl">0.7</span>,<span class="dv">1</span>,<span class="fl">1.2</span>,<span class="fl">1.5</span>,<span class="dv">2</span>,<span class="dv">3</span>),</span>
-<span id="cb19-164"><a href="#cb19-164" aria-hidden="true" tabindex="-1"></a>                     <span class="at">expand =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>)) <span class="sc">+</span></span>
-<span id="cb19-165"><a href="#cb19-165" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">&#39;dashed&#39;</span>) <span class="sc">+</span></span>
-<span id="cb19-166"><a href="#cb19-166" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Progression-free survival hazard ratio (log scale)&quot;</span>)<span class="sc">+</span> </span>
-<span id="cb19-167"><a href="#cb19-167" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">&quot;Overall survival hazard ratio&quot;</span> , <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="st">&quot;\U00B1&quot;</span>, <span class="st">&quot;95% confidence and prediction intervals (log scale)&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb19-168"><a href="#cb19-168" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Frequentist Fixed-effects Meta-regression&quot;</span>) <span class="sc">+</span></span>
-<span id="cb19-169"><a href="#cb19-169" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb19-170"><a href="#cb19-170" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_hue</span>(<span class="st">&quot;trial&quot;</span>) <span class="sc">+</span></span>
-<span id="cb19-171"><a href="#cb19-171" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
-<span id="cb19-172"><a href="#cb19-172" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-173"><a href="#cb19-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-174"><a href="#cb19-174" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.width=8, fig.height=6, out.width=&quot;100%&quot;}</span></span>
-<span id="cb19-175"><a href="#cb19-175" aria-hidden="true" tabindex="-1"></a>FEMR.association.plot</span>
-<span id="cb19-176"><a href="#cb19-176" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-177"><a href="#cb19-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-178"><a href="#cb19-178" aria-hidden="true" tabindex="-1"></a><span class="fu">## Surrogate Threshold Effect</span></span>
-<span id="cb19-179"><a href="#cb19-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-182"><a href="#cb19-182" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb19-183"><a href="#cb19-183" aria-hidden="true" tabindex="-1"></a>candidate.HR.PFS <span class="ot">&lt;-</span> FEMR.ci <span class="sc">%&gt;%</span></span>
-<span id="cb19-184"><a href="#cb19-184" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ci.ub <span class="sc">&lt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb19-185"><a href="#cb19-185" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(HR.PFS)</span>
-<span id="cb19-186"><a href="#cb19-186" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-187"><a href="#cb19-187" aria-hidden="true" tabindex="-1"></a>FEMR.STE <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">max</span>(candidate.HR.PFS), <span class="at">digits =</span> <span class="dv">3</span>)</span>
-<span id="cb19-188"><a href="#cb19-188" aria-hidden="true" tabindex="-1"></a>FEMR.STE</span>
-<span id="cb19-189"><a href="#cb19-189" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;Frequentist Fixed-effects Meta Regression&quot;</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> &quot;Ananda Biswas&quot;</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> &quot;`r Sys.Date()`&quot;</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> </span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="co">    embed-resources: true</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 3</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: right</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a><span class="co">    code-summary: &quot;Show/Hide Code&quot;</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a><span class="an">knitr:</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a><span class="co">  opts_chunk:</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a><span class="co">    fig.path: &quot;figures/&quot;</span></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a><span class="fu">## Required Libraries</span></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a><span class="in">```{r message=FALSE, warning=FALSE}</span></span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(metafor)</span>
+<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a><span class="fu">## Loading Data</span></span>
+<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-34"><a href="#cb29-34" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-35"><a href="#cb29-35" aria-hidden="true" tabindex="-1"></a><span class="co">#| include: false</span></span>
+<span id="cb29-36"><a href="#cb29-36" aria-hidden="true" tabindex="-1"></a>data.path <span class="ot">&lt;-</span> <span class="st">&#39;https://github.com/ananda-ebm/datasets/raw/refs/heads/master/NSCLC.xlsx&#39;</span></span>
+<span id="cb29-37"><a href="#cb29-37" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-38"><a href="#cb29-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-41"><a href="#cb29-41" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-42"><a href="#cb29-42" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">read.xlsx</span>(data.path, <span class="at">sheet =</span> <span class="dv">1</span>)</span>
+<span id="cb29-43"><a href="#cb29-43" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-44"><a href="#cb29-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-45"><a href="#cb29-45" aria-hidden="true" tabindex="-1"></a><span class="fu">## Initial Sanity Checks</span></span>
+<span id="cb29-46"><a href="#cb29-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-49"><a href="#cb29-49" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-50"><a href="#cb29-50" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df1)</span>
+<span id="cb29-51"><a href="#cb29-51" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-52"><a href="#cb29-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-55"><a href="#cb29-55" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-56"><a href="#cb29-56" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(df1)</span>
+<span id="cb29-57"><a href="#cb29-57" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-58"><a href="#cb29-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-59"><a href="#cb29-59" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, results=&#39;asis&#39;}</span></span>
+<span id="cb29-60"><a href="#cb29-60" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb29-61"><a href="#cb29-61" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: &quot;Snapshot of NSCLC Data&quot;</span></span>
+<span id="cb29-62"><a href="#cb29-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-63"><a href="#cb29-63" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df1) <span class="sc">|&gt;</span></span>
+<span id="cb29-64"><a href="#cb29-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span></span>
+<span id="cb29-65"><a href="#cb29-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_options</span>(</span>
+<span id="cb29-66"><a href="#cb29-66" aria-hidden="true" tabindex="-1"></a>    <span class="at">data_row.padding =</span> <span class="fu">px</span>(<span class="dv">8</span>),</span>
+<span id="cb29-67"><a href="#cb29-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">column_labels.padding =</span> <span class="fu">px</span>(<span class="dv">10</span>)</span>
+<span id="cb29-68"><a href="#cb29-68" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb29-69"><a href="#cb29-69" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-70"><a href="#cb29-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-71"><a href="#cb29-71" aria-hidden="true" tabindex="-1"></a><span class="fu">## Derived Quantities</span></span>
+<span id="cb29-72"><a href="#cb29-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-75"><a href="#cb29-75" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-76"><a href="#cb29-76" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>weight <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">/</span> (df1<span class="sc">$</span>OS.se)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb29-77"><a href="#cb29-77" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-78"><a href="#cb29-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-79"><a href="#cb29-79" aria-hidden="true" tabindex="-1"></a><span class="fu">## Generating Treatment Effect on Surrogate Endpoint in New Trials</span></span>
+<span id="cb29-80"><a href="#cb29-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-83"><a href="#cb29-83" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-84"><a href="#cb29-84" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(df1<span class="sc">$</span>HR.PFS)</span>
+<span id="cb29-85"><a href="#cb29-85" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-86"><a href="#cb29-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-89"><a href="#cb29-89" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-90"><a href="#cb29-90" aria-hidden="true" tabindex="-1"></a><span class="co"># Suppose 1000 new trials reporting TE on surrogate endpoint only</span></span>
+<span id="cb29-91"><a href="#cb29-91" aria-hidden="true" tabindex="-1"></a>new.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">PFS.ln.HR =</span> <span class="fu">log</span>(<span class="fu">seq</span>(<span class="fl">0.2</span>, <span class="dv">3</span>, <span class="at">length =</span> <span class="dv">1000</span>)))</span>
+<span id="cb29-92"><a href="#cb29-92" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-93"><a href="#cb29-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-94"><a href="#cb29-94" aria-hidden="true" tabindex="-1"></a><span class="fu">## Model</span></span>
+<span id="cb29-95"><a href="#cb29-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-96"><a href="#cb29-96" aria-hidden="true" tabindex="-1"></a>Meta-regression is an extension of meta-analysis that includes the surrogate endpoint as a study-level covariate. The model is written as</span>
+<span id="cb29-97"><a href="#cb29-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-98"><a href="#cb29-98" aria-hidden="true" tabindex="-1"></a>$$\widehat{\theta}_i</span>
+<span id="cb29-99"><a href="#cb29-99" aria-hidden="true" tabindex="-1"></a>=</span>
+<span id="cb29-100"><a href="#cb29-100" aria-hidden="true" tabindex="-1"></a>\theta+\beta\widehat{\alpha}_i+\varepsilon_i,</span>
+<span id="cb29-101"><a href="#cb29-101" aria-hidden="true" tabindex="-1"></a>\qquad</span>
+<span id="cb29-102"><a href="#cb29-102" aria-hidden="true" tabindex="-1"></a>i=1,\ldots,N,$$</span>
+<span id="cb29-103"><a href="#cb29-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-104"><a href="#cb29-104" aria-hidden="true" tabindex="-1"></a>where</span>
+<span id="cb29-105"><a href="#cb29-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-106"><a href="#cb29-106" aria-hidden="true" tabindex="-1"></a>$$\varepsilon_i</span>
+<span id="cb29-107"><a href="#cb29-107" aria-hidden="true" tabindex="-1"></a>\overset{\mathrm{iid}}{\sim}</span>
+<span id="cb29-108"><a href="#cb29-108" aria-hidden="true" tabindex="-1"></a>N(0,\sigma^2).$$ Here:</span>
+<span id="cb29-109"><a href="#cb29-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-110"><a href="#cb29-110" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\widehat{\theta}_i$ = estimated treatment effect on the final endpoint in study $i$;</span>
+<span id="cb29-111"><a href="#cb29-111" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\widehat{\alpha}_i$ = estimated treatment effect on the surrogate endpoint in study $i$;</span>
+<span id="cb29-112"><a href="#cb29-112" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\theta$ = intercept;</span>
+<span id="cb29-113"><a href="#cb29-113" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\beta$ = regression coefficient describing the association between surrogate and final treatment effects.</span>
+<span id="cb29-114"><a href="#cb29-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-115"><a href="#cb29-115" aria-hidden="true" tabindex="-1"></a>Here we assume that $\theta$ is common for all studies and the only reason observed treatment effect $\widehat{\theta_i}$&#39;s are different from $\theta$ is the sampling error (in addition to the observed treatment effect on surrogate endpoint of that study).</span>
+<span id="cb29-116"><a href="#cb29-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-117"><a href="#cb29-117" aria-hidden="true" tabindex="-1"></a><span class="fu">## Model Fitting</span></span>
+<span id="cb29-118"><a href="#cb29-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-121"><a href="#cb29-121" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-122"><a href="#cb29-122" aria-hidden="true" tabindex="-1"></a>fit.FEMR <span class="ot">&lt;-</span> metafor<span class="sc">::</span><span class="fu">rma</span>(OS.ln.HR <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> PFS.ln.HR, <span class="at">sei =</span> OS.se, <span class="at">data =</span> df1, <span class="at">method =</span> <span class="st">&quot;FE&quot;</span>)</span>
+<span id="cb29-123"><a href="#cb29-123" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit.FEMR)</span>
+<span id="cb29-124"><a href="#cb29-124" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-125"><a href="#cb29-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-126"><a href="#cb29-126" aria-hidden="true" tabindex="-1"></a><span class="fu">## Prediction of TE on Clinical Outcome in New Trials and Confidence Intervals</span></span>
+<span id="cb29-127"><a href="#cb29-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-128"><a href="#cb29-128" aria-hidden="true" tabindex="-1"></a>We assume that there is no between-trial heterogeneity in either the target or the surrogate endpoint (fixed-effects assumption). So confidence intervals can be interpreted as prediction intervals.</span>
+<span id="cb29-129"><a href="#cb29-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-132"><a href="#cb29-132" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-133"><a href="#cb29-133" aria-hidden="true" tabindex="-1"></a>FEMR.ci <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">predict</span>(fit.FEMR, new.data<span class="sc">$</span>PFS.ln.HR))</span>
+<span id="cb29-134"><a href="#cb29-134" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(FEMR.ci) <span class="sc">|&gt;</span></span>
+<span id="cb29-135"><a href="#cb29-135" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>()</span>
+<span id="cb29-136"><a href="#cb29-136" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-137"><a href="#cb29-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-140"><a href="#cb29-140" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-141"><a href="#cb29-141" aria-hidden="true" tabindex="-1"></a>FEMR.ci<span class="sc">$</span>HR.OS <span class="ot">&lt;-</span> <span class="fu">exp</span>(FEMR.ci<span class="sc">$</span>pred)</span>
+<span id="cb29-142"><a href="#cb29-142" aria-hidden="true" tabindex="-1"></a>FEMR.ci<span class="sc">$</span>HR.PFS <span class="ot">&lt;-</span> <span class="fu">exp</span>(new.data<span class="sc">$</span>PFS.ln.HR)</span>
+<span id="cb29-143"><a href="#cb29-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-144"><a href="#cb29-144" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(FEMR.ci) <span class="sc">|&gt;</span></span>
+<span id="cb29-145"><a href="#cb29-145" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>()</span>
+<span id="cb29-146"><a href="#cb29-146" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-147"><a href="#cb29-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-148"><a href="#cb29-148" aria-hidden="true" tabindex="-1"></a><span class="fu">## Trial-level Association Plot</span></span>
+<span id="cb29-149"><a href="#cb29-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-152"><a href="#cb29-152" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-153"><a href="#cb29-153" aria-hidden="true" tabindex="-1"></a>FEMR.association.plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df1, <span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">y =</span> HR.OS)) <span class="sc">+</span></span>
+<span id="cb29-154"><a href="#cb29-154" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">ymin =</span> <span class="fu">exp</span>(ci.lb), <span class="at">ymax =</span> <span class="fu">exp</span>(ci.ub)), <span class="at">data =</span> FEMR.ci, <span class="at">fill =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb29-155"><a href="#cb29-155" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">x =</span> HR.PFS, <span class="at">y =</span> HR.OS), <span class="at">data =</span> FEMR.ci, <span class="at">stat =</span> <span class="st">&#39;identity&#39;</span>) <span class="sc">+</span></span>
+<span id="cb29-156"><a href="#cb29-156" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">size =</span> weight), <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">col =</span> <span class="st">&quot;gray30&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;orange&quot;</span>) <span class="sc">+</span></span>
+<span id="cb29-157"><a href="#cb29-157" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">transform =</span> <span class="st">&quot;log&quot;</span>,</span>
+<span id="cb29-158"><a href="#cb29-158" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">3.1</span>),</span>
+<span id="cb29-159"><a href="#cb29-159" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>,<span class="fl">0.4</span>,<span class="fl">0.5</span>,<span class="fl">0.7</span>,<span class="dv">1</span>,<span class="fl">1.2</span>,<span class="fl">1.5</span>,<span class="dv">2</span>,<span class="dv">3</span>),</span>
+<span id="cb29-160"><a href="#cb29-160" aria-hidden="true" tabindex="-1"></a>                     <span class="at">expand =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>)) <span class="sc">+</span></span>
+<span id="cb29-161"><a href="#cb29-161" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">transform =</span> <span class="st">&quot;log&quot;</span>,</span>
+<span id="cb29-162"><a href="#cb29-162" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">3.1</span>),</span>
+<span id="cb29-163"><a href="#cb29-163" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>,<span class="fl">0.4</span>,<span class="fl">0.5</span>,<span class="fl">0.7</span>,<span class="dv">1</span>,<span class="fl">1.2</span>,<span class="fl">1.5</span>,<span class="dv">2</span>,<span class="dv">3</span>),</span>
+<span id="cb29-164"><a href="#cb29-164" aria-hidden="true" tabindex="-1"></a>                     <span class="at">expand =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>)) <span class="sc">+</span></span>
+<span id="cb29-165"><a href="#cb29-165" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">&#39;dashed&#39;</span>) <span class="sc">+</span></span>
+<span id="cb29-166"><a href="#cb29-166" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Progression-free survival hazard ratio (log scale)&quot;</span>)<span class="sc">+</span> </span>
+<span id="cb29-167"><a href="#cb29-167" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="fu">paste</span>(<span class="st">&quot;Overall survival hazard ratio&quot;</span> , <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="st">&quot;\U00B1&quot;</span>, <span class="st">&quot;95% confidence and prediction intervals (log scale)&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb29-168"><a href="#cb29-168" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Frequentist Fixed-effects Meta-regression&quot;</span>) <span class="sc">+</span></span>
+<span id="cb29-169"><a href="#cb29-169" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb29-170"><a href="#cb29-170" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_hue</span>(<span class="st">&quot;trial&quot;</span>) <span class="sc">+</span></span>
+<span id="cb29-171"><a href="#cb29-171" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb29-172"><a href="#cb29-172" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-173"><a href="#cb29-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-174"><a href="#cb29-174" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.width=8, fig.height=6, out.width=&quot;100%&quot;}</span></span>
+<span id="cb29-175"><a href="#cb29-175" aria-hidden="true" tabindex="-1"></a>FEMR.association.plot</span>
+<span id="cb29-176"><a href="#cb29-176" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-177"><a href="#cb29-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-178"><a href="#cb29-178" aria-hidden="true" tabindex="-1"></a><span class="fu">## Surrogate Threshold Effect</span></span>
+<span id="cb29-179"><a href="#cb29-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-182"><a href="#cb29-182" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-183"><a href="#cb29-183" aria-hidden="true" tabindex="-1"></a>candidate.HR.PFS <span class="ot">&lt;-</span> FEMR.ci <span class="sc">%&gt;%</span></span>
+<span id="cb29-184"><a href="#cb29-184" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ci.ub <span class="sc">&lt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-185"><a href="#cb29-185" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(HR.PFS)</span>
+<span id="cb29-186"><a href="#cb29-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-187"><a href="#cb29-187" aria-hidden="true" tabindex="-1"></a>FEMR.STE <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">max</span>(candidate.HR.PFS), <span class="at">digits =</span> <span class="dv">3</span>)</span>
+<span id="cb29-188"><a href="#cb29-188" aria-hidden="true" tabindex="-1"></a>FEMR.STE</span>
+<span id="cb29-189"><a href="#cb29-189" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-190"><a href="#cb29-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-191"><a href="#cb29-191" aria-hidden="true" tabindex="-1"></a><span class="fu">## Leave-one-out Cross-validation</span></span>
+<span id="cb29-192"><a href="#cb29-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-193"><a href="#cb29-193" aria-hidden="true" tabindex="-1"></a>Leave-one-out cross-validation (LOOCV) is performed by selecting each trial in a data set in turns and using it as the validation set while using the rest $(n-1)$ of the trials as the training set. This is repeated $n$ times. For each iteration in the LOOCV procedure, models are ﬁtted to the training set, and the dependent variable of interest (target endpoint) is predicted on the basis of the explanatory variable(s) in the models (surrogate endpoint) in the validation set.</span>
+<span id="cb29-194"><a href="#cb29-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-195"><a href="#cb29-195" aria-hidden="true" tabindex="-1"></a>Two different criteria were used to assess the performance of each model for each iteration of the LOOCV. For each criterion, the median and range of the output values were used to assess model performance.</span>
+<span id="cb29-196"><a href="#cb29-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-197"><a href="#cb29-197" aria-hidden="true" tabindex="-1"></a><span class="fu">### Proportion of actual values from the validation set that lies within the 95% prediction interval from the training set</span></span>
+<span id="cb29-198"><a href="#cb29-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-199"><a href="#cb29-199" aria-hidden="true" tabindex="-1"></a>The steps are as follows:</span>
+<span id="cb29-200"><a href="#cb29-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-201"><a href="#cb29-201" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Leave out $i-$th study and train the model with remaining $n - 1$ studies.</span>
+<span id="cb29-202"><a href="#cb29-202" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Obtain $95\%$ prediction interval for the treatment effect on target endpoint (OS) in the left-out trial, using its surrogate endpoint (PFS) treatment effect.</span>
+<span id="cb29-203"><a href="#cb29-203" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Simulate $1000$ OS treatment effects based on normal distribution using the observed OS treatment effect and its standard error from the left-out trial.</span>
+<span id="cb29-204"><a href="#cb29-204" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Calculate the proportion of the $1000$ simulated values falling within the prediction interval, $p_i$.</span>
+<span id="cb29-205"><a href="#cb29-205" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Repeat these steps for all the studies, leaving out one at a time.</span>
+<span id="cb29-206"><a href="#cb29-206" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Calculate $median(p_1, \ldots, p_n)$ and $range(p_1, \ldots, p_n)$.</span>
+<span id="cb29-207"><a href="#cb29-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-210"><a href="#cb29-210" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-211"><a href="#cb29-211" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(df1)</span>
+<span id="cb29-212"><a href="#cb29-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-213"><a href="#cb29-213" aria-hidden="true" tabindex="-1"></a>prop <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb29-214"><a href="#cb29-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-215"><a href="#cb29-215" aria-hidden="true" tabindex="-1"></a>absolute.difference <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb29-216"><a href="#cb29-216" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-217"><a href="#cb29-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-220"><a href="#cb29-220" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-221"><a href="#cb29-221" aria-hidden="true" tabindex="-1"></a><span class="co">#| include: false</span></span>
+<span id="cb29-222"><a href="#cb29-222" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">7</span>)</span>
+<span id="cb29-223"><a href="#cb29-223" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-224"><a href="#cb29-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-227"><a href="#cb29-227" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-228"><a href="#cb29-228" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
+<span id="cb29-229"><a href="#cb29-229" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df1[<span class="sc">-</span>i,]</span>
+<span id="cb29-230"><a href="#cb29-230" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-231"><a href="#cb29-231" aria-hidden="true" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> metafor<span class="sc">::</span><span class="fu">rma</span>(OS.ln.HR <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> PFS.ln.HR, <span class="at">sei =</span> OS.se, <span class="at">data =</span> df, <span class="at">method =</span> <span class="st">&quot;FE&quot;</span>)</span>
+<span id="cb29-232"><a href="#cb29-232" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-233"><a href="#cb29-233" aria-hidden="true" tabindex="-1"></a>  new.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">PFS.ln.HR =</span> df1<span class="sc">$</span>PFS.ln.HR[i])</span>
+<span id="cb29-234"><a href="#cb29-234" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-235"><a href="#cb29-235" aria-hidden="true" tabindex="-1"></a>  FEMR.ci <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">predict</span>(fit, new.data<span class="sc">$</span>PFS.ln.HR))</span>
+<span id="cb29-236"><a href="#cb29-236" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-237"><a href="#cb29-237" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for criterion 1</span></span>
+<span id="cb29-238"><a href="#cb29-238" aria-hidden="true" tabindex="-1"></a>  simulated.OS.ln.HR <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="at">mean =</span> df1<span class="sc">$</span>OS.ln.HR[i], <span class="at">sd =</span> df1<span class="sc">$</span>OS.se[i])</span>
+<span id="cb29-239"><a href="#cb29-239" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-240"><a href="#cb29-240" aria-hidden="true" tabindex="-1"></a>  prop[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>((simulated.OS.ln.HR <span class="sc">&gt;=</span> FEMR.ci<span class="sc">$</span>ci.lb) <span class="sc">&amp;</span> (simulated.OS.ln.HR <span class="sc">&lt;=</span> FEMR.ci<span class="sc">$</span>ci.ub))</span>
+<span id="cb29-241"><a href="#cb29-241" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-242"><a href="#cb29-242" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for criterion 2</span></span>
+<span id="cb29-243"><a href="#cb29-243" aria-hidden="true" tabindex="-1"></a>  absolute.difference[i] <span class="ot">&lt;-</span> <span class="fu">abs</span>(df1<span class="sc">$</span>OS.ln.HR[i] <span class="sc">-</span> FEMR.ci<span class="sc">$</span>pred)</span>
+<span id="cb29-244"><a href="#cb29-244" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb29-245"><a href="#cb29-245" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-246"><a href="#cb29-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-249"><a href="#cb29-249" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-250"><a href="#cb29-250" aria-hidden="true" tabindex="-1"></a>median.prop <span class="ot">&lt;-</span> <span class="fu">median</span>(prop)</span>
+<span id="cb29-251"><a href="#cb29-251" aria-hidden="true" tabindex="-1"></a>median.prop</span>
+<span id="cb29-252"><a href="#cb29-252" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-253"><a href="#cb29-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-256"><a href="#cb29-256" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-257"><a href="#cb29-257" aria-hidden="true" tabindex="-1"></a>range.prop <span class="ot">&lt;-</span> <span class="fu">range</span>(prop)</span>
+<span id="cb29-258"><a href="#cb29-258" aria-hidden="true" tabindex="-1"></a>range.prop</span>
+<span id="cb29-259"><a href="#cb29-259" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-260"><a href="#cb29-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-261"><a href="#cb29-261" aria-hidden="true" tabindex="-1"></a><span class="fu">### Absolute difference between mean predicted value and actual value</span></span>
+<span id="cb29-262"><a href="#cb29-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-263"><a href="#cb29-263" aria-hidden="true" tabindex="-1"></a>The absolute difference between the actual log hazard ratio and the predicted log hazard ratio for OS for each trial left out will be recorded.</span>
+<span id="cb29-264"><a href="#cb29-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-267"><a href="#cb29-267" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-268"><a href="#cb29-268" aria-hidden="true" tabindex="-1"></a>median.absolute.difference <span class="ot">&lt;-</span> <span class="fu">median</span>(absolute.difference)</span>
+<span id="cb29-269"><a href="#cb29-269" aria-hidden="true" tabindex="-1"></a>median.absolute.difference <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">3</span>)</span>
+<span id="cb29-270"><a href="#cb29-270" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-271"><a href="#cb29-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-274"><a href="#cb29-274" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb29-275"><a href="#cb29-275" aria-hidden="true" tabindex="-1"></a>range.absolute.difference <span class="ot">&lt;-</span> <span class="fu">range</span>(absolute.difference)</span>
+<span id="cb29-276"><a href="#cb29-276" aria-hidden="true" tabindex="-1"></a>range.absolute.difference <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">3</span>)</span>
+<span id="cb29-277"><a href="#cb29-277" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
