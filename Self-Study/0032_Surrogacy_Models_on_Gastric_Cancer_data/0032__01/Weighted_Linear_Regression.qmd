@@ -1,0 +1,296 @@
+---
+title: "Frequentist Weighted Linear Regression"
+author: "Ananda Biswas"
+date: "`r Sys.Date()`"
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    code-fold: show
+    code-tools: true
+    code-summary: "Show/Hide Code"
+knitr:
+  opts_chunk:
+    fig.path: "figures/"
+---
+
+## Required Libraries
+
+```{r message=FALSE, warning=FALSE}
+library(openxlsx)
+
+library(wCorr)
+library(DescTools)
+
+library(gt)
+library(tidyverse)
+```
+
+## Loading Data
+
+```{r}
+#| include: false
+data.path <- 'https://github.com/ananda-ebm/datasets/raw/refs/heads/master/Gastric_Cancer.xlsx'
+```
+
+```{r}
+df1 <- read.xlsx(data.path, sheet = 1)
+
+df2 <- df1[1:14, ]
+```
+
+## Initial Sanity Checks
+
+```{r}
+str(df2)
+```
+
+```{r}
+dim(df2)
+```
+
+```{r, results='asis'}
+#| echo: false
+#| tbl-cap: "Snapshot of Gastric Cancer Data"
+
+head(df2) |>
+  gt() |>
+  tab_options(
+    data_row.padding = px(8),
+    column_labels.padding = px(10)
+  )
+```
+
+## Generating Treatment Effect on Surrogate Endpoint in New Trials
+
+```{r}
+range(df2$HR.DFS)
+```
+
+```{r}
+# Suppose 1000 new trials reporting TE on surrogate endpoint only
+new.data <- data.frame(DFS.ln.HR = log(seq(0.45, 1.2, length = 1000)))
+```
+
+## Some Derived Quantities
+
+The weights used in this analysis were the inverse variance $1/{\text{SE}^2}$ of the log HR of OS.
+
+```{r}
+df2$weight <- 1 / (df2$OS.se)^2
+```
+
+The weighted correlation coefficient $(\rho)$ was estimated using the Pearson weighted correlation of the target and the surrogate endpoints.
+
+```{r}
+rho <- weightedCorr(df2$OS.ln.HR, df2$DFS.ln.HR,
+             method = "Pearson",
+             weights = 1 / df2$OS.se^2)
+rho
+```
+
+Confidence intervals around Pearson $\rho$ are not symmetrical. Therefore, a Fisher's $z-$transformation was applied to estimate the $95\%$ confidence intervals, which is conducted using the `CorCI()` function in the `DescTools` package.
+
+```{r}
+effective.n <- sum(df2$weight)^2 / sum(df2$weight^2)
+effective.n <- round(effective.n, 1)
+
+effective.n
+```
+
+```{r}
+CorCI(rho = rho, 
+      n = effective.n, 
+      conf.level = 0.95, alternative = "two.sided")
+```
+
+## Model
+
+The weighted linear regression (WLR) model is given by
+
+$$\theta_i = \alpha + \beta\gamma_i + \varepsilon_i,
+\qquad i = 1,\ldots,n,$$
+
+where
+
+$$\varepsilon_i \sim
+N\left(0,\sigma_{\theta_i}^2\right); 
+\qquad 
+w_i = \dfrac{1}{\sigma_{\theta_i}^2}.$$
+
+The parameters $\alpha$ and $\beta$ are estimated by minimizing the weighted sum of squared residuals:
+
+$$\underset{\alpha,\beta}{\operatorname{minimize}}
+\sum_{i=1}^{n}
+w_i
+\left(
+\theta_i-\alpha-\beta\gamma_i
+\right)^2.$$ Here:
+
+- $\theta_i$ is the treatment effect on the final endpoint in study $i$;
+- $\gamma_i$ is the treatment effect on the surrogate endpoint in study $i$;
+- $\alpha$ is the intercept;
+- $\beta$ is the regression coefficient measuring the association between treatment effects on the surrogate and final endpoints; and
+- $w_i$ is the weight assigned to study $i$.
+
+## Model Fitting
+
+Frequentist weighted linear regression is arguably the *simplest* approach to a surrogate analysis. A weighted linear regression model was used to relate the target endpoint (log HRs of OS) to the surrogate endpoint (log HRs of DFS). The data were *weighted* by the inverse of the variance of the log HRs of the target variable.
+
+```{r}
+fit <- lm(OS.ln.HR ~ DFS.ln.HR, weights = weight, data = df2)
+summary(fit)
+```
+
+```{r}
+sqrt(summary(fit)$r.squared)
+```
+
+## Prediction of TE on Clinical Outcome in New Trials
+
+### Confidence Intervals
+
+```{r}
+wlr.ci <- data.frame(predict(fit, newdata = new.data, interval = "confidence"))
+
+head(wlr.ci)
+```
+
+### Prediction Intervals
+
+```{r}
+wlr.pi <- data.frame(predict(fit, newdata = new.data, interval = "prediction",
+                  weight = 1 / (mean(df2$OS.se)^2) ))
+
+head(wlr.pi)
+```
+
+## Trial-level Association Plot
+
+```{r}
+wlr.pred.df <- data.frame(HR.OS = exp(wlr.ci[,1]),
+                        HR.DFS = exp(new.data$DFS.ln.HR),
+                        lower.ci = exp(wlr.ci[,2]),
+                        upper.ci = exp(wlr.ci[,3]),
+                        lower.pi = exp(wlr.pi[,2]),
+                        upper.pi = exp(wlr.pi[,3]))
+```
+
+```{r}
+wlr.association.plot <- ggplot(df2, aes(x = HR.DFS, y = HR.OS)) +
+  geom_ribbon(aes(x = HR.DFS, ymin = lower.ci, ymax = upper.ci), data = wlr.pred.df, stat = 'identity', fill = "steelblue", alpha = 0.5) +
+  geom_ribbon(aes(x = HR.DFS, ymin = lower.pi, ymax = upper.pi), data = wlr.pred.df, stat = 'identity', fill = "lightblue", alpha = 0.4) +
+  scale_x_continuous(trans = "log", 
+                     limits = c(0.45, 1.2),
+                     breaks=c(0.4,0.5,0.6,0.7,0.8,0.9,1,1.1),
+                     expand = c(0.01, 0.01)) +
+  scale_y_continuous(trans = "log",
+                     limits=c(0.35, 1.5),
+                     breaks=c(0.1,0.2,0.3,0.4,0.5,0.7,1,1.2,1.5,2,3),
+                     expand = c(0.01, 0.01)) +
+  geom_smooth(aes(x = HR.DFS, y = HR.OS), data = wlr.pred.df, stat = 'identity') +
+  geom_point(aes(x = HR.DFS, y = HR.OS, size = weight), 
+             col = "gray30", shape = 21, fill = "orange") +
+  geom_hline(yintercept = 1, linetype = 'dashed') +
+  xlab("Disease-free survival hazard ratio (log scale)")+ 
+  ylab(paste("Overall survival hazard ratio" , "\n", "\U00B1", "95% confidence and prediction intervals (log scale)")) +
+  ggtitle("Weighted Linear Regression") +
+  theme_bw() +
+  scale_colour_hue("trial") +
+  theme(legend.position = "none")
+```
+
+```{r, fig.width=8, fig.height=6, out.width="100%"}
+wlr.association.plot
+```
+
+## Surrogate Threshold Effect
+
+Surrogate Threshold Effect is defined as ***the minimum treatment effect on the surrogate necessary to predict a nonzero effect on the true endpoint*** in a future trial. $\log(HR) < 0$ implies a *beneficial* treatment effect. So STE was computed as the intersection of the upper $95\%$ prediction interval with the horizontal line for no treatment effect (i.e., in which the HR for OS equals $1$ or $\log(HR) = 0$).
+
+```{r}
+candidate.HR.DFS <- wlr.pred.df %>%
+  filter(upper.pi < 1) %>%
+  pull(HR.DFS)
+
+WLR.STE <- round(max(candidate.HR.DFS), digits = 3)
+
+WLR.STE
+```
+
+## Leave-one-out Cross-validation
+
+Leave-one-out cross-validation (LOOCV) is performed by selecting each trial in a data set in turns and using it as the validation set while using the rest $(n-1)$ of the trials as the training set. This is repeated $n$ times. For each iteration in the LOOCV procedure, models are ﬁtted to the training set, and the dependent variable of interest (target endpoint) is predicted on the basis of the explanatory variable(s) in the models (surrogate endpoint) in the validation set.
+
+Two different criteria were used to assess the performance of each model for each iteration of the LOOCV. For each criterion, the median and range of the output values were used to assess model performance.
+
+### Proportion of actual values from the validation set that lies within the 95% prediction interval from the training set
+
+The steps are as follows:
+
+- Leave out $i-$th study and train the model with remaining $n - 1$ studies.
+- Obtain $95\%$ prediction interval for the treatment effect on target endpoint (OS) in the left-out trial, using its surrogate endpoint (DFS) treatment effect.
+- Simulate $1000$ OS treatment effects based on normal distribution using the observed OS treatment effect and its standard error from the left-out trial.
+- Calculate the proportion of the $1000$ simulated values falling within the prediction interval, $p_i$.
+- Repeat these steps for all the studies, leaving out one at a time.
+- Calculate $median(p_1, \ldots, p_n)$ and $range(p_1, \ldots, p_n)$.
+
+```{r}
+n <- nrow(df2)
+
+prop <- c()
+
+absolute.difference <- c()
+```
+
+```{r}
+#| include: false
+set.seed(22)
+```
+
+```{r}
+for(i in 1:n){
+  df <- df2[-i,]
+  
+  fit <- lm(OS.ln.HR ~ DFS.ln.HR, weights = weight, data = df)
+
+  new.data <- data.frame(DFS.ln.HR = df2$DFS.ln.HR[i])
+  
+  wlr.pi <- data.frame(predict(fit, newdata = new.data, interval = "prediction", 
+                               weight = 1 / (mean(df$OS.se)^2) ))
+  
+  # for criterion 1
+  simulated.OS.ln.HR <- rnorm(1000, mean = df2$OS.ln.HR[i], sd = df2$OS.se[i])
+  
+  prop[i] <- mean((simulated.OS.ln.HR >= wlr.pi[,2] & simulated.OS.ln.HR <= wlr.pi[,3]))
+  
+  # for criterion 2
+  absolute.difference[i] <- abs(wlr.pi$fit - df2$OS.ln.HR[i])
+}
+```
+
+```{r}
+median.prop <- median(prop)
+median.prop
+```
+
+```{r}
+range.prop <- range(prop)
+range.prop
+```
+
+### Absolute difference between mean predicted value and actual value
+
+The absolute difference between the actual log hazard ratio and the predicted log hazard ratio for OS for each trial left out will be recorded.
+
+```{r}
+median.absolute.difference <- median(absolute.difference)
+median.absolute.difference |> round(3)
+```
+
+```{r}
+range.absolute.difference <- range(absolute.difference)
+range.absolute.difference |> round(3)
+```
