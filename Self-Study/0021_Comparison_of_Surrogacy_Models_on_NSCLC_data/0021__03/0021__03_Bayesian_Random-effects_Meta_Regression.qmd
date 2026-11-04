@@ -75,7 +75,7 @@ range(df1$HR.PFS)
 ```
 
 ```{r}
-new.data <- data.frame(PFS.ln.HR = log(seq(0.2,3, length=1000)))
+new.data <- data.frame(PFS.ln.HR = log(seq(0.2, 3, length = 1000)))
 ```
 
 ## Model
@@ -191,7 +191,7 @@ fit.BREMR <- model.BREMR$sample(
 n.posterior.samples <- n.chains * n.samples.per.chain
 ```
 
-### STAN Diagnostics
+### HMC Diagnostics
 
 ```{r}
 fit.BREMR$cmdstan_diagnose()
@@ -416,4 +416,101 @@ candidate.HR.PFS <- BREMR.pred.df %>%
 
 BREMR.STE <- round(max(candidate.HR.PFS), digits = 3)
 BREMR.STE
+```
+
+
+## Leave-one-out Cross-validation
+
+Leave-one-out cross-validation (LOOCV) is performed by selecting each trial in a data set in turns and using it as the validation set while using the rest $(n-1)$ of the trials as the training set. This is repeated $n$ times. For each iteration in the LOOCV procedure, models are ﬁtted to the training set, and the dependent variable of interest (target endpoint) is predicted on the basis of the explanatory variable(s) in the models (surrogate endpoint) in the validation set.
+
+Two different criteria were used to assess the performance of each model for each iteration of the LOOCV. For each criterion, the median and range of the output values were used to assess model performance.
+
+### Proportion of actual values from the validation set that lies within the 95% prediction interval from the training set
+
+The steps are as follows:
+
+- Leave out $i-$th study and train the model with remaining $n - 1$ studies.
+- Obtain $95\%$ prediction interval for the treatment effect on target endpoint (OS) in the left-out trial, using its surrogate endpoint (PFS) treatment effect.
+- Simulate $1000$ OS treatment effects based on normal distribution using the observed OS treatment effect and its standard error from the left-out trial.
+- Calculate the proportion of the $1000$ simulated values falling within the prediction interval, $p_i$.
+- Repeat these steps for all the studies, leaving out one at a time.
+- Calculate $median(p_1, \ldots, p_n)$ and $range(p_1, \ldots, p_n)$.
+
+```{r}
+n <- nrow(df1)
+
+prop <- c()
+
+absolute.difference <- c()
+```
+
+```{r}
+#| include: false
+set.seed(7)
+```
+
+```{r}
+#| echo: true
+#| output: false
+for(i in 1:n){
+  df <- df1[-i,]
+  
+  BREMR.data <- list(N = nrow(df1), 
+                     Y2 = df1$OS.ln.HR, Y1 = df1$PFS.ln.HR, 
+                     sigma2 = df1$OS.se)
+  
+  fit.BREMR <- model.BREMR$sample(data = BREMR.data, 
+                                  chains = 4, parallel_chains = 4,
+                                  iter_warmup = 250, 
+                                  iter_sampling = 1000,
+                                  adapt_delta = 0.96, seed = 14,
+                                  refresh = 0)
+  
+  posterior.draws <- fit.BREMR$draws(variables = c("beta", "lambda1", "psi"),
+                                     format = "draws_df")
+  
+  new.data <- data.frame(PFS.ln.HR = df1$PFS.ln.HR[i])
+  
+  BREMR.posterior <- posterior.draws$beta + new.data$PFS.ln.HR * posterior.draws$lambda1
+  
+  u <- rnorm(4 * 1000, 0, sd = posterior.draws$psi)
+  
+  BREMR.predictions <- BREMR.posterior + u
+  
+  # for criterion 1
+  BREMR.pi <- quantile(BREMR.predictions, probs = c(0.025, 0.975))
+  
+  simulated.OS.ln.HR <- rnorm(1000, mean = df1$OS.ln.HR[i], sd = df1$OS.se[i])
+  
+  prop[i] <- mean((simulated.OS.ln.HR >= BREMR.pi["2.5%"]) & (simulated.OS.ln.HR <= BREMR.pi["97.5%"]))
+  
+  # for criterion 2
+  BREMR.fit <- mean(BREMR.predictions)
+  
+  absolute.difference[i] <- abs(df1$OS.ln.HR[i] - BREMR.fit)
+}
+```
+
+```{r}
+median.prop <- median(prop)
+median.prop
+```
+
+```{r}
+range.prop <- range(prop)
+range.prop
+```
+
+### Absolute difference between mean predicted value and actual value
+
+The absolute difference between the actual log hazard ratio and the predicted log hazard ratio for OS for each trial left out will be recorded.
+
+```{r}
+median.absolute.difference <- median(absolute.difference)
+median.absolute.difference |> round(3)
+```
+
+```{r}
+range.absolute.difference <- range(absolute.difference)
+range.absolute.difference |> round(3)
 ```
