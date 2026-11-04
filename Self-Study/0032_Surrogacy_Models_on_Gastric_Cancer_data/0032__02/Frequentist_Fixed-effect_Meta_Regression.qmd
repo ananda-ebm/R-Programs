@@ -1,0 +1,242 @@
+---
+title: "Frequentist Fixed-effects Meta Regression"
+author: "Ananda Biswas"
+date: "`r Sys.Date()`"
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    code-fold: show
+    code-tools: true
+    code-summary: "Show/Hide Code"
+knitr:
+  opts_chunk:
+    fig.path: "figures/"
+---
+
+## Required Libraries
+
+```{r message=FALSE, warning=FALSE}
+library(openxlsx)
+
+library(gt)
+library(tidyverse)
+
+library(metafor)
+```
+
+## Loading Data
+
+```{r}
+#| include: false
+data.path <- 'https://github.com/ananda-ebm/datasets/raw/refs/heads/master/Gastric_Cancer.xlsx'
+```
+
+```{r}
+df1 <- read.xlsx(data.path, sheet = 1)
+
+df2 <- df1[1:14, ]
+```
+
+## Initial Sanity Checks
+
+```{r}
+str(df2)
+```
+
+```{r}
+dim(df2)
+```
+
+```{r, results='asis'}
+#| echo: false
+#| tbl-cap: "Snapshot of Gastric Cancer Data"
+
+head(df2) |>
+  gt() |>
+  tab_options(
+    data_row.padding = px(8),
+    column_labels.padding = px(10)
+  )
+```
+
+## Derived Quantities
+
+```{r}
+df2$weight <- 1 / (df2$OS.se)^2
+```
+
+## Generating Treatment Effect on Surrogate Endpoint in New Trials
+
+```{r}
+range(df2$HR.DFS)
+```
+
+```{r}
+# Suppose 1000 new trials reporting TE on surrogate endpoint only
+new.data <- data.frame(DFS.ln.HR = log(seq(0.45, 1.2, length=1000)))
+```
+
+## Model
+
+Meta-regression is an extension of meta-analysis that includes the surrogate endpoint as a study-level covariate. The model is written as
+
+$$\widehat{\theta}_i
+=
+\theta+\beta\widehat{\alpha}_i+\varepsilon_i,
+\qquad
+i=1,\ldots,N,$$
+
+where
+
+$$\varepsilon_i
+\overset{\mathrm{iid}}{\sim}
+N(0,\sigma^2).$$ Here:
+
+- $\widehat{\theta}_i$ = estimated treatment effect on the final endpoint in study $i$;
+- $\widehat{\alpha}_i$ = estimated treatment effect on the surrogate endpoint in study $i$;
+- $\theta$ = intercept;
+- $\beta$ = regression coefficient describing the association between surrogate and final treatment effects.
+
+Here we assume that $\theta$ is common for all studies and the only reason observed treatment effect $\widehat{\theta_i}$'s are different from $\theta$ is the sampling error (in addition to the observed treatment effect on surrogate endpoint of that study).
+
+## Model Fitting
+
+```{r}
+fit.FEMR <- metafor::rma(OS.ln.HR ~ 1 + DFS.ln.HR, sei = OS.se, data = df2, method = "FE")
+summary(fit.FEMR)
+```
+
+## Prediction of TE on Clinical Outcome in New Trials and Confidence Intervals
+
+We assume that there is no between-trial heterogeneity in either the target or the surrogate endpoint (fixed-effects assumption). So confidence intervals can be interpreted as prediction intervals.
+
+```{r}
+FEMR.ci <- data.frame(predict(fit.FEMR, new.data$DFS.ln.HR))
+head(FEMR.ci) |>
+  gt()
+```
+
+```{r}
+FEMR.ci$HR.OS <- exp(FEMR.ci$pred)
+FEMR.ci$HR.DFS <- exp(new.data$DFS.ln.HR)
+
+head(FEMR.ci) |>
+  gt()
+```
+
+## Trial-level Association Plot
+
+```{r}
+FEMR.association.plot <- ggplot(df2, aes(x = HR.DFS, y = HR.OS)) +
+  geom_ribbon(aes(x = HR.DFS, ymin = exp(ci.lb), ymax = exp(ci.ub)), data = FEMR.ci, fill = "steelblue", alpha = 0.4) +
+  geom_smooth(aes(x = HR.DFS, y = HR.OS), data = FEMR.ci, stat = 'identity') +
+  geom_point(aes(size = weight), shape = 21, col = "gray30", fill = "orange") +
+  scale_x_continuous(transform = "log",
+                     limits = c(0.45, 1.2),
+                     breaks=c(0.5,0.6,0.7,0.8,0.9,1,1.1),
+                     expand = c(0.01, 0.01)) +
+  scale_y_continuous(transform = "log",
+                     limits = c(0.3, 1.7),
+                     breaks=c(0.3,0.4,0.5,0.7,1,1.2,1.5),
+                     expand = c(0.01, 0.01)) +
+  geom_hline(yintercept = 1, linetype = 'dashed') +
+  xlab("Disease-free survival hazard ratio (log scale)")+ 
+  ylab(paste("Overall survival hazard ratio" , "\n", "\U00B1", "95% confidence and prediction intervals (log scale)")) +
+  ggtitle("Frequentist Fixed-effects Meta-regression") +
+  theme_bw() +
+  scale_colour_hue("trial") +
+  theme(legend.position = "none")
+```
+
+```{r, fig.width=8, fig.height=6, out.width="100%"}
+FEMR.association.plot
+```
+
+## Surrogate Threshold Effect
+
+```{r}
+candidate.HR.DFS <- FEMR.ci %>%
+  filter(ci.ub < 0) %>%
+  pull(HR.DFS)
+
+FEMR.STE <- round(max(candidate.HR.DFS), digits = 3)
+FEMR.STE
+```
+
+
+## Leave-one-out Cross-validation
+
+Leave-one-out cross-validation (LOOCV) is performed by selecting each trial in a data set in turns and using it as the validation set while using the rest $(n-1)$ of the trials as the training set. This is repeated $n$ times. For each iteration in the LOOCV procedure, models are ﬁtted to the training set, and the dependent variable of interest (target endpoint) is predicted on the basis of the explanatory variable(s) in the models (surrogate endpoint) in the validation set.
+
+Two different criteria were used to assess the performance of each model for each iteration of the LOOCV. For each criterion, the median and range of the output values were used to assess model performance.
+
+### Proportion of actual values from the validation set that lies within the 95% prediction interval from the training set
+
+The steps are as follows:
+
+- Leave out $i-$th study and train the model with remaining $n - 1$ studies.
+- Obtain $95\%$ prediction interval for the treatment effect on target endpoint (OS) in the left-out trial, using its surrogate endpoint (DFS) treatment effect.
+- Simulate $1000$ OS treatment effects based on normal distribution using the observed OS treatment effect and its standard error from the left-out trial.
+- Calculate the proportion of the $1000$ simulated values falling within the prediction interval, $p_i$.
+- Repeat these steps for all the studies, leaving out one at a time.
+- Calculate $median(p_1, \ldots, p_n)$ and $range(p_1, \ldots, p_n)$.
+
+```{r}
+n <- nrow(df2)
+
+prop <- c()
+
+absolute.difference <- c()
+```
+
+```{r}
+#| include: false
+set.seed(7)
+```
+
+```{r}
+for(i in 1:n){
+  df <- df2[-i,]
+  
+  fit <- metafor::rma(OS.ln.HR ~ 1 + DFS.ln.HR, sei = OS.se, data = df, method = "FE")
+  
+  new.data <- data.frame(DFS.ln.HR = df2$DFS.ln.HR[i])
+  
+  FEMR.ci <- data.frame(predict(fit, new.data$DFS.ln.HR))
+  
+  # for criterion 1
+  simulated.OS.ln.HR <- rnorm(1000, mean = df2$OS.ln.HR[i], sd = df2$OS.se[i])
+  
+  prop[i] <- mean((simulated.OS.ln.HR >= FEMR.ci$ci.lb) & (simulated.OS.ln.HR <= FEMR.ci$ci.ub))
+  
+  # for criterion 2
+  absolute.difference[i] <- abs(df2$OS.ln.HR[i] - FEMR.ci$pred)
+}
+```
+
+```{r}
+median.prop <- median(prop)
+median.prop
+```
+
+```{r}
+range.prop <- range(prop)
+range.prop
+```
+
+### Absolute difference between mean predicted value and actual value
+
+The absolute difference between the actual log hazard ratio and the predicted log hazard ratio for OS for each trial left out will be recorded.
+
+```{r}
+median.absolute.difference <- median(absolute.difference)
+median.absolute.difference |> round(3)
+```
+
+```{r}
+range.absolute.difference <- range(absolute.difference)
+range.absolute.difference |> round(3)
+```
