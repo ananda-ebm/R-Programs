@@ -11,6 +11,14 @@ format:
     code-fold: show
     code-tools: true
     code-summary: "Show/Hide Code"
+    theme:
+      light: flatly
+      dark: darkly
+    highlight-style:
+      light: github
+      dark: monokai
+    respect-user-color-scheme: true
+    css: custom.css
 knitr:
   opts_chunk:
     fig.path: "figures/"
@@ -277,4 +285,79 @@ ggsave("WLR_association_plot.png",
        dpi = 3000,
        units = "in",
        bg = "white")
+```
+
+## Leave-one-out Cross-validation
+
+Leave-one-out cross-validation (LOOCV) is performed by selecting each trial in a data set in turns and using it as the validation set while using the rest $(n-1)$ of the trials as the training set. This is repeated $n$ times. For each iteration in the LOOCV procedure, models are ﬁtted to the training set, and the dependent variable of interest (target endpoint) is predicted on the basis of the explanatory variable(s) in the models (surrogate endpoint) in the validation set.
+
+Two different criteria were used to assess the performance of each model for each iteration of the LOOCV. For each criterion, the median and range of the output values were used to assess model performance.
+
+### Proportion of actual values from the validation set that lies within the 95% prediction interval from the training set
+
+The steps are as follows:
+
+- Leave out $i-$th study and train the model with remaining $n - 1$ studies.
+- Obtain $95\%$ prediction interval for the treatment effect on target endpoint (OS) in the left-out trial, using its surrogate endpoint (PFS) treatment effect.
+- Simulate $1000$ OS treatment effects based on normal distribution using the observed OS treatment effect and its standard error from the left-out trial.
+- Calculate the proportion of the $1000$ simulated values falling within the prediction interval, $p_i$.
+- Repeat these steps for all the studies, leaving out one at a time.
+- Calculate $median(p_1, \ldots, p_n)$ and $range(p_1, \ldots, p_n)$.
+
+```{r}
+n <- nrow(df1)
+
+prop <- c()
+
+absolute.difference <- c()
+```
+
+```{r}
+#| include: false
+set.seed(22)
+```
+
+```{r}
+for(i in 1:n){
+  df <- df1[-i,]
+  
+  fit <- lm(OS.ln.HR ~ PFS.ln.HR, weights = weight, data = df)
+
+  new.data <- data.frame(PFS.ln.HR = df1$PFS.ln.HR[i])
+  
+  wlr.pi <- data.frame(predict(fit, newdata = new.data, interval = "prediction", 
+                               weight = 1 / (mean(df$OS.se)^2) ))
+  
+  # for criterion 1
+  simulated.OS.ln.HR <- rnorm(1000, mean = df1$OS.ln.HR[i], sd = df1$OS.se[i])
+  
+  prop[i] <- mean((simulated.OS.ln.HR >= wlr.pi[,2]) & (simulated.OS.ln.HR <= wlr.pi[,3]))
+  
+  # for criterion 2
+  absolute.difference[i] <- abs(wlr.pi$fit - df1$OS.ln.HR[i])
+}
+```
+
+```{r}
+median.prop <- median(prop)
+median.prop
+```
+
+```{r}
+range.prop <- range(prop)
+range.prop
+```
+
+### Absolute difference between mean predicted value and actual value
+
+The absolute difference between the actual log hazard ratio and the predicted log hazard ratio for OS for each trial left out will be recorded.
+
+```{r}
+median.absolute.difference <- median(absolute.difference)
+median.absolute.difference |> round(3)
+```
+
+```{r}
+range.absolute.difference <- range(absolute.difference)
+range.absolute.difference |> round(3)
 ```
