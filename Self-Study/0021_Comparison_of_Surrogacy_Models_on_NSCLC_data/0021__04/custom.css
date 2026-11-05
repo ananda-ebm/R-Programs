@@ -1,0 +1,76 @@
+/* DARK AND LIGHT MODE TOGGLING */
+
+.quarto-color-scheme-toggle {
+  position: fixed !important;
+  top: 15px !important;
+  right: 20px !important;
+  z-index: 9999 !important;
+}
+
+/* gt() OUTPUT */
+
+/* LIGHT MODE */
+
+.quarto-light .gt_table {
+  background-color: #ffffff !important;
+  color: #343a40 !important;
+}
+
+.quarto-light .gt_heading {
+  background-color: #ffffff !important;
+  color: #343a40 !important;
+}
+
+.quarto-light .gt_col_heading {
+  background-color: #e9ecef !important;
+  color: #343a40 !important;
+}
+
+.quarto-light .gt_row,
+.quarto-light .gt_stub {
+  background-color: #ffffff !important;
+  color: #343a40 !important;
+}
+
+
+/* DARKLY MODE */
+
+.quarto-dark .gt_table {
+  background-color: #222222 !important;
+  color: #eeeeee !important;
+}
+
+.quarto-dark .gt_heading {
+  background-color: #222222 !important;
+  color: #ffffff !important;
+}
+
+.quarto-dark .gt_col_heading {
+  background-color: #303030 !important;
+  color: #11c6e2 !important;
+}
+
+.quarto-dark .gt_row,
+.quarto-dark .gt_stub {
+  background-color: #222222 !important;
+  color: #eeeeee !important;
+}
+
+
+/* BORDERS */
+
+.quarto-dark .gt_table,
+.quarto-dark .gt_row,
+.quarto-dark .gt_col_heading,
+.quarto-dark .gt_stub {
+  border-color: #444444 !important;
+}
+
+
+/* FOOTNOTES AND SOURCE NOTES */
+
+.quarto-dark .gt_footnote,
+.quarto-dark .gt_sourcenote {
+  background-color: #222222 !important;
+  color: #bbbbbb !important;
+}

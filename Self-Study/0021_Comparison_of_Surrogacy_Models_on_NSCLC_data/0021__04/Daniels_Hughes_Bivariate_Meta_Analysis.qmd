@@ -12,6 +12,14 @@ format:
     code-fold: show
     code-tools: true
     code-summary: "Show/Hide Code"
+    theme:
+      light: flatly
+      dark: darkly
+    highlight-style:
+      light: github
+      dark: monokai
+    respect-user-color-scheme: true
+    css: custom.css
 knitr:
   opts_chunk:
     fig.path: "figures/"
@@ -85,7 +93,7 @@ range(df1$HR.PFS)
 ```
 
 ```{r}
-new.data <- data.frame(PFS.ln.HR = log(seq(0.2,3, length = 1000)))
+new.data <- data.frame(PFS.ln.HR = log(seq(0.2, 3, length = 1000)))
 ```
 
 ## Model
@@ -301,20 +309,20 @@ fit$cmdstan_diagnose()
 
 ## Posterior Summaries of Parameters of Interest
 
+### Posterior Draws
+
+```{r}
+posterior.draws <- fit$draws(variables = c("alpha", "beta", "tau_sq"),
+                             format = "matrix")
+```
+
 ### Point Estimates
 
 ```{r}
-fit$summary(c("alpha", "beta", "tau")) |> gt()
+apply(posterior.draws, 2, mean)
 ```
 
 ### Interval Estimates
-
-```{r}
-posterior.draws <- fit$draws(
-  variables = c("alpha", "beta", "tau"),
-  format = "matrix"
-)
-```
 
 ```{r}
 apply(posterior.draws, 2, quantile, probs = c(0.025, 0.975))
@@ -391,7 +399,9 @@ As analytical solution cannot be traced, we resort to numerical solution as foll
 Now I proceed to calculate the $95\%$ posterior prediction intervals.
 
 ```{r}
-u <- rnorm(n.posterior.samples, 0, sd = posterior.draws[, 3])
+tau.draws <- fit$draws(variables = "tau", format = "matrix")
+
+u <- rnorm(n.posterior.samples, 0, sd = tau.draws[, 1])
 
 DH.predictions <- DH.posterior +
                   matrix(rep(u, 1000), 
@@ -450,4 +460,103 @@ candidate.HR.PFS <- DH.pred.df %>%
 
 DH.STE <- max(candidate.HR.PFS) |> round(3)
 DH.STE
+```
+
+## Leave-one-out Cross-validation
+
+Leave-one-out cross-validation (LOOCV) is performed by selecting each trial in a data set in turns and using it as the validation set while using the rest $(n-1)$ of the trials as the training set. This is repeated $n$ times. For each iteration in the LOOCV procedure, models are ﬁtted to the training set, and the dependent variable of interest (target endpoint) is predicted on the basis of the explanatory variable(s) in the models (surrogate endpoint) in the validation set.
+
+Two different criteria were used to assess the performance of each model for each iteration of the LOOCV. For each criterion, the median and range of the output values were used to assess model performance.
+
+### Proportion of actual values from the validation set that lies within the 95% prediction interval from the training set
+
+The steps are as follows:
+
+- Leave out $i-$th study and train the model with remaining $n - 1$ studies.
+- Obtain $95\%$ prediction interval for the treatment effect on target endpoint (OS) in the left-out trial, using its surrogate endpoint (PFS) treatment effect.
+- Simulate $1000$ OS treatment effects based on normal distribution using the observed OS treatment effect and its standard error from the left-out trial.
+- Calculate the proportion of the $1000$ simulated values falling within the prediction interval, $p_i$.
+- Repeat these steps for all the studies, leaving out one at a time.
+- Calculate $median(p_1, \ldots, p_n)$ and $range(p_1, \ldots, p_n)$.
+
+```{r}
+n <- nrow(df1)
+
+prop <- c()
+
+absolute.difference <- c()
+```
+
+```{r}
+#| include: false
+set.seed(7)
+```
+
+```{r}
+#| echo: true
+#| output: false
+for(i in 1:n){
+  df <- df1[-i,]
+  
+  DH.data <- list(N = nrow(df),
+                  theta_hat = df$OS.ln.HR,
+                  gamma_hat = df$PFS.ln.HR,
+                  se_theta = df$OS.se,
+                  se_gamma = df$PFS.se)
+  
+  fit <- DH.model$sample(data = DH.data, 
+                         chains = 4, parallel_chains = 4,
+                         iter_warmup = 500,
+                         iter_sampling = 2000,
+                         adapt_delta = 0.95,
+                         max_treedepth = 25,
+                         refresh = 0)
+  
+  posterior.draws <- fit$draws(variables = c("alpha", "beta", "tau"),
+                                     format = "draws_df")
+  
+  new.data <- data.frame(PFS.ln.HR = df1$PFS.ln.HR[i])
+  
+  DH.posterior <- posterior.draws$alpha + new.data$PFS.ln.HR * posterior.draws$beta
+  
+  u <- rnorm(4 * 2000, 0, sd = posterior.draws$tau)
+  
+  DH.predictions <- DH.posterior + u
+  
+  # for criterion 1
+  DH.pi <- quantile(DH.predictions, probs = c(0.025, 0.975))
+  
+  simulated.OS.ln.HR <- rnorm(1000, mean = df1$OS.ln.HR[i], sd = df1$OS.se[i])
+  
+  prop[i] <- mean((simulated.OS.ln.HR >= DH.pi["2.5%"]) & (simulated.OS.ln.HR <= DH.pi["97.5%"]))
+  
+  # for criterion 2
+  DH.fit <- mean(DH.predictions)
+  
+  absolute.difference[i] <- abs(df1$OS.ln.HR[i] - DH.fit)
+}
+```
+
+```{r}
+median.prop <- median(prop)
+median.prop
+```
+
+```{r}
+range.prop <- range(prop)
+range.prop
+```
+
+### Absolute difference between mean predicted value and actual value
+
+The absolute difference between the actual log hazard ratio and the predicted log hazard ratio for OS for each trial left out will be recorded.
+
+```{r}
+median.absolute.difference <- median(absolute.difference)
+median.absolute.difference |> round(3)
+```
+
+```{r}
+range.absolute.difference <- range(absolute.difference)
+range.absolute.difference |> round(3)
 ```
